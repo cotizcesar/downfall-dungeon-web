@@ -310,7 +310,7 @@ body.opts #opts{display:flex}body.opts #menu,body.opts #title,body.opts #overlay
 #trk .tkr{font-size:.82em;color:#cfc8b8;line-height:1.25}#trk .tkr em{font-style:normal;color:#7ae05a}#trk .tkr em.done{color:#9aa0a8}#trk .tkok{color:#7ae05a;margin-left:.35em}
 #sClock{color:#bfb7a6;font-size:.8em;margin-left:.2em}body.title #trk{display:none}
 body.hudl #tlt{order:0}body.hudl #compass{display:none}body.hudl #place{font-family:Georgia,'Times New Roman',serif}
-body:not(.hudl) #trk,body:not(.hudl) #sClock{display:none !important} /* the centred HUD stays as the kit drew it */
+
 /* HUD CONFIGURATION: LEFT CORNER - measured on the reference's screenshot (2000 x 1125) and turned into the HUD's own pixels (1080 high;
    in #core 1em = 16 of them): life orb 159 across at 77 from the left and 120 from the foot, the resource orb 130 at 197 / 91, the bar of six
    slots of 60 at 350 / 38 with the keys under it, the experience line at 124 over it, the potion at 124 / 292, the roll at 238 / 172,
@@ -566,7 +566,7 @@ body #tut{top:calc(var(--p) * 470);right:calc(var(--p) * 20);width:max(calc(var(
 body #lcol{left:calc(var(--p) * 20);top:calc(var(--p) * 20);font-size:max(calc(var(--p) * 16),12px)}
 /* the boss: a long bar across the top, the title of the floor below it */
 body #bossBar{top:calc(var(--p) * 26);width:calc(var(--p) * 640);margin-left:calc(var(--p) * -320);font-size:max(calc(var(--p) * 16),12px)}
-body #banner{top:calc(var(--p) * 120);font-size:calc(var(--p) * 44);left:calc(var(--p) * 300);right:calc(var(--p) * 300);padding:0}
+body #banner{top:calc(var(--p) * 120);font-size:calc(var(--p) * 44);left:calc(var(--p) * 345);right:calc(var(--p) * 345);padding:0}
 /* the inventory: docked to the right, 660 wide, the whole height; the character's details open to its left */
 
   body.inv #topr{visibility:hidden}
@@ -674,61 +674,56 @@ body #tut{top:calc(var(--p) * 600) !important}
 
 /* a phone or a tablet: the notice instead of the game */
 #phoneGate{position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1em;padding:2em;text-align:center;background:radial-gradient(ellipse at 50% 45%,#13221f,#060606 70%);color:#e8e0cc;font:16px/1.4 Georgia,serif;letter-spacing:.06em}#phoneGate b{font-size:1.8em;letter-spacing:.2em;color:#d8b46a}#phoneGate i{width:min(60vw,18em);height:1px;background:linear-gradient(90deg,transparent,#d8b46a,transparent)}#phoneGate p{margin:0;font-size:1.15em}#phoneGate small{color:#9fb8b0;font-size:.9em;max-width:26em}body.gated #game,body.gated #hud{display:none !important}
-/* ===== THE KIT'S BAR (the centred HUD), to the reference's size: measured on its screenshots at 3440 x 1440 and placed here in the same
-   units (1em = 16 pixels of a 1080-pixel-high screen = 21.3 pixels at 1440). Orbs 225 px across, centred 771 px left and right of the middle
-   and 123 px over the bottom; the riveted plate 1317 x 155 px; the experience in ten parts along its top; six slots of 87 px, each with its key
-   or pad button on its lower edge (attack, spell 1, roll, spells 2-4: the pad's A X B Y RB RT); a framed slot of 72 px in the middle for the
-   skill points; a framed belt of four (potion, mana, whistle, charms); the roll's stamina at the right. Each orb sits in a bronze cradle of
-   our own (the reference's statues are its art). It lies over the diorama */
-body:not(.hudl) #core{left:50% !important;bottom:0 !important;transform:translateX(-50%) !important;display:block !important;width:98em;height:12.5em;gap:0 !important;pointer-events:none;font-size:min(calc(var(--p) * 16),calc(100vw / 100)) !important}
-body:not(.hudl) #core::before,body:not(.hudl) #core::after{content:'';position:absolute;bottom:0;width:19em;height:12.5em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 125'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23d8b46a'/%3E%3Cstop offset='.45' stop-color='%239a7432'/%3E%3Cstop offset='1' stop-color='%234a3616'/%3E%3C/linearGradient%3E%3ClinearGradient id='v' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235fb8a6'/%3E%3Cstop offset='1' stop-color='%2316433c'/%3E%3C/linearGradient%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233a4a46'/%3E%3Cstop offset='1' stop-color='%230b0f10'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M18 125V113H34V105H60L72 96H118V125Z' fill='url(%23s)' stroke='%236a5a30' stroke-width='1.2'/%3E%3Cpath d='M44 105C40 80 46 50 62 26C70 14 78 7 84 3C80 22 80 40 86 58C90 70 96 80 104 88L96 105Z' fill='url(%23v)' stroke='%23c9a24a' stroke-width='1.4'/%3E%3Cpath d='M60 100C58 78 64 56 76 38' fill='none' stroke='%23c9a24a' stroke-width='1' opacity='.7'/%3E%3Cpath d='M70 102C70 86 74 72 82 60' fill='none' stroke='%23c9a24a' stroke-width='.8' opacity='.55'/%3E%3Ccircle cx='128.8' cy='67.2' r='55.5' fill='none' stroke='url(%23b)' stroke-width='5'/%3E%3Ccircle cx='128.8' cy='67.2' r='59' fill='none' stroke='%230b0f10' stroke-width='1.5'/%3E%3Cpath d='M74 88A55 55 0 0 0 184 88L190 125H72Z' fill='url(%23s)'/%3E%3Cpath d='M76 92A55 55 0 0 0 182 92' fill='none' stroke='url(%23b)' stroke-width='7'/%3E%3Cpath d='M80 100A55 55 0 0 0 178 100' fill='none' stroke='%235fb8a6' stroke-width='1.2' opacity='.6'/%3E%3Cg fill='%23e8cf8a'%3E%3Ccircle cx='26' cy='119' r='1.6'/%3E%3Ccircle cx='42' cy='109' r='1.6'/%3E%3Ccircle cx='66' cy='100' r='1.6'/%3E%3Ccircle cx='96' cy='117' r='1.6'/%3E%3Ccircle cx='133' cy='120' r='1.6'/%3E%3Ccircle cx='170' cy='117' r='1.6'/%3E%3C/g%3E%3Cpath d='M72 67L64 62L64 72Z' fill='%23c9a24a'/%3E%3C/svg%3E") left bottom/100% 100% no-repeat;z-index:0;pointer-events:none;filter:drop-shadow(0 0 .4em rgba(0,0,0,.8))}
-body:not(.hudl) #core::before{left:0}body:not(.hudl) #core::after{right:0;transform:scaleX(-1)}
-body:not(.hudl) .orb2{position:absolute;bottom:.5em;width:10.55em;height:10.55em;z-index:1;pointer-events:auto;border:none;box-shadow:inset 0 0 1.4em rgba(0,0,0,.9)}
-body:not(.hudl) #orbHp{left:7.6em}body:not(.hudl) #orbMp{right:7.6em}
-body:not(.hudl) #coreMid{position:absolute !important;left:calc(50% - 30.87em);width:61.73em;bottom:0;height:7.27em;margin:0 !important;display:block !important;min-width:0;z-index:1;pointer-events:auto;background:radial-gradient(circle,#c9a24a 0 .09em,transparent .12em) .55em .2em/1.6em .6em repeat-x,radial-gradient(circle,#c9a24a 0 .09em,transparent .12em) .55em calc(100% - .12em)/1.6em .6em repeat-x,linear-gradient(180deg,#30393a,#1a2122 18%,#111617 70%,#0a0d0e);border:1px solid #6a5a30;border-bottom:none;box-shadow:inset 0 1px 0 #8a7238,inset 0 0 1.2em rgba(0,0,0,.85),0 -.2em .8em rgba(0,0,0,.6)}
+/* ===== THE BAR (the centred HUD), to the measure of the owner's second reference (its screenshots, 875 px of picture high, scaled to a
+   1080-pixel-high screen; 1em = 16 of those pixels). Two orbs of 146 px, centred 355 px left and right of the middle and 109 px over the bottom;
+   between them a frame of 383 x 84 px that holds the experience line with its ticks and six slots of 57 px - spells 1 to 4, the attack (the
+   mouse's left button), the lifeline charms; the level in a diamond on the frame's left shoulder; the key of each slot under the frame.
+   Round buttons at the orbs' shoulders: the potion (over the life orb), the mana draught (under it), the roll (over the mana orb), the recall
+   whistle (under it), each with its key beside it; the skill points owed as a red diamond at the far right. A bronze wing of our own joins
+   each orb to the frame (the reference has statues there: its art). It lies over the diorama */
+body:not(.hudl) #core{left:50% !important;bottom:0 !important;transform:translateX(-50%) !important;display:block !important;width:60em;height:14em;gap:0 !important;pointer-events:none;font-size:min(calc(var(--p) * 16),calc(100vw / 62)) !important}
+body:not(.hudl) #core::before,body:not(.hudl) #core::after{content:'';position:absolute;bottom:3.5em;width:5.75em;height:5.25em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 92 84'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23d8b46a'/%3E%3Cstop offset='.5' stop-color='%239a7432'/%3E%3Cstop offset='1' stop-color='%234a3616'/%3E%3C/linearGradient%3E%3ClinearGradient id='v' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233f8f80'/%3E%3Cstop offset='1' stop-color='%23143a34'/%3E%3C/linearGradient%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%2333403f'/%3E%3Cstop offset='1' stop-color='%230b0f10'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 30L92 22V84H0Z' fill='url(%23s)' stroke='%236a5a30' stroke-width='1.2'/%3E%3Cpath d='M6 62C18 30 44 10 86 4C70 22 60 40 58 62C56 70 50 76 42 78L10 78Z' fill='url(%23v)' stroke='%23c9a24a' stroke-width='1.3'/%3E%3Cpath d='M18 66C28 44 44 28 66 18M30 70C36 54 46 42 58 34' fill='none' stroke='%23c9a24a' stroke-width='.9' opacity='.6'/%3E%3Cpath d='M0 80H92' stroke='url(%23b)' stroke-width='5'/%3E%3Cg fill='%23e8cf8a'%3E%3Ccircle cx='8' cy='38' r='1.5'/%3E%3Ccircle cx='84' cy='30' r='1.5'/%3E%3Ccircle cx='84' cy='70' r='1.5'/%3E%3C/g%3E%3C/svg%3E") center/100% 100% no-repeat;z-index:0;pointer-events:none;filter:drop-shadow(0 0 .3em rgba(0,0,0,.8))}
+body:not(.hudl) #core::before{left:12.375em}body:not(.hudl) #core::after{right:12.375em;transform:scaleX(-1)}
+body:not(.hudl) .orb2{position:absolute;bottom:2.25em;width:9.125em;height:9.125em;z-index:1;pointer-events:auto;border:none;box-shadow:0 0 0 .22em #0b0f10,0 0 0 .5em #33403f,0 0 0 .58em #6a5a30,0 0 0 .7em #0b0f10,0 .3em 1em rgba(0,0,0,.8),inset 0 0 1.4em rgba(0,0,0,.9)}
+body:not(.hudl) #orbHp{left:3.25em}body:not(.hudl) #orbMp{right:3.25em}
+body:not(.hudl) #coreMid{position:absolute !important;left:18.125em;width:23.94em;bottom:3.5em;height:5.25em;margin:0 !important;display:block !important;min-width:0;z-index:1;pointer-events:auto;box-sizing:border-box;background:linear-gradient(180deg,#2a3334,#141a1b 30%,#0b0f10);border:1px solid #6a5a30;box-shadow:inset 0 0 0 1px #0b0f10,inset 0 1px 0 1px #3a4a46,0 .2em .8em rgba(0,0,0,.7)}
 body:not(.hudl) #xpRow{position:static}
-body:not(.hudl) #xpLv{position:absolute;left:.33em;bottom:1.6em;font-size:.62em;min-width:1.6em;height:1.6em;margin:0}
-body:not(.hudl) #xpBar{position:absolute !important;left:1.64em;right:1.4em;top:.61em;height:.5em !important;border-radius:0;border:1px solid #4a3e22;background:#07090a;overflow:hidden}
-body:not(.hudl) #xpBar::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 4px),#3a3020 calc(10% - 4px) calc(10% - 3px),#0b0d0e calc(10% - 3px) 10%);pointer-events:none}
-body:not(.hudl) #xpFill{background:linear-gradient(180deg,#f6e2a6,#c9a04a 60%,#8a6a2c) !important}
-body:not(.hudl) #tpBadge{position:absolute;left:50%;bottom:calc(100% + .5em);transform:translateX(-50%);white-space:nowrap}
-body:not(.hudl) #kitTalF,body:not(.hudl) #kitBeltF{display:block;position:absolute;bottom:.7em;border:2px solid #6a5a30;background:linear-gradient(180deg,#141819,#0a0d0e);box-shadow:inset 0 0 0 1px #2a2418,inset 0 0 .8em rgba(0,0,0,.9)}
-body:not(.hudl) #kitTalF{left:28.31em;width:5.3em;height:4.69em}body:not(.hudl) #kitBeltF{left:34.08em;width:16.88em;height:4.55em}
-#kitTalF,#kitBeltF{display:none}
+body:not(.hudl) #xpLv{position:absolute;left:-2.15em;bottom:4.35em;font-size:1em;min-width:1.65em;height:1.65em;margin:0;z-index:3}body:not(.hudl) #xpLv span{font-size:.62em}
+body:not(.hudl) #xpBar{position:absolute !important;left:.15em;right:.15em;top:.25em;height:.56em !important;border-radius:0;border:1px solid #3a4a46;background:#07090a;overflow:hidden}
+body:not(.hudl) #xpBar::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(8.333% - 1px),#3a4a46 calc(8.333% - 1px) 8.333%);pointer-events:none}
+body:not(.hudl) #xpFill{background:linear-gradient(180deg,#f0b860,#c8781e 70%,#8a4a10) !important}
+body:not(.hudl) #tpBadge{position:absolute;left:50%;bottom:calc(100% + .6em);transform:translateX(-50%);white-space:nowrap}
+#kitTalF,#kitBeltF,#aRoot .stb{display:none !important}
 body:not(.hudl) #coreBar{position:absolute !important;inset:0 !important;display:block !important;padding:0 !important;background:none !important;border:none !important;box-shadow:none !important}
 body:not(.hudl) #coreBar .sepv{display:none}
 body:not(.hudl) #coreBar .act{position:absolute !important;right:auto !important;font-size:1em !important;display:flex !important;gap:0}
-body:not(.hudl) #coreBar .act::before{border-radius:0 !important;border:1px solid #5a4c2a;background-color:#15191a;box-shadow:inset 0 0 0 1px #0b0d0e,inset 0 0 .7em rgba(0,0,0,.95)}
-body:not(.hudl) #coreBar .act .gi{width:3.3em;height:3.3em;margin-left:-1.65em;top:.39em}
-body:not(.hudl) #coreBar .act kbd{position:absolute !important;left:50% !important;right:auto !important;top:calc(100% - .55em) !important;bottom:auto !important;transform:translateX(-50%);min-width:1.4em;height:1.1em;font-size:.62em !important;line-height:1.1em;padding:0 .3em !important;border-radius:.2em;background:#0b0d0e !important;border:1px solid #4a4236;color:#e6dfcc;white-space:nowrap;z-index:3}
+body:not(.hudl) #coreBar .act::before{width:3.56em !important;height:3.56em !important;border-radius:0 !important;border:1px solid #3a4a46;background-color:#10191a;box-shadow:inset 0 0 0 1px #0b0d0e,inset 0 0 .7em rgba(0,0,0,.95)}
+body:not(.hudl) #coreBar .act .gi{width:3em;height:3em;margin-left:-1.5em;top:.28em}
+body:not(.hudl) #coreBar .act kbd{position:absolute !important;left:50% !important;right:auto !important;top:calc(100% + .95em) !important;bottom:auto !important;transform:translateX(-50%);min-width:1.5em;height:1.5em;box-sizing:border-box;font-size:.62em !important;line-height:1.35em;padding:0 .3em !important;border-radius:.15em;background:#d8d2c2 !important;border:1px solid #0b0f10;color:#14181a;font-weight:700;white-space:nowrap;z-index:3}
 body:not(.hudl) #coreBar .act kbd:empty{display:none}
-body.pad:not(.hudl) #coreBar .act kbd{border-radius:50%;min-width:1.8em;height:1.8em;line-height:1.75em;padding:0 !important;border-color:#000;font-weight:700;top:calc(100% - .9em) !important}
+body.pad:not(.hudl) #coreBar .act kbd{border-radius:50%;min-width:1.7em;height:1.7em;line-height:1.6em;padding:0 !important;background:#16171c !important;color:#ece6d6}
 body.pad:not(.hudl) #coreBar .act kbd[data-p=A]{background:#3a8a2a !important;color:#fff}body.pad:not(.hudl) #coreBar .act kbd[data-p=B]{background:#c03a2a !important;color:#fff}body.pad:not(.hudl) #coreBar .act kbd[data-p=X]{background:#2a5ac0 !important;color:#fff}body.pad:not(.hudl) #coreBar .act kbd[data-p=Y]{background:#c8a020 !important;color:#1a1408}
-body:not(.hudl) #coreBar .act small{top:.15em !important;right:.15em !important}
+body:not(.hudl) #coreBar .act small{top:.1em !important;right:.1em !important}
 body:not(.hudl) #coreBar .act b{top:50% !important;transform:translateY(-50%)}
-body:not(.hudl) #coreBar #aAtk{left:2.58em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #aAtk::before{width:4.08em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #sk1{left:6.75em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #sk1::before{width:4.08em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #aDodge{left:10.88em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #aDodge::before{width:4.08em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #sk2{left:15.09em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #sk2::before{width:4.08em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #sk3{left:19.31em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #sk3::before{width:4.08em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #sk4{left:23.44em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #sk4::before{width:4.08em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #aPot{left:35.25em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #aPot::before{width:3.75em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #aMana{left:38.86em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #aMana::before{width:3.75em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #aEsc{left:42.94em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #aEsc::before{width:3.75em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #aChm{left:47.02em !important;bottom:0.94em !important}body:not(.hudl) #coreBar #aChm::before{width:3.75em !important;height:4.08em !important}
-body:not(.hudl) #coreBar #aTal{left:29.39em !important;bottom:1.31em !important}body:not(.hudl) #coreBar #aTal::before{width:3.375em !important;height:3.375em !important}
-body:not(.hudl) #coreBar #aRoot{left:52.22em !important;bottom:2.34em !important}body:not(.hudl) #coreBar #aRoot::before{width:6.47em !important;height:1.41em !important}
-body:not(.hudl) #coreBar #aTal::before{background-color:#3a1210;border-color:#8a3a2a;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8c070' stroke-width='1.6'%3E%3Cpath d='M12 3v18M6 9h12M9 6l3-3 3 3'/%3E%3C/svg%3E")}
-body:not(.hudl) #coreBar #aTal.due::before{box-shadow:inset 0 0 1em rgba(255,200,90,.55),0 0 .6em rgba(255,190,80,.6)}
-body:not(.hudl) #coreBar #aRoot::before{background:#07090a;border-color:#3a4a46}
-body:not(.hudl) #aRoot .stb{position:absolute;left:.12em;right:.12em;top:.12em;height:1.17em;background:#07090a;overflow:hidden}body:not(.hudl) #aRoot .stb i{display:block;height:100%;width:100%;background:linear-gradient(180deg,#9fe0d0,#2f7d70 60%,#16433c);transition:width .2s}
-#aChm,#aRoot .stb{display:none}body:not(.hudl) #aRoot .stb{display:block}body:not(.hudl) #coreBar #aChm{display:flex !important}
+body:not(.hudl) #coreBar #sk1{left:0.31em !important;bottom:.23em !important}body:not(.hudl) #coreBar #sk2{left:4.21em !important;bottom:.23em !important}body:not(.hudl) #coreBar #sk3{left:8.11em !important;bottom:.23em !important}body:not(.hudl) #coreBar #sk4{left:12.01em !important;bottom:.23em !important}body:not(.hudl) #coreBar #aAtk{left:15.91em !important;bottom:.23em !important}body:not(.hudl) #coreBar #aChm{left:19.81em !important;bottom:.23em !important}
+/* the round buttons at the orbs' shoulders */
+body:not(.hudl) #coreBar #aPot::before,body:not(.hudl) #coreBar #aMana::before,body:not(.hudl) #coreBar #aDodge::before,body:not(.hudl) #coreBar #aEsc::before{width:2.6em !important;height:2.6em !important;border-radius:50% !important;border:1px solid #6a5a30;background-color:#141a1b;background-size:62% !important;box-shadow:0 0 0 .14em #0b0f10,inset 0 0 .5em rgba(0,0,0,.9)}
+body:not(.hudl) #coreBar #aPot{left:-7.49em !important;bottom:6.3em !important}body:not(.hudl) #coreBar #aMana{left:-7.18em !important;bottom:-1.5em !important}body:not(.hudl) #coreBar #aDodge{left:27.98em !important;bottom:6.5em !important}body:not(.hudl) #coreBar #aEsc{left:27.68em !important;bottom:-1.55em !important}
+body:not(.hudl) #coreBar #aPot .gi,body:not(.hudl) #coreBar #aMana .gi,body:not(.hudl) #coreBar #aDodge .gi,body:not(.hudl) #coreBar #aEsc .gi{width:1.8em;height:1.8em;margin-left:-.9em;top:.4em}
+body:not(.hudl) #coreBar #aPot kbd,body:not(.hudl) #coreBar #aMana kbd{left:calc(100% + 1.3em) !important;top:50% !important;transform:translate(-50%,-50%)}
+body:not(.hudl) #coreBar #aDodge kbd,body:not(.hudl) #coreBar #aEsc kbd{left:-1.3em !important;top:50% !important;transform:translate(-50%,-50%)}
+body:not(.hudl) #coreBar #aPot small,body:not(.hudl) #coreBar #aMana small,body:not(.hudl) #coreBar #aDodge small,body:not(.hudl) #coreBar #aEsc small{top:auto !important;bottom:-.3em;right:-.3em !important}
+/* the skill points owed: a red diamond with a cross, far right, only while a point waits */
+body:not(.hudl) #coreBar #aTal{left:36.7em !important;bottom:7.15em !important;display:none !important}body.tpdue:not(.hudl) #coreBar #aTal{display:flex !important}
+body:not(.hudl) #coreBar #aTal::before{width:1.7em !important;height:1.7em !important;margin:.3em;transform:rotate(45deg);border:.12em solid #f0e6d0;background:#c0281e;box-shadow:0 0 0 .1em #0b0f10,0 0 .6em rgba(240,60,40,.7);background-image:none}
+body:not(.hudl) #coreBar #aTal::after{content:'+';position:absolute;left:0;right:0;top:.12em;text-align:center;font-size:1.7em;font-weight:900;line-height:1.3;color:#fff;pointer-events:none}
+body:not(.hudl) #coreBar #aTal kbd{left:calc(100% + .2em) !important;top:calc(100% + .1em) !important}
 body:not(.hudl) #coreBar #aChm::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8d9a8' stroke-width='1.6'%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3C/svg%3E")}
+#aChm{display:none}body:not(.hudl) #coreBar #aChm{display:flex !important}
 body:not(.hudl) #coreBar #aEsc::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8d9a8' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 14h11a4 4 0 0 0 0-8H9M4 14l3 3M15 6v3'/%3E%3C/svg%3E")}
 body.hudl #aTal{display:none !important}
-/* messages and captions stay above the plate and the cradles */
-body:not(.hudl) #hint{bottom:calc(var(--p) * 230) !important}body:not(.hudl) #cap{bottom:calc(var(--p) * 275) !important}
-
+/* messages and captions stay above the bar and its buttons */
+body:not(.hudl) #hint{bottom:calc(var(--p) * 250) !important}body:not(.hudl) #cap{bottom:calc(var(--p) * 295) !important}
 /* ===== THE FRONT END, in the reference's order and to its measure (its screenshots at 3440 x 1440, here in pixels of a 1080-pixel-high
    screen: var(--p)), dressed as the kit's bar: slate plates, brass rivets and rules, verdigris gems, bronze frames. Our name and emblem,
    never the reference's logo, art or words. 1) the splash: black, the emblem low on the right while the game loads; 2) PRESS ANY KEY;
@@ -853,6 +848,65 @@ body.csel #hud>:not(#csel):not(#opts):not(#hint),body.press #hud>*,body.calib #h
 body.inv #banner,body.bigmap #banner,body.shop #banner,body.menu #banner,body.opts #banner{display:none !important}
 body:not(.inv) #cTabs{display:none !important}#cTabs .hx{display:none !important}
 #cClass:empty{display:none}#cTalents>h2,#cTalents>.stat{display:none !important}
+/* the shop as a wall of tiles: picture and price; the foot of the window says what the one in focus is */
+#shopPanel .sgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:.5em;margin:0}
+#shopPanel .sr.st{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25em;aspect-ratio:1/1.12;margin:0;padding:.4em .2em .3em;border:1px solid #2c3a3a;border-left-width:1px;background:linear-gradient(180deg,#1a2122,#0e1213);box-shadow:inset 0 0 .6em rgba(0,0,0,.8);cursor:pointer;min-width:0}
+#shopPanel .sr.st .sico{width:62%;height:auto;aspect-ratio:1;margin:0;flex:none}#shopPanel .sr.st .sico0{display:flex;align-items:center;justify-content:center;font-size:1.6em;color:#c9a24a}
+#shopPanel .sr.st b{font-size:.78em;font-weight:600;color:#e8c070;letter-spacing:.02em;min-height:1.1em;white-space:nowrap}
+#shopPanel .sr.st.no{opacity:.45}#shopPanel .sr.st.no b{color:#c0705a}
+#shopPanel .sr.st.r1{border-color:#3a6a3a}#shopPanel .sr.st.r2{border-color:#3a5a9a}#shopPanel .sr.st.r3{border-color:#7a4a9a}#shopPanel .sr.st.r4{border-color:#a8823a}
+#shopPanel .sr.st:hover,#shopPanel .sr.st.focus{border-color:#5fb8a6 !important;box-shadow:inset 0 0 .8em rgba(95,184,166,.3),0 0 .5em rgba(95,184,166,.35)}
+#shopDesc{position:sticky;bottom:0;margin-top:1em;padding:.8em .9em;min-height:7.5em;border:1px solid #6a5a30;background:linear-gradient(180deg,#141a1b,#0b0f10);box-shadow:0 -.6em 1em rgba(8,10,12,.95);font-size:.86em;line-height:1.5;letter-spacing:.04em;color:#d8d2c2;text-transform:uppercase}
+#shopDesc b{font-size:1.15em;letter-spacing:.08em;color:#fff}#shopDesc em{font-style:normal;color:#e8c070}#shopDesc u{text-decoration:none;color:#e58a6a}#shopDesc i{font-style:normal;color:#8a9a96}
+/* the skill tree, a branch a page */
+#talTree{display:block !important}
+#talTree .skTabs{display:flex;align-items:stretch;gap:.4em;margin:.6em 0 .8em}
+#talTree .skTabs span{flex:1;padding:.6em .4em;text-align:center;font-family:Georgia,serif;font-size:.86em;letter-spacing:.14em;text-transform:uppercase;color:#b8b0a0;border:1px solid #2c3a3a;background:linear-gradient(180deg,#1d2526,#121819);cursor:pointer;white-space:nowrap}
+#talTree .skTabs span i{font-style:normal;color:#8a9a96;margin-left:.3em}
+#talTree .skTabs span.on{color:#fff;border-color:#8a7238;box-shadow:inset 0 -2px 0 #5fb8a6}#talTree .skTabs span.on i{color:#e6c56a}
+#talTree .skTabs span.due::after{content:'';display:inline-block;width:.5em;height:.5em;margin-left:.4em;border-radius:50%;background:#ffd75a;box-shadow:0 0 .4em #ffd75a}
+#talTree .skTabs kbd{flex:none;align-self:center;min-width:1.9em;padding:.25em .4em;text-align:center;font:inherit;font-size:.72em;border:1px solid #6a5a30;border-radius:.2em;background:#16171c;color:#ece6d6;cursor:pointer}
+#talTree .skb{border:none;background:none;padding:0}
+#talTree .skcol{padding-left:0}
+#talTree .skn{height:72px;left:3.6em;gap:.8em;padding:0 1em}
+#talTree .skn .gi{width:3.2em;height:3.2em}
+#talTree .skn b{font-size:1.05em;letter-spacing:.06em}#talTree .skn b em{display:block;margin-top:.25em;font-style:normal;font-weight:400;font-size:.68em;letter-spacing:.12em;color:#8a9a96}
+#talTree .skn.lvl b em{color:#e58a8a}
+#talTree .skn i{font-size:1em}
+#skDesc{margin-top:.8em;min-height:6em}
+/* ===== THE TOP-RIGHT CORNER, to the second reference: the place and the hour in one line over the map; the map 302 x 242, 18 from the edge;
+   under it, from the map's left edge, what the floor asks and then the stories and contracts - a mark, the name, each step behind an arrow */
+body #topr{top:calc(var(--p) * 8) !important;right:calc(var(--p) * 18) !important;flex-direction:column !important;align-items:stretch !important;gap:calc(var(--p) * 6) !important;width:calc(var(--p) * 302);font-size:calc(var(--p) * 16) !important}
+body #tlt{order:0 !important;max-width:none !important;overflow:visible !important;padding:0 !important;text-align:right}
+body #place{font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--p) * 14);letter-spacing:.14em;text-transform:uppercase;color:#e8e0cc;white-space:nowrap;text-shadow:0 1px 2px #000}
+body #sBiome{display:inline !important;font-size:1em !important;max-width:none !important;margin:0 !important;color:#e8e0cc !important;letter-spacing:inherit !important}body #sBiome::after{content:' \00b7 '}
+body #sClock{display:inline !important;margin-left:.6em;padding-left:.6em;border-left:1px solid #6a5a30;color:#cfc8b8;font-size:.92em}
+body #compass{display:none !important}
+body:not(.bigmap) #mapbox{order:1;width:calc(var(--p) * 302) !important;height:calc(var(--p) * 242) !important;border-radius:0 !important;border:1px solid #6a5a30 !important;background:radial-gradient(ellipse at 50% 50%,#4a4126,#2a2415 70%,#17130b) !important;box-shadow:0 0 0 1px #0a0a0a,0 .3em .8em rgba(0,0,0,.7)}
+body #trk{order:2;display:flex !important;align-items:flex-start !important;text-align:left !important;max-width:none !important;gap:.15em;padding:calc(var(--p) * 6) 0 calc(var(--p) * 6) calc(var(--p) * 8);border-top:1px solid rgba(201,162,74,.35);font-size:calc(var(--p) * 15)}
+body #trk .tkq{margin-top:0;font-size:1em;color:#f0e0b8;letter-spacing:.04em}body #trk .tkq b{font-weight:400}
+body #trk .tkr{font-size:.9em;color:#d8d2c2;padding-left:1.3em;position:relative}body #trk .tkr::before{content:'\2192';position:absolute;left:0;color:#9a9282}
+body #qTrack{order:3 !important;align-items:stretch !important;text-align:left !important;width:auto !important;max-width:none !important;min-width:0;font-size:calc(var(--p) * 15) !important;gap:0}
+body #qTrack .qt{border-left:0 !important;border-top:1px solid rgba(201,162,74,.35);padding:calc(var(--p) * 7) 0 calc(var(--p) * 7) calc(var(--p) * 8) !important;background:none !important;text-shadow:0 1px 2px #000,0 0 6px #000}
+body #qTrack .qt b{justify-content:flex-start !important;font-size:1em !important;color:#f0e0b8 !important}
+body #qTrack .qt span{margin:.25em 0 0 1.35em !important;font-size:.9em;color:#d8d2c2 !important;letter-spacing:.02em}body #qTrack .qt span::before{content:'\2192  ' !important}
+body #qTrack .qt em{color:#7adf6a !important}
+body.title #topr{display:none !important}
+/* drops: the name of a piece on a dark plate, in the colour of its tier, as the reference shows them */
+.lootL{font-family:Georgia,'Times New Roman',serif;font-size:.86em !important;letter-spacing:.03em !important;padding:.12em .6em !important;background:rgba(8,8,10,.78) !important;border:1px solid rgba(0,0,0,.6) !important;border-radius:0 !important;text-transform:none}
+.lootL.hov{background:rgba(8,8,10,.95) !important;border-color:#f0e6d0 !important;color:#fff !important}
+/* ===== A GUARDIAN'S HEALTH, to the second reference: a dark plate with its name and its level (the floor), 500 x 27 at 20 from the top;
+   under it the red bar in its frame, 518 x 17; under that a thin pale bar of 471 x 6 in three parts - the guardian's three phases - with a mark in the middle */
+body #bossBar{top:calc(var(--p) * 20) !important;width:calc(var(--p) * 518) !important;margin-left:calc(var(--p) * -259) !important;font-size:calc(var(--p) * 16) !important;text-align:center}
+body #bossName{display:flex !important;align-items:center;justify-content:center;gap:1.1em;width:calc(var(--p) * 500);height:calc(var(--p) * 27);margin:0 auto !important;box-sizing:border-box;font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--p) * 15) !important;letter-spacing:.14em !important;text-transform:uppercase;color:#f0e6d0 !important;white-space:nowrap;background:linear-gradient(180deg,#1a2122,#0b0f10);border:1px solid #6a5a30;border-bottom:none;clip-path:polygon(calc(var(--p) * 10) 0,calc(100% - calc(var(--p) * 10)) 0,100% 100%,0 100%)}
+body #bossName::after{content:attr(data-lv);font-size:1.1em;letter-spacing:.06em;color:#fff}
+body #bossBar div{height:calc(var(--p) * 17) !important;border-radius:0 !important;background:#1a0606 !important;border:1px solid #6a5a30;box-shadow:0 0 0 1px #0b0f10,inset 0 0 calc(var(--p) * 6) rgba(0,0,0,.9),0 calc(var(--p) * 3) calc(var(--p) * 10) rgba(0,0,0,.7);box-sizing:border-box;overflow:hidden}
+body #bossBar i{border-radius:0 !important;background:linear-gradient(180deg,#e0433a,#b01a16 55%,#6a0c0a) !important}
+body #bossPips{display:flex !important;position:relative;gap:calc(var(--p) * 3) !important;width:calc(var(--p) * 471);height:calc(var(--p) * 6);margin:calc(var(--p) * 4) auto 0 !important;justify-content:stretch !important}
+body #bossPips b{flex:1;width:auto !important;height:100% !important;transform:none !important;border:1px solid #0b0f10 !important;background:#2a2a22 !important;opacity:1 !important;box-sizing:border-box}
+body #bossPips b.on{background:linear-gradient(180deg,#f0e8c0,#b8a868) !important}
+body #bossPips::after{content:'';position:absolute;left:50%;top:50%;width:calc(var(--p) * 11);height:calc(var(--p) * 11);margin:calc(var(--p) * -5.5) 0 0 calc(var(--p) * -5.5);transform:rotate(45deg);background:#0b0f10;border:1px solid #c9a24a}
+body.inv #bossBar,body.shop #bossBar,body.menu #bossBar,body.bigmap #bossBar{display:none !important}
 </style>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
@@ -1012,8 +1066,8 @@ const BUILD = '0.8.0';
 const CHANGES = [['0.8', 'ELBOWS AND TWO-HANDED GRIPS, ADAPTIVE MUSIC AND A MIXER, CAMERA LOOK-AHEAD, OPTIONS FOR EVERYTHING, A CODEX, THIS PAGE'], ['0.7', 'TWELVE VISUAL EFFECTS IN FOUR GRAPHICS TIERS, NEW WEAPON MODELS AND SWINGS'], ['0.6', 'THE RULES OF THE DUNGEON: CHARMS, CRYSTALS, THE REFUGE, MONSTER ROOMS, FOUR SAVE SLOTS']];
 /** the first floor's lessons: [what must be done, the prompt, why it matters] */
 const TT = x => T(x);
-const TUT = [['move', 'MOVE', 'THE CAMERA LOOKS WHERE YOU GO'], ['strike', 'STRIKE THE TRAINING DUMMY', 'THREE BLOWS IN A ROW MAKE A COMBO; THE THIRD IS HEAVY'], ['roll', 'ROLL', 'NOTHING CAN HIT YOU WHILE YOU ROLL; YOU HAVE TWO, AND EACH COMES BACK IN A FEW SECONDS'], ['drink', 'DRINK A POTION', 'IT ONLY WORKS WHEN YOU ARE HURT'],
-  ['cast', 'CAST A SPELL', 'SPELLS SPEND THE BLUE BAR'], ['loot', 'OPEN A CHEST OR TALK TO SOMEONE', 'THE SAME BUTTON STRIKES AND USES'], ['equip', 'OPEN THE BAG AND WEAR SOMETHING', 'THE BAG COMPARES EACH PIECE WITH WHAT YOU WEAR'], ['leave', 'TAKE THE STAIRS DOWN', 'BUY A LIFELINE CHARM FIRST: WITHOUT ONE, DEATH IS FINAL']];
+const TUT = [['move', 'MOVE', 'THE CAMERA FOLLOWS YOU'], ['strike', 'STRIKE THE TRAINING DUMMY', 'THREE BLOWS IN A ROW MAKE A COMBO; THE THIRD IS HEAVY'], ['roll', 'ROLL', 'NOTHING CAN HIT YOU WHILE YOU ROLL. YOU HAVE TWO ROLLS; EACH COMES BACK IN A FEW SECONDS'], ['drink', 'DRINK A POTION', 'IT ONLY WORKS WHEN YOU ARE HURT'],
+  ['cast', 'CAST A SPELL', 'SPELLS SPEND MANA, THE BLUE ORB'], ['loot', 'OPEN A CHEST OR TALK TO SOMEONE', 'THE ATTACK BUTTON ALSO OPENS AND TALKS'], ['equip', 'OPEN THE BAG AND WEAR SOMETHING', 'POINT AT A PIECE TO COMPARE IT WITH WHAT YOU WEAR'], ['leave', 'TAKE THE STAIRS DOWN', 'BUY A LIFELINE CHARM FROM THE MERCHANT FIRST: WITHOUT ONE, DEATH IS FINAL']];
 
 /* ============================================================
    CONFIG & UTILITIES
@@ -2043,17 +2097,17 @@ const PERKS = {
   venom: { n: 'KILLING EDGE', arch: 'nightblade', path: 0, d: '+10% CRITICAL CHANCE, +6% ATTACK SPEED', f: M => { M.crit += .1; M.aspd += .06; } }, ghost: { n: 'GHOST', arch: 'nightblade', path: 2, d: 'ROLLS COME BACK SOONER, 8% LESS DAMAGE TAKEN', f: M => { M.roll *= .7; M.taken *= .92; } }
 };
 const PACTS = {
-  blood: { n: 'BLOOD PACT', d: '+35% DAMAGE  /  -20% MAX HEALTH', f: M => { M.dmg *= 1.35; M.hp *= .8; } }, glass: { n: 'PACT OF GLASS', d: '+50% DAMAGE  /  YOU TAKE +30% DAMAGE', f: M => { M.dmg *= 1.5; M.taken *= 1.3; } },
-  miser: { n: "MISER'S PACT", d: '+100% GOLD  /  POTIONS HEAL 40% LESS', f: M => { M.gold *= 2; M.potion *= .6; } }, shadow: { n: 'PACT OF SHADOWS', d: '+25% MOVE SPEED  /  LIGHT RADIUS -35%', f: M => { M.spd *= 1.25; M.light *= .65; } },
-  grave: { n: 'PACT OF THE GRAVE', d: '+2 LIFELINE CHARMS NOW  /  -25% MAX HEALTH', f: M => M.hp *= .75, once: p => p.bracelets += 2 }, hunger: { n: 'HUNGER PACT', d: '+20% DAMAGE  /  NO NATURAL REGENERATION', f: M => { M.dmg *= 1.2; M.noRegen = true; } },
-  titan: { n: 'TITAN PACT', d: '+50% MAX HEALTH  /  -15% MOVE SPEED', f: M => { M.hp *= 1.5; M.spd *= .85; } }
+  blood: { n: 'BLOOD PACT', d: 'GAIN: 35% MORE DAMAGE - COST: 20% LESS MAX HEALTH', f: M => { M.dmg *= 1.35; M.hp *= .8; } }, glass: { n: 'PACT OF GLASS', d: 'GAIN: 50% MORE DAMAGE - COST: YOU TAKE 30% MORE DAMAGE', f: M => { M.dmg *= 1.5; M.taken *= 1.3; } },
+  miser: { n: "MISER'S PACT", d: 'GAIN: TWICE THE GOLD - COST: POTIONS HEAL 40% LESS', f: M => { M.gold *= 2; M.potion *= .6; } }, shadow: { n: 'PACT OF SHADOWS', d: 'GAIN: 25% MORE MOVE SPEED - COST: YOU SEE 35% LESS FAR', f: M => { M.spd *= 1.25; M.light *= .65; } },
+  grave: { n: 'PACT OF THE GRAVE', d: 'GAIN: 2 LIFELINE CHARMS NOW - COST: 25% LESS MAX HEALTH', f: M => M.hp *= .75, once: p => p.bracelets += 2 }, hunger: { n: 'HUNGER PACT', d: 'GAIN: 20% MORE DAMAGE - COST: NO HEALTH COMES BACK BY ITSELF', f: M => { M.dmg *= 1.2; M.noRegen = true; } },
+  titan: { n: 'TITAN PACT', d: 'GAIN: 50% MORE MAX HEALTH - COST: 15% LESS MOVE SPEED', f: M => { M.hp *= 1.5; M.spd *= .85; } }
 };
 const OMENS = {
-  horde: { id: 'horde', n: 'OMEN OF THE HORDE', d: '+60% MONSTERS  /  +60% XP AND GOLD', mobs: 1.6, xp: 1.6, gold: 1.6 }, dark: { id: 'dark', n: 'OMEN OF DARKNESS', d: 'LIGHT RADIUS -40%  /  +100% GOLD', light: .6, gold: 2 },
-  frail: { id: 'frail', n: 'OMEN OF FRAILTY', d: 'YOU TAKE +40% DAMAGE  /  +100% XP', taken: 1.4, xp: 2 }, famine: { id: 'famine', n: 'OMEN OF FAMINE', d: 'NO REGENERATION, NO POTION DROPS  /  +2 KEYS NOW', noRegen: 1, noPot: 1, keys: 2 },
-  might: { id: 'might', n: 'OMEN OF MIGHT', d: 'MONSTERS +40% HEALTH AND DAMAGE  /  FINER LOOT', ehp: 1.4, edmg: 1.4, loot: 1 }
+  horde: { id: 'horde', n: 'OMEN OF THE HORDE', d: 'HARDER: 60% MORE MONSTERS - REWARD: 60% MORE EXPERIENCE AND GOLD', mobs: 1.6, xp: 1.6, gold: 1.6 }, dark: { id: 'dark', n: 'OMEN OF DARKNESS', d: 'HARDER: YOU SEE 40% LESS FAR - REWARD: TWICE THE GOLD', light: .6, gold: 2 },
+  frail: { id: 'frail', n: 'OMEN OF FRAILTY', d: 'HARDER: YOU TAKE 40% MORE DAMAGE - REWARD: TWICE THE EXPERIENCE', taken: 1.4, xp: 2 }, famine: { id: 'famine', n: 'OMEN OF FAMINE', d: 'HARDER: NO HEALTH COMES BACK BY ITSELF AND NO POTIONS DROP - REWARD: 2 KEYS NOW', noRegen: 1, noPot: 1, keys: 2 },
+  might: { id: 'might', n: 'OMEN OF MIGHT', d: 'HARDER: MONSTERS HAVE 40% MORE HEALTH AND DAMAGE - REWARD: BETTER ITEMS', ehp: 1.4, edmg: 1.4, loot: 1 }
 };
-const CAMP = { id: 'camp', n: 'THEY SMELLED YOUR FIRE', d: 'MONSTERS +25% HEALTH AND DAMAGE', ehp: 1.25, edmg: 1.25 };
+const CAMP = { id: 'camp', n: 'YOU RESTED BEFORE THIS FLOOR', d: '25% MORE MONSTERS HERE', ehp: 1.25, edmg: 1.25 };
 let OMEN = {}; // the omen ruling the current floor (read by the generator, the monsters and the loot)
 /** what runs in the rivers of each realm, and what its bridges are made of (1 wood, 2 rock, 3 metal) */
 const RIVER_KIND = { meadow: ['water'], swamp: ['poison', 'water'], cave: ['water', 'mist'], ruins: ['water', 'mist'], tundra: ['water', 'mist'], desert: ['mist', 'water'], volcano: ['lava'], undead: ['poison', 'mist'], puzzle: ['mist'], elite: ['poison', 'lava'], sanctum: ['mist', 'water'] },
@@ -4581,11 +4635,11 @@ class InteractionSystem {
     if (r.glow) r.glow.visible = !r.open || r.t === 'waystone' || r.t === 'refuge';
   }
   label(r) {
-    if (r.t === 'pdoor') return r.o.out ? 'THE WAY BACK' : r.open ? 'AN EMPTY FRAME' : 'A DOOR TO ' + POCKETS[r.o.theme].n; if (r.t === 'camp') return 'A CAMP - SIT BY THE FIRE';
-    if (r.t === 'idol') return 'TURN THE IDOL'; if (r.t === 'tavern') return 'THE GUARDIANS\' TAVERN - IT DOES NOT CHARGE'; if (r.t === 'lab') return 'THE SECRET LABORATORY';
-    if (r.t === 'refuge') return this.G.depth === 95 ? 'RETURN DOOR' : 'REFUGE - A SAFE ROOM TO REST'; if (r.t === 'inn') return this.G.depth === 95 ? 'THE REFUGE INN - REST, EAT, BATHE' : 'THE LAST INN - REST, EAT, BATHE'; if (r.t === 'tutor') return 'TALK TO THE INSTRUCTOR';
-    if (r.t === 'altar') return 'DARK ALTAR - MAKE A PACT'; if (r.t === 'shop') return 'TRADE WITH THE MERCHANT'; if (r.t === 'waystone') return 'WAYSTONE - TRAVEL'; if (r.t === 'chest') return 'OPEN ' + (r.tier || 'BRONZE').toUpperCase() + ' CHEST'; if (r.t === 'lever') return 'PULL LEVER'; if (r.t === 'stairs') return 'DESCEND';
-    return ({ wood: 'OPEN DOOR', locked: 'UNLOCK DOOR', gate: 'IRON GATE', secret: 'CRACKED WALL', riddle: 'RIDDLE DOOR - ANSWER IT' })[r.o.kind];
+    if (r.t === 'pdoor') return r.o.out ? 'THE WAY BACK' : r.open ? 'AN EMPTY FRAME' : 'A DOOR TO ' + POCKETS[r.o.theme].n; if (r.t === 'camp') return 'REST AT THE CAMP';
+    if (r.t === 'idol') return 'TURN THE IDOL'; if (r.t === 'tavern') return 'ENTER THE GUARDIANS\' TAVERN (FREE)'; if (r.t === 'lab') return 'THE SECRET LABORATORY';
+    if (r.t === 'refuge') return this.G.depth === 95 ? 'GO BACK THROUGH THE DOOR' : 'ENTER THE REFUGE'; if (r.t === 'inn') return this.G.depth === 95 ? 'ENTER THE INN' : 'ENTER THE INN'; if (r.t === 'tutor') return 'TALK TO THE INSTRUCTOR';
+    if (r.t === 'altar') return 'MAKE A PACT AT THE DARK ALTAR'; if (r.t === 'shop') return 'TRADE WITH THE MERCHANT'; if (r.t === 'waystone') return 'TRAVEL BY WAYSTONE'; if (r.t === 'chest') return 'OPEN ' + (r.tier || 'BRONZE').toUpperCase() + ' CHEST'; if (r.t === 'lever') return 'PULL LEVER'; if (r.t === 'stairs') return 'GO DOWN THE STAIRS';
+    return ({ wood: 'OPEN DOOR', locked: 'UNLOCK DOOR', gate: 'IRON GATE', secret: 'CRACKED WALL', riddle: 'ANSWER THE RIDDLE DOOR' })[r.o.kind];
   }
   nearest(x, z, maxD) { let b = null, bd = maxD; for (const r of this.list) { if (r.done) continue; const d = Math.hypot(r.x - x, r.z - z); if (d < bd) { bd = d; b = r; } } return b; }
   sealed(r) { return r.data.type === 'boss' && r.data.spawns.some(s => s.type === 'boss' && !this.G.flags.has(s.id)); }
@@ -4845,7 +4899,7 @@ class LootManager {
     for (let a = 0; a < 8; a++) { const tx = x + rand(-.7, .7), tz = z + rand(-.7, .7); if (G.world.free(tx, tz)) { px = tx; pz = tz; break; } }
     const geo = kind === 'grave' ? GEO.bag3 : kind === 'gold' ? GEO.coin : kind === 'potion' ? GEO.potion : kind === 'mana' ? GEO.mana : kind === 'key' ? GEO.key : kind === 'crystal' ? GEO.crystal : null;
     const gear = kind === 'item', tr = gear ? clamp(o.item.rar | 0, 0, TOP) : 0, g = new THREE.Group(); let m, disc = null;
-    if (gear && !this.told && DEV() === 'key' && !G.auto) { this.told = true; G.hud.toast('HOLD ALT TO READ WHAT LIES ON THE GROUND'); }
+    
     if (gear) { m = new THREE.Group(); const orb = new THREE.Mesh(GEO.sph, this.orbM[tr]); orb.scale.setScalar(.27); orb.position.y = .2; m.add(orb); g.add(m);
       disc = new THREE.Mesh(this.discG, this.discM[tr]); disc.position.y = .03; disc.scale.setScalar(1.5 + tr * .22); disc.renderOrder = 2; g.add(disc); const bm = new THREE.Sprite(this.beamM[tr]); bm.center.set(.5, 0); bm.scale.set(.8 + tr * .07, 1.7 + tr * .5, 1); bm.position.y = .05; bm.renderOrder = 3; g.add(bm); }
     else { m = new THREE.Mesh(geo, MAT.vc); m.castShadow = true; g.add(m); } g.position.set(px, G.world.hAt(px, pz), pz);
@@ -4868,7 +4922,7 @@ class LootManager {
     const mouse = dev === 'key' && M.over && !open, mx = (M.ndc.x * .5 + .5) * S, my = (-M.ndc.y * .5 + .5) * S, placed = []; if (mouse) M.ray.setFromCamera(M.ndc, G.cam.cam);
     let hov = null, hd = 1e9;
     { const gp = dev === 'pad' && G.input.gp.pick(), l3 = !!(gp && padB(gp)(10)) && padMap().b[10] === undefined; if (l3 && !this.l3) { this.allOn = !this.allOn; G.audio.play('uimove'); } this.l3 = l3; if (dev !== 'pad') this.allOn = false; }
-    for (const d of this.list) { if (d.kind !== 'item') continue; const show = !open && d.fly <= 0 && (alt || this.allOn || (d.x - p.x) ** 2 + (d.z - p.z) ** 2 < 6.25), gy = G.world.hAt(d.x, d.z);
+    for (const d of this.list) { if (d.kind !== 'item') continue; const show = !open && d.fly <= 0 && (alt || this.allOn || (d.x - p.x) ** 2 + (d.z - p.z) ** 2 < 64), gy = G.world.hAt(d.x, d.z);
       if (show) { if (!d.lab) { const el = d.lab = document.createElement('div'); el.className = 'lootL r' + clamp(d.item.rar | 0, 0, TOP); el.textContent = d.item.name; this.labBox.appendChild(el); d.lw = 0; }
         const v = G.cam.project(d.x, gy + .62, d.z); d.lab.style.display = 'block'; if (!d.lw) { d.lw = d.lab.offsetWidth; d.lh = d.lab.offsetHeight; } let x = (v.x * .5 + .5) * S, y = (-v.y * .5 + .5) * S;
         /* names never lie on top of each other: a later one steps up */ for (let a = 0; a < 8; a++) { const hit = placed.find(q => Math.abs(q[0] - x) < (q[2] + d.lw) / 2 && Math.abs(q[1] - y) < d.lh + 1); if (!hit) break; y = hit[1] - d.lh - 2; } placed.push([x, y, d.lw]); d.lx = x; d.ly = y; d.lab.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-100%)`; }
@@ -4941,7 +4995,7 @@ class InventorySystem {
     this.G = G; this.max = 33; this.dirty = true; this.eq = $('equip'); this.bag = $('inv'); this.desc = $('desc');
     const bind = (el, fn) => { el.addEventListener('click', e => fn(e, false)); el.addEventListener('contextmenu', e => { e.preventDefault(); fn(e, true); }); el.addEventListener('mouseover', e => this.hover(e)); };
     bind(this.eq, (e) => { const k = e.target.closest('.slot')?.dataset.k; if (!k) return; if (e.pointerType === 'touch' || this.G.input.device === 'gamepad') { const it = this.G.player.equip[k]; if (it) this.pick(it, k); return; } this.unequip(k); });
-    $('talTree').addEventListener('click', e => { if (e.target.closest('[data-skr]')) { this.G.skillReset(); return; } const n = e.target.closest('[data-sk]'); if (n && this.G.skillUp(n.dataset.sk)) { const d = $('skDesc'); if (d) d.innerHTML = this.skText(n.dataset.sk); } });
+    $('talTree').addEventListener('click', e => { if (e.target.closest('[data-skr]')) { this.G.skillReset(); return; } { const tb = e.target.closest('[data-skp]'); if (tb) { this.skStep(0, +tb.dataset.skp); return; } const ar = e.target.closest('.skTabs kbd'); if (ar) { this.skStep(ar === ar.parentNode.firstElementChild ? -1 : 1); return; } } const n = e.target.closest('[data-sk]'); if (n && this.G.skillUp(n.dataset.sk)) { const d = $('skDesc'); if (d) d.innerHTML = this.skText(n.dataset.sk); } });
     $('talTree').addEventListener('mouseover', e => { const n = e.target.closest('[data-sk]'), d = $('skDesc'); if (n && d) { this.skDesc = n.dataset.sk; d.innerHTML = this.skText(n.dataset.sk); } });
     $('spells').addEventListener('click', e => { const el = e.target.closest('.sp'); if (el) { this.selSlot = +el.dataset.s; this.dirty = true; } }); $('known').addEventListener('click', e => { const el = e.target.closest('[data-k]'); if (el) this.assign(el.dataset.k); });
     $('known').addEventListener('mouseover', e => { const el = e.target.closest('[data-k]'); if (el) { const S = SPELLS[el.dataset.k]; $('descS').innerHTML = `<b>${S.n}</b><br>${S.s.toUpperCase()} SCHOOL<br>${S.d}<br>MANA ${S.cost} - COOLDOWN ${S.cd}S${S.cast ? ' - CAST ' + S.cast + 'S' : ''}`; } });
@@ -4975,10 +5029,20 @@ class InventorySystem {
       el.innerHTML = `${classIco(p.arch).replace('class="gi"', 'class="gi big"')}<b>${T(archName(p.arch, p.sex))}</b> &middot; ${T(A.d)}<br><b>${T(A.pw)}</b><br>${T('TRAINED IN')}: <b>${A.exp.map(k => T(FAMILY[k].n)).join(', ')}</b> (+15% ${T('DAMAGE')})<br>${T('OFF HAND')}: <b>${(ARCH_OFF[archKey(p.arch)] || []).map(k => T({ shield: 'SHIELD', orb: 'ORB OR FETISH', blade: 'PARRYING BLADE' }[k])).join(', ')}</b> (${T('WITH A ONE-HANDED WEAPON')})<br>${T('WEAPONS YOU CAN USE')}:<div class="cs">${Object.keys(FAMILY).map(k => `<span class="${A.use.includes(k) ? 'have' : 'lock'}">${A.use.includes(k) ? '' : '\u2715 '}${T(FAMILY[k].n)}</span>`).join('')}</div>`; }
     if (this.pg === 'talents') this.drawTree(); }
   /** the skill tree: three branches side by side, six tiers down, a line from each node to the ones it opens; a click puts a point in */
-  drawTree() { const p = this.G.player, TR = SKILLS[archKey(p.arch)] || [], el = $('talTree'), H = 64;
-    const node = n => { const r = skRank(p, n.id), op = skOpen(p, n.id), S = n.a ? SPELLS[n.a] : null; return `<div class="skn ${r ? 'have' : ''} ${op && p.tp > 0 ? 'open' : ''} ${p.level < SK_LV[n.t] ? 'lvl' : ''}" data-sk="${n.id}" style="top:${n.t * H}px">${n.a ? spellIco(n.a) : talentIco(n.id)}<b>${T(n.n)}</b><i>${r}/${SK_MAX}</i>${p.level < SK_LV[n.t] ? '<small>LV ' + SK_LV[n.t] + '</small>' : ''}</div>`; };
-    const lines = B => B.nodes.map(n => n.r.map(q => { const pn = SKN[q], y0 = pn.t * H + 26, y1 = n.t * H + 26, bend = n.t - pn.t > 1 ? 14 : 0; return `<path class="${skRank(p, q) ? 'on' : ''}" d="M ${30 - bend} ${y0} C ${30 - bend * 2} ${y0 + 20} ${30 - bend * 2} ${y1 - 20} ${30 - bend} ${y1}" />`; }).join('')).join('');
-    el.innerHTML = `<div class="skHead"><b>${T('SKILL POINTS')}: ${p.tp}</b><span class="bt" data-skr="1">${T('RESET THE TREE')}</span></div>` + TR.map(B => `<div class="tb skb"><h3>${T(B.n)} <i>${B.nodes.reduce((a, n) => a + skRank(p, n.id), 0)}</i></h3><div class="skcol" style="height:${6 * H}px"><svg class="sklines" viewBox="0 0 60 ${6 * H}" preserveAspectRatio="none">${lines(B)}</svg>${B.nodes.map(node).join('')}</div></div>`).join('') + `<div id="skDesc">${this.skDesc && SKN[this.skDesc] && SKN[this.skDesc].arch === archKey(p.arch) ? this.skText(this.skDesc) : T('POINT AT A SKILL TO READ IT - CLICK IT TO SPEND A POINT')}</div>`; }
+  drawTree() { const p = this.G.player, TR = SKILLS[archKey(p.arch)] || [], el = $('talTree'), H = 84, pad = DEV() === 'pad';
+    /* one branch a page (owner: "one per page, so it is not so crowded; LT and RT turn the pages"): its six skills large, one under the other, with the line
+       from each to the ones it opens. The row of tabs over it names the three branches and the points in each; LB and RB stay with the window's own tabs */
+    this.skPage = clamp(this.skPage | 0, 0, Math.max(0, TR.length - 1)); const B = TR[this.skPage];
+    const node = n => { const r = skRank(p, n.id), op = skOpen(p, n.id), low = p.level < SK_LV[n.t]; return `<div class="skn ${r ? 'have' : ''} ${op && p.tp > 0 ? 'open' : ''} ${low ? 'lvl' : ''}" data-sk="${n.id}" style="top:${n.t * H}px">${n.a ? spellIco(n.a) : talentIco(n.id)}<b>${T(n.n)}<em>${T(n.a ? 'SPELL' : 'PASSIVE')}${low ? ' &middot; ' + T('NEEDS LEVEL') + ' ' + SK_LV[n.t] : op || r ? '' : ' &middot; ' + T('LOCKED')}</em></b><i>${r}/${SK_MAX}</i></div>`; };
+    const lines = B => B.nodes.map(n => n.r.map(q => { const pn = SKN[q], y0 = pn.t * H + 36, y1 = n.t * H + 36, bend = n.t - pn.t > 1 ? 14 : 0; return `<path class="${skRank(p, q) ? 'on' : ''}" d="M ${30 - bend} ${y0} C ${30 - bend * 2} ${y0 + 24} ${30 - bend * 2} ${y1 - 24} ${30 - bend} ${y1}" />`; }).join('')).join('');
+    const pts = b => b.nodes.reduce((a, n) => a + skRank(p, n.id), 0), due = b => p.tp > 0 && b.nodes.some(n => skOpen(p, n.id));
+    el.innerHTML = `<div class="skHead"><b>${T('SKILL POINTS')}: ${p.tp}</b><span class="bt" data-skr="1">${T('RESET THE TREE')}</span></div><div class="skTabs"><kbd>${pad ? PAD_BTN[6] : '\u25C0'}</kbd>${TR.map((b, i) => `<span data-skp="${i}" class="${i === this.skPage ? 'on' : ''}${due(b) ? ' due' : ''}">${T(b.n)} <i>${pts(b)}</i></span>`).join('')}<kbd>${pad ? PAD_BTN[7] : '\u25B6'}</kbd></div>`
+      + (B ? `<div class="tb skb"><div class="skcol" style="height:${6 * H}px"><svg class="sklines" viewBox="0 0 60 ${6 * H}" preserveAspectRatio="none">${lines(B)}</svg>${B.nodes.map(node).join('')}</div></div>` : '')
+      + `<div id="skDesc">${this.skDesc && SKN[this.skDesc] && SKN[this.skDesc].arch === archKey(p.arch) ? this.skText(this.skDesc) : T('POINT AT A SKILL TO READ IT - CLICK IT TO SPEND A POINT')}</div>`; }
+  /** the next or the last branch of the tree (LT / RT, the arrows, or a click on its tab) */
+  skStep(d, to) { const n = (SKILLS[archKey(this.G.player.arch)] || []).length || 1; this.skPage = to !== undefined ? to : ((this.skPage | 0) + d + n) % n; this.skDesc = null; this.G.audio.play('uimove'); this.drawTree(); }
+  /** the page of the tree that holds a skill */
+  skShow(id) { const i = (SKILLS[archKey(this.G.player.arch)] || []).findIndex(b => b.nodes.some(n => n.id === id)); if (i >= 0 && i !== this.skPage) { this.skPage = i; this.drawTree(); } }
   skText(id) { const p = this.G.player, n = SKN[id], r = skRank(p, id), L = [`<b>${T(n.n)}</b> - ${T('RANK')} ${r}/${SK_MAX}`, T('NEEDS LEVEL') + ' ' + SK_LV[n.t] + (n.r.length ? ' - ' + T('AND A POINT IN') + ' ' + n.r.map(q => T(SKN[q].n)).join(' ' + T('OR') + ' ') : '')];
     if (n.a) { const S = SPELLS[n.a]; L.push(T(S.d), T('MANA') + ' ' + skCost(p, n.a) + ' - ' + T('COOLDOWN') + ' ' + S.cd + 'S', T('POWER') + ' x' + skPow(p, n.a).toFixed(2) + ' - ' + T('EACH RANK +12%')); const by = []; for (const B of SKILLS[n.arch]) for (const m of B.nodes) if (m.syn && m.syn[n.a]) by.push(T(m.n) + ' +' + Math.round(m.syn[n.a] * 100) + '%'); if (by.length) L.push(T('GROWS WITH') + ': ' + by.join(', ')); }
     else { const NM = { dmg: 'DAMAGE', hp: 'MAX HEALTH', spd: 'MOVE SPEED', aspd: 'ATTACK SPEED', crit: 'CRITICAL CHANCE', armor: 'ARMOR', taken: 'LESS DAMAGE TAKEN', block: 'BLOCK', gold: 'GOLD', heal: 'HEALING', potion: 'POTIONS', light: 'LIGHT RADIUS', spell: 'SPELLS', energy: 'MANA', stReg: 'MANA RECOVERY', minion: 'COMPANION DAMAGE', minionN: 'ONE MORE COMPANION EVERY 20 RANKS', undead: 'AGAINST THE UNDEAD', fury: 'FURY', roll: 'FASTER ROLLS' }; L.push(T('EACH RANK') + ': ' + Object.entries(n.p).map(([k, v]) => k === 'minionN' ? T(NM[k]) : '+' + (v * 100).toFixed(1).replace('.0', '') + '% ' + T(NM[k])).join(', ')); if (n.syn) L.push(T('ALSO STRENGTHENS') + ': ' + Object.entries(n.syn).map(([k, v]) => T(SPELLS[k].n) + ' +' + Math.round(v * 100) + '%').join(', ')); }
@@ -5008,17 +5072,18 @@ class InventorySystem {
     for (const a of AFFIXES) if (s[a.k]) L.push(`+${Math.round(s[a.k] * 100)}% ${a.t}`); if (it.tier) L.push('TIER ' + ['', 'I', 'II', 'III', 'IV', 'V'][it.tier]); if (it.uniq) L.push(`<span class="r4">UNIQUE: ${UNIQUES[it.uniq].d}</span>`); if (it.named !== undefined) L.push('<span class="r4">NAMED - ONE OF ' + NAMED.length + '</span>');
     if (it.set) { const n = this.G.player.setN ? this.G.player.setN[it.set] || 0 : 0; L.push(`<span style="color:#${SETS[it.set].col.toString(16).padStart(6, '0')}">${SETS[it.set].n} SET (${n} OF 6 WORN)</span>`, ...SET_AT.map((c, i) => (n >= c ? '\u25C6 ' : '\u25C7 ') + ['TWO', 'FOUR', 'SIX'][i] + ': ' + SETS[it.set].b[i])); }
     if (it.slot === 'off') { const ok = offKind(it); if (!canWield(this.G.player, it)) L.push('<b style="color:#e5484d">A ' + archName(this.G.player.arch, this.G.player.sex) + ' CANNOT CARRY THIS</b>'); L.push('<b style="color:#e6c56a">' + OFF_TXT[ok] + '</b>', 'A TWO-HANDED WEAPON OR A PAIR LEAVES NO HAND FOR IT'); }
-    if (it.slot === 'weapon') { const F = famOf(it), ml = masteryLv((this.G.player.mastery || {})[famKey(it)]); { const sg = SIGNATURE[famKey(it)]; if (sg) L.push('SIGNATURE (STAND STILL + ATTACK): ' + sg[0] + ' - ' + sg[3] + ' - ' + sg[1] + ' MANA, ' + sg[2] + ' S'); } if (!canWield(this.G.player, it)) L.push('<b style="color:#e5484d">A ' + archName(this.G.player.arch, this.G.player.sex) + ' CANNOT WIELD THIS</b>'); L.push('<b style="color:#e6c56a">' + HANDS_TXT[HANDS[famKey(it)]] + '</b>', 'FAMILY: ' + F.n + ' - ' + F.tip, ...(isExpert(this.G.player.arch, it) ? ['<b style="color:#ffd75a">\u2726 YOUR TRAINING: +' + Math.round((CB.expert - 1) * 100) + '% DAMAGE</b>'] : canWield(this.G.player, it) ? ['<span style="color:#9aa4ae">NOT YOUR TRAINING: NO BONUS</span>'] : []), 'DAMAGE: ' + F.t.toUpperCase(), 'MASTERY ' + ml + ' OF 5' + (ml ? ' (+' + ml * 2 + '% DAMAGE)' : '')); L.push('ENERGY ' + (it.energy || 0) + ' / ' + (it.awake >= 2 ? 'FULLY AWAKE' : CB.awaken[it.awake || 0]) + (it.awake ? ' - AWAKENED ' + (it.awake >= 2 ? 'TWICE (' + (it.edge || 'NO CORE') + ' EDGE)' : 'ONCE') : '')); }
+    if (it.slot === 'weapon') { const F = famOf(it), ml = masteryLv((this.G.player.mastery || {})[famKey(it)]); { const sg = SIGNATURE[famKey(it)]; if (sg) L.push('SPECIAL ATTACK (STAND STILL + ATTACK): ' + sg[0] + ' - ' + sg[3] + ' - ' + sg[1] + ' MANA, ' + sg[2] + ' S'); } if (!canWield(this.G.player, it)) L.push('<b style="color:#e5484d">A ' + archName(this.G.player.arch, this.G.player.sex) + ' CANNOT WIELD THIS</b>'); L.push('<b style="color:#e6c56a">' + HANDS_TXT[HANDS[famKey(it)]] + '</b>', 'FAMILY: ' + F.n + ' - ' + F.tip, ...(isExpert(this.G.player.arch, it) ? ['<b style="color:#ffd75a">\u2726 YOUR TRAINING: +' + Math.round((CB.expert - 1) * 100) + '% DAMAGE</b>'] : []), 'DAMAGE: ' + F.t.toUpperCase(), ...(ml ? ['MASTERY ' + ml + ' OF 5 (+' + ml * 2 + '% DAMAGE)'] : [])); if (it.energy || it.awake) L.push('ENERGY ' + (it.energy || 0) + ' / ' + (it.awake >= 2 ? 'FULLY AWAKE' : CB.awaken[it.awake || 0]) + (it.awake ? ' - AWAKENED ' + (it.awake >= 2 ? 'TWICE (' + (it.edge || 'NO CORE') + ' EDGE)' : 'ONCE') : '')); }
     if (it.master) L.push('MASTERWORK EDGE: NEVER DULLS'); else if (it.wear >= DULL) L.push('DULL: -12% DAMAGE UNTIL REPAIRED');
     if (it.tag === 'fallen') L.push('SOAKED IN THE DEEP - ONCE CARRIED BY A FALLEN HERO');
-    const ns = slotsOf(it); if (ns) L.push('SOCKETS: ' + Array.from({ length: ns }, (_, i) => (it.sock || [])[i] || 'EMPTY').join(' / '));
+    const ns = slotsOf(it); if (ns && (it.sock || []).length) L.push('SOCKETS: ' + Array.from({ length: ns }, (_, i) => (it.sock || [])[i] || 'EMPTY').join(' / '));
     L.push(`VALUE ${it.value} GOLD`); return L.join('<br>');
   }
+  /** the names of an item's plain numbers, for the comparison */
   hover(e) { const el = e.target.closest('.slot'); if (!el) return; const p = this.G.player, it = el.dataset.k ? p.equip[el.dataset.k] : p.items[+el.dataset.i]; this.desc.innerHTML = it ? this.text(it) + (el.dataset.k ? '' : this.compare(it)) : this.hintTxt(); }
   /** what changes against the piece worn in the same slot */
   compare(it) { const eq = it.slot === 'tome' ? null : this.G.player.equip[eqKey(this.G.player, it)]; if (!eq || !it.s || eq === it) return eq ? '' : (it.slot !== 'tome' ? '<br><span style="color:#8ad08a">NOTHING WORN IN THIS SLOT</span>' : ''); const ks = [...new Set([...Object.keys(it.s), ...Object.keys(eq.s || {})])], out = [];
-    for (const k of ks) { const d = (it.s[k] || 0) - ((eq.s || {})[k] || 0); if (Math.abs(d) < .005) continue; const pct = Math.abs(it.s[k] || 0) < 3 && Math.abs((eq.s || {})[k] || 0) < 3 && k !== 'dmg' && k !== 'armor' && k !== 'hp'; out.push(`<span style="color:${d > 0 ? '#8ad08a' : '#e58a8a'}">${d > 0 ? '\u25B2' : '\u25BC'} ${k.toUpperCase()} ${d > 0 ? '+' : ''}${pct ? Math.round(d * 100) + '%' : Math.round(d * 10) / 10}</span>`); }
-    return '<br>AGAINST ' + eq.name + ': ' + (out.length ? out.join(' &middot; ') : 'THE SAME'); }
+    for (const k of ks) { const d = (it.s[k] || 0) - ((eq.s || {})[k] || 0); if (Math.abs(d) < .005) continue; const pct = Math.abs(it.s[k] || 0) < 3 && Math.abs((eq.s || {})[k] || 0) < 3 && k !== 'dmg' && k !== 'armor' && k !== 'hp'; out.push(`<span style="color:${d > 0 ? '#8ad08a' : '#e58a8a'}">${d > 0 ? '\u25B2' : '\u25BC'} ${T(STAT_NAME[k] || (AFFIXES.find(a => a.k === k) || {}).t || k.toUpperCase())} ${d > 0 ? '+' : ''}${pct ? Math.round(d * 100) + '%' : Math.round(d * 10) / 10}</span>`); }
+    return '<br>COMPARED WITH ' + eq.name + ': ' + (out.length ? out.join(' &middot; ') : 'THE SAME'); }
   sort() { const ord = { weapon: 0, off: .5, helm: 1, armor: 1.2, gloves: 1.4, boots: 1.6, ring: 2, amulet: 2.2, familiar: 2.5, tome: 3 }; this.G.player.items.sort((a, b) => (ord[a.slot] ?? 9) - (ord[b.slot] ?? 9) || b.rar - a.rar || b.value - a.value); this.dirty = true; this.G.audio.play('equip'); }
   sellJunk() { const p = this.G.player, js = p.items.filter(i => i.junk); if (!js.length) { this.G.hud.toast(say('NOTHING IS MARKED AS JUNK (SHIFT + CLICK AN ITEM)', 'NOTHING IS MARKED AS JUNK (CHOOSE AN ITEM, THEN JUNK)')); return 0; } let g = 0; for (const it of js) { g += it.value; this.sell(it); } this.G.hud.toast(js.length + ' PIECES OF JUNK SOLD FOR ' + g + ' GOLD'); return js.length; }
   tool(t) { if (t === 'sort') this.sort(); else if (t === 'junk') this.sellJunk(); else if (t === 'filter') { const F = ['all', 'weapon', 'armor', 'jewel', 'tome']; this.filter = F[(F.indexOf(this.filter || 'all') + 1) % F.length]; $('invFilter').textContent = 'SHOW: ' + (this.filter === 'jewel' ? 'JEWELLERY' : this.filter.toUpperCase()); this.dirty = true; } }
@@ -5932,7 +5997,7 @@ class HUD {
     this.css('hpFill', 'width', Math.max(0, Math.round(p.hp / p.maxHp * 100)) + '%'); this.css('hpTrail', 'width', Math.max(0, Math.round(p.hp / p.maxHp * 100)) + '%'); this.css('stFill', 'width', Math.round(p.st) + '%'); { const hk = Math.max(0, Math.round(p.hp / p.maxHp * 100)), mk = clamp(Math.round(p.st / (p.stMax || 100) * 100), 0, 100); if (this.c.oh !== hk) { this.c.oh = hk; const o = $('orbHp'); o.querySelector('i').style.height = hk + '%'; o.querySelector('u').style.height = hk + '%'; o.classList.toggle('low', hk < 30 && !p.dead); } if (this.c.om !== mk) { this.c.om = mk; $('orbMp').querySelector('i').style.height = mk + '%'; } this.set('orbHpN', Math.max(0, Math.ceil(p.hp))); this.set('orbMpN', Math.floor(p.st)); const xk = Math.round(clamp(p.xp / p.xpNext(), 0, 1) * 100); if (this.c.xk !== xk) { this.c.xk = xk; $('xpFill').style.width = xk + '%'; } if (this.c.xl !== p.level) { this.c.xl = p.level; $('xpLv').firstChild.textContent = p.level; }
       { const B = document.body.className, open = /\b(inv|menu|shop|bigmap)\b/.test(B) && !/\btitle\b/.test(B), dev = DEV(), key = open + dev + (PAD_BTN.brand || '') + /\bbigmap\b/.test(B) + /\bshop\b/.test(B) + /\binv\b/.test(B) + LANG.name + G.inv.pg; if (this.c.prompts !== key) { this.c.prompts = key; const el = $('prompts'), pk = (g, t) => `<span><kbd data-g="${dev === 'pad' ? g : ''}">${g}</kbd>${T(t)}</span>`;
         const bag = /\binv\b/.test(B) && !/\b(shop|menu|bigmap)\b/.test(B);
-        el.innerHTML = !open ? '' : bag ? (dev === 'pad' ? pk(PAD_BTN[0], G.inv.pg === 'talents' ? 'ADD A POINT' : 'CHOOSE') + pk(PAD_BTN[4] + ' ' + PAD_BTN[5], 'PAGES') + (G.inv.pg === 'char' ? pk(PAD_BTN[6] + ' ' + PAD_BTN[7], 'BAG TABS') : '') + pk(PAD_BTN[1], 'CLOSE') : (G.inv.pg === 'talents' ? pk('CLICK', 'ADD A POINT') : G.inv.pg === 'skills' ? pk('CLICK', 'CHOOSE') : pk('CLICK', 'WEAR') + pk('RIGHT CLICK', 'SELL') + pk('SHIFT + CLICK', 'MARK AS JUNK')) + pk('ESC', 'CLOSE')) : dev === 'pad' ? pk('L', 'MOVE') + pk(PAD_BTN[0], /\bshop\b/.test(B) && /\binv\b/.test(B) ? 'BUY' : 'CHOOSE') + (/\bshop\b/.test(B) && /\binv\b/.test(B) ? pk(PAD_BTN[2], 'SELL') : '') + pk(PAD_BTN[1], 'CLOSE') : (/\bbigmap\b/.test(B) && !/\bshop\b/.test(B) ? '' : pk('\u2191\u2193', 'MOVE') + pk('ENTER', /\bshop\b/.test(B) && /\binv\b/.test(B) ? 'BUY' : 'CHOOSE')) + (/\bshop\b/.test(B) && /\binv\b/.test(B) ? pk('RIGHT CLICK', 'SELL FROM YOUR BAG') : '') + pk('ESC', 'CLOSE');
+        el.innerHTML = !open ? '' : bag ? (dev === 'pad' ? pk(PAD_BTN[0], G.inv.pg === 'talents' ? 'ADD A POINT' : 'CHOOSE') + pk(PAD_BTN[4] + ' ' + PAD_BTN[5], 'PAGES') + (G.inv.pg === 'char' ? pk(PAD_BTN[6] + ' ' + PAD_BTN[7], 'BAG TABS') : G.inv.pg === 'talents' ? pk(PAD_BTN[6] + ' ' + PAD_BTN[7], 'BRANCHES') : '') + pk(PAD_BTN[1], 'CLOSE') : (G.inv.pg === 'talents' ? pk('CLICK', 'CHOOSE A BRANCH / ADD A POINT') : G.inv.pg === 'skills' ? pk('CLICK', 'CHOOSE') : pk('CLICK', 'WEAR') + pk('RIGHT CLICK', 'SELL') + pk('SHIFT + CLICK', 'MARK AS JUNK')) + pk('ESC', 'CLOSE')) : dev === 'pad' ? pk('L', 'MOVE') + pk(PAD_BTN[0], /\bshop\b/.test(B) && /\binv\b/.test(B) ? 'BUY' : 'CHOOSE') + (/\bshop\b/.test(B) && /\binv\b/.test(B) ? pk(PAD_BTN[2], 'SELL') : '') + pk(PAD_BTN[1], 'CLOSE') : (/\bbigmap\b/.test(B) && !/\bshop\b/.test(B) ? '' : pk('\u2191\u2193', 'MOVE') + pk('ENTER', /\bshop\b/.test(B) && /\binv\b/.test(B) ? 'BUY' : 'CHOOSE')) + (/\bshop\b/.test(B) && /\binv\b/.test(B) ? pk('RIGHT CLICK', 'SELL FROM YOUR BAG') : '') + pk('ESC', 'CLOSE');
         for (const k of document.querySelectorAll('kbd[data-pi]')) { const g = PAD_BTN[+k.dataset.pi]; k.textContent = dev === 'pad' ? g : k.dataset.k; k.dataset.g = dev === 'pad' ? g : ''; } } }
       { const tr = $('qTrack') || (() => { const e = document.createElement('div'); e.id = 'qTrack'; $('topr').appendChild(e); const ev = $('evBar'); if (ev) $('topr').appendChild(ev); return e; })(), S = p.stories, st = S && S.on && STORIES.find(q => q.id === S.on), b = p.bounty, rows = [];
         if (st && OPT.quests) { const cur = st.steps[S.step], fl = cur[0] === 'floor', have = fl ? Math.min(G.depth, cur[1]) : S.count, need = fl ? cur[1] : cur[1]; rows.push(['story', st.n, cur[2], fl ? T('FLOOR') + ' ' + G.depth + ' / ' + need : have + '/' + need, have >= need, (S.step + 1) + '/' + st.steps.length]); }
@@ -5974,9 +6039,9 @@ class HUD {
       if (G.airT > 0) h += row('LEVERS PULLED', (G.airN || 0) + '/3', G.airN >= 3);
       /* the stories and the contract follow in the tracker below (qTrack) */
       if (h !== this.trkH) { this.trkH = h; $('trk').innerHTML = h; }
-      { const d = new Date(), cl = ' \u00b7 ' + d.toLocaleTimeString(LANG.text ? 'es' : 'en', { hour: 'numeric', minute: '2-digit' }); if (cl !== this.clk) { this.clk = cl; $('sClock').textContent = cl; } } }
+      { const d = new Date(), cl = d.toLocaleTimeString(LANG.text ? 'es' : 'en', { hour: 'numeric', minute: '2-digit' }); if (cl !== this.clk) { this.clk = cl; $('sClock').textContent = cl; } } }
     const b = G.enemies.boss(), show = b && b.state !== 'idle' && b.state !== 'patrol';
-    this.css('bossBar', 'display', show ? 'block' : 'none'); if (show) { const ph = Math.min(3, b.bossPhase || 1); if (this.c.pips !== ph) { this.c.pips = ph; $('bossPips').innerHTML = [1, 2, 3].map(i => `<b class="${i <= ph ? 'on' : ''}"></b>`).join(''); } this.css('bossFill', 'width', Math.round(b.hp / b.maxHp * 100) + '%'); this.set('bossName', b.S.name.replace(/ \[.*$/, '').replace(/ - RECOVERING$/, '')); }
+    this.css('bossBar', 'display', show ? 'block' : 'none'); if (show) { const ph = Math.min(3, b.bossPhase || 1); if (this.c.pips !== ph) { this.c.pips = ph; $('bossPips').innerHTML = [1, 2, 3].map(i => `<b class="${i <= ph ? 'on' : ''}"></b>`).join(''); } this.css('bossFill', 'width', Math.round(b.hp / b.maxHp * 100) + '%'); this.set('bossName', b.S.name.replace(/ \[.*$/, '').replace(/ - RECOVERING$/, '')); if (this.c.bossLv !== G.depth) { this.c.bossLv = G.depth; $('bossName').dataset.lv = G.depth; } }
     let hint = '', use = null;
     if (this.toastT > 0 && !(document.body.classList.contains('hudl') && OPT.chatlog)) hint = this.toastTxt; else if (p.dead) hint = G.over ? 'A NEW RUN BEGINS AT THE GATE...' : 'THE CHARM IS WORKING...'; if (!p.dead) use = G.inter.nearest(p.x, p.z, 1.75) || (G.events && G.events.nearest(p.x, p.z, 2)) || G.loot.nearest(p.x, p.z, 1.7); if (use && use.E) use = { ev: use, x: use.E.x, z: use.E.z, t: 'chest' };
     this.set('hint', hint);
@@ -6006,6 +6071,7 @@ const KEEPERS = {
   shop: { n: 'MARDA OF THE SCALES', c: ['#c89060', '#5a3020', '#d8b030'], l: [['FIRST DESCENT? BUY THE CHARM BEFORE THE SWORD.', 'I WEIGH EVERYTHING. EVEN PROMISES.'], ['TEN FLOORS AND STILL BREATHING. THE GUILD NOTICED.', 'CORES FROM THE THIRD STRETCH FETCH MORE. BRING THOSE.'], ['YOU SMELL OF THE DEEP MINES. GOOD. THAT SMELL PAYS.', 'HALF OF THOSE WHO REACH THIRTY NEVER SEE FORTY. PROVE ME WRONG.'], ['THEY TALK ABOUT YOU IN THE UPPER MARKET NOW.', 'NOBODY SELLS BELOW SIXTY BUT ME. PRICE ACCORDINGLY.'], ['WHATEVER IS DOWN THERE, IT KNOWS YOUR NAME BY NOW.', 'IF YOU REACH THE BOTTOM, TELL ME WHAT IT WAS ALL FOR.']], nc: 'NO CHARM ON YOUR WRIST. I WILL NOT SELL A SWORD TO A CORPSE.', debt: 'THE LENDER ASKED AFTER YOU. I SAID YOU WERE BUSY.', hurt: 'YOU ARE BLEEDING ON MY COUNTER. POTIONS ARE ON THE LEFT.' },
   inn: { n: 'OLD BREN', c: ['#e0b090', '#8a8a8a', '#7a3020'], l: [['A BED IS A BED. YOURS IS BY THE FIRE.', 'EAT. THE GUARDIAN DOES NOT CARE IF YOU ARE HUNGRY, BUT YOU WILL.'], ['I KEPT THIS HOUSE BEFORE YOU WERE BORN. I HAVE SEEN THEM ALL GO DOWN.', 'THE ONES WHO BATHE FIRST COME BACK MORE OFTEN. NO IDEA WHY.'], ['SIT. YOU HAVE THE LOOK OF SOMEONE WHO HEARD THE WALLS MOVE.', 'THE STEW IS THE SAME ON EVERY FLOOR. THAT IS THE POINT.'], ['FEW GUESTS THIS DEEP. I KEEP THE LAMP LIT ANYWAY.', 'YOU PAY, YOU SLEEP, YOU DO NOT ASK WHO BUILT AN INN DOWN HERE.'], ['LAST HOUSE BEFORE THE END. THE BED IS FREE TONIGHT, IF YOU ASK ME NICELY. IT IS NOT. PAY.', 'I WILL NOT SAY GOODBYE. I NEVER DO.']], nc: 'NO CHARM? THEN SLEEP WELL. IT MAY BE THE LAST BED YOU KNOW.', debt: 'THE LENDER DRINKS HERE. HE TALKS. WATCH YOUR PURSE.', hurt: 'A BATH AND A MEAL WILL CLOSE THAT. NOT THE WOUND IN YOUR PRIDE.' },
   way: { n: 'THE TOLLWARDEN', c: ['#9aa8c0', '#20283a', '#6ab8ff'], l: [['THE STONES REMEMBER WHERE YOU HAVE STOOD. I ONLY COUNT THE COIN.', 'A FLOOR YOU HAVE NOT UNSEALED IS A FLOOR I CANNOT SELL YOU.'], ['YOU WALK FARTHER EACH TIME. THE TOLL GROWS WITH THE ROAD.', 'THE WAY DOWN IS QUICK. THE WAY BACK COSTS.'], ['THE STONE HUMS WHEN YOU COME NEAR. IT DID THAT FOR ONE OTHER, ONCE.', 'DEEPER THAN THIS, EVEN THE STONES HESITATE.'], ['FEW TOLLS THIS DEEP. I AM ALMOST LONELY.', 'THE STONE WILL TAKE YOU. WHETHER IT BRINGS YOU BACK IS NOT MY TRADE.'], ['ONE STONE LEFT BELOW THIS ONE. I HAVE NEVER BEEN PAID FOR IT.', 'GO ON. I WILL KEEP THE LEDGER OPEN.']], nc: 'NO CHARM. THE STONE DOES NOT CARE. I DO, A LITTLE.', debt: 'DEBTS DO NOT TRAVEL BY STONE. THEY WALK. THEY ARRIVE.', hurt: 'TRAVEL HEALS NOTHING. MEND FIRST.' } };
+const STAT_NAME = { dmg: 'DAMAGE', armor: 'ARMOR', hp: 'HEALTH', block: 'BLOCK', aspd: 'ATTACK SPEED', mspd: 'MOVE SPEED', cold: 'DEEP COLD', heat: 'BLAZE' };
 const _kp = {};
 /** a keeper's face, painted once from blocks of their own colours */
 function keeperPortrait(id) { if (_kp[id]) return _kp[id]; const K = KEEPERS[id], cv = document.createElement('canvas'); cv.width = cv.height = 64; const g = cv.getContext('2d'), R = (c, x, y, w, h) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
@@ -6481,7 +6547,7 @@ class AutoPilot {
   /** open the bag on the skill tree, put the cursor on a node, press it, until the points are spent */
   treeHands() { const G = this.G, I = G.inv, B = document.body.classList; if (!this.hands()) { let n = 0; while (G.player.tp > 0 && n++ < 200) { const q = this.treePick(); if (!q) break; G.skillUp(q.id); } return true; }
     const shut = () => { if (B.contains('inv')) G.toggleInv(); return false; };
-    const step = () => { if (G.player.tp <= 0) return shut(); const q = this.treePick(); if (!q) return shut(); const el = $('talTree').querySelector('[data-sk="' + q.id + '"]'); if (el) el.classList.add('pk'); I.skDesc = q.id; { const d = $('skDesc'); if (d) d.innerHTML = I.skText(q.id); }
+    const step = () => { if (G.player.tp <= 0) return shut(); const q = this.treePick(); if (!q) return shut(); I.skShow(q.id); const el = $('talTree').querySelector('[data-sk="' + q.id + '"]'); if (el) el.classList.add('pk'); I.skDesc = q.id; { const d = $('skDesc'); if (d) d.innerHTML = I.skText(q.id); }
       this.hq.unshift(() => { const e2 = $('talTree').querySelector('[data-sk="' + q.id + '"]'); if (e2) e2.click(); else G.skillUp(q.id); I.drawTree(); this.hq.unshift(step); return this.pace(.35); }); return this.pace(.55); };
     this.hand([() => { if (!B.contains('inv')) G.toggleInv(); return this.pace(.5); }, () => { const t = $('cTabs').querySelector('[data-ct="talents"]'); if (t) t.click(); else I.page('talents'); I.drawTree(); return this.pace(.5); }, step]); return true; }
   /** a choice on the screen: read it, put the cursor on the answer, press it */
@@ -6843,7 +6909,7 @@ class Shop {
     ].map(e => (e.sec = Shop.SEC[e.id] || (e.item ? 1 : 0), e)).sort((a, b) => a.sec - b.sec);
   }
   /** a piece of gear in one line: what it is and its three first numbers (the bag shows the rest) */
-  short(it) { const L = this.G.inv.text(it).split('<br>').slice(1, -1).map(x => x.replace(/<[^>]+>/g, '').trim()).filter(Boolean); return L.slice(0, 4).join(' / '); }
+  short(it) { const L = this.G.inv.text(it).split('<br>').slice(1, -1).map(x => x.replace(/<[^>]+>/g, '').trim()).filter(Boolean); return L.slice(0, 4).map(x => T(x)).join(' / '); }
   /** the guild counter: it buys what the labyrinth breeds, sets cores into weapons, sells scrolls and charts, and hands out contracts */
   guild() {
     const G = this.G, p = G.player, t = this.tier(), w = p.equip.weapon, free = slotsOf(w) - ((w && w.sock) || []).length, corePay = this.sellNet(5 * coreVal(t)), matPay = this.sellNet(p.matVal), rate = Math.round(G.guildRate * 100), b = p.bounty, pay = Math.round(worth(t) * EC.contract), late = t >= EC.lateFrom;
@@ -6929,11 +6995,19 @@ class Shop {
     const kh = `<div class="keeper"><img src="${keeperPortrait(kp)}"><span><b>${T(KP.n)}</b><i>"${T(kl)}"</i></span></div>`;
     const what = way ? (E.length ? 'TRAVEL TO A FLOOR YOU HAVE REACHED' : 'DEFEAT THE GUARDIAN OF FLOOR 10 TO OPEN YOUR FIRST WAYSTONE') : inn ? (this.free ? 'FREE FOR YOU - EACH ONE LASTS FOR THIS FLOOR' : 'EACH ONE LASTS FOR THIS FLOOR') : 'BUY, SELL AND REPAIR';
     let h = kh + `<h3>${T(way ? 'WAYSTONE' : inn ? (this.free ? "THE GUARDIANS' TAVERN" : 'THE INN') : 'MERCHANT')}</h3><p>${T(what)} &middot; ${T('YOUR GOLD')}: ${p.gold}${p.debt ? ' &middot; ' + T('YOUR DEBT') + ': ' + p.debt : ''}</p>`;
-    const two = E.length > 7; this.el.classList.toggle('wide', two); h += `<div class="${two ? 'two' : ''}">`;
-    let sec = -1; E.forEach((e, i) => { const ic = e.item ? itemIcon(e.item) : e.icon ? iconOf(e.icon) : ''; if (!way && !inn && e.sec !== sec) { sec = e.sec; h += `<h4 class="ssec">${T(Shop.SECN[sec])}</h4>`; } h += `<div class="sr ${p.gold < e.price || e.can === false ? 'no' : ''}" data-buy="${i}">${ic ? `<img class="sico" src="${ic}">` : ''}<span class="${e.cls || ''}"><i class="kn">[${i + 1}] </i>${T(e.label)}<small>${T(e.sub || '')}</small></span><b>${e.gain ? '+' + e.gain + ' G' : e.price ? e.price + ' G' : e.id ? '' : 'FREE'}</b></div>`; });
-    this.el.innerHTML = h + `</div>`;
+    /* a shop is a wall of things (owner: "only icons; the description when the mouse is over one or the controller chooses it"): a tile each -
+       its picture and its price - under the title of its kind; what the tile in focus is and does is written at the foot of the window */
+    this.el.classList.remove('wide'); let sec = -1; h += `<div class="sgrid">`;
+    E.forEach((e, i) => { const ic = e.item ? itemIcon(e.item) : e.icon ? iconOf(e.icon) : ''; if (!way && !inn && e.sec !== sec) { sec = e.sec; h += `</div><h4 class="ssec">${T(Shop.SECN[sec])}</h4><div class="sgrid">`; }
+      h += `<div class="sr st ${e.cls || ''} ${p.gold < e.price || e.can === false ? 'no' : ''}" data-buy="${i}">${ic ? `<img class="sico" src="${ic}">` : `<span class="sico sico0">${T(e.label).slice(0, 1)}</span>`}<b>${e.gain ? '+' + e.gain : e.price ? e.price : e.id || e.item ? '' : T('FREE')}</b></div>`; });
+    this.el.innerHTML = h + `</div><div id="shopDesc"></div>`; this.descI = -2; this.showDesc(-1);
   }
-  update() { const p = this.G.player; if (this.mode === 'choice' && !this.at) return; if (this.mode && (!this.at || this.at.gone || p.dead || Math.hypot(p.x - this.at.x, p.z - this.at.z) > 3)) this.close(); }
+  /** what the tile in focus is: its name, what it does (a piece of gear: all of it, and how it compares with what you wear), its price and why it cannot be had */
+  showDesc(i) { const el = this.el.querySelector('#shopDesc'); if (!el) return; const E = this.entries(), e = E[i], p = this.G.player; this.descI = i;
+    if (!e) { el.innerHTML = `<i>${T(DEV() === 'pad' ? 'MOVE OVER SOMETHING TO SEE WHAT IT IS' : 'POINT AT SOMETHING TO SEE WHAT IT IS')}</i>`; return; }
+    const why = e.can === false ? T('NOT AVAILABLE NOW') : p.gold < e.price ? T('NOT ENOUGH GOLD') : '', cost = e.gain ? T('PAYS') + ' ' + e.gain + ' G' : e.price ? T('PRICE') + ': ' + e.price + ' G' : T('FREE');
+    el.innerHTML = (e.item && e.item.slot !== 'tome' ? this.G.inv.text(e.item).split('<br>').slice(0, -1).join('<br>') + this.G.inv.compare(e.item) : `<b class="${e.cls || ''}">${T(e.label)}</b><br>${T(e.sub || '')}`) + `<br><em>${cost}${why ? ' &middot; <u>' + why + '</u>' : ''}</em>`; }
+  update() { const p = this.G.player; if (this.mode && this.mode !== 'choice') { const f = this.el.querySelector('.st.focus') || this.el.querySelector('.st:hover'), i = f ? +f.dataset.buy : this.descI; if (i !== this.descI) this.showDesc(i); } if (this.mode === 'choice' && !this.at) return; if (this.mode && (!this.at || this.at.gone || p.dead || Math.hypot(p.x - this.at.x, p.z - this.at.z) > 3)) this.close(); }
 }
 
 /* ============================================================
@@ -7059,7 +7133,8 @@ class Game {
   /** LB and RB: one tab left or right along the hub, from whichever of its screens is open (as the genre's pad does) */
   bumpers(gp) { const bt = padB(gp), lb = bt(4), rb = bt(5), lt = bt(6), rt = bt(7), was = [this.navLB, this.navRB, this.navLT, this.navRT]; this.navLB = lb; this.navRB = rb; this.navLT = lt; this.navRT = rt;
     if (lb && !was[0]) return this.hubStep(-1); if (rb && !was[1]) return this.hubStep(1);
-    if (document.body.classList.contains('inv') && !this.shop.mode && (this.inv.pg || 'char') === 'char') { if (lt && !was[2]) { this.inv.bagStep(-1); return true; } if (rt && !was[3]) { this.inv.bagStep(1); return true; } } return false; }
+    if (document.body.classList.contains('inv') && !this.shop.mode && (this.inv.pg || 'char') === 'char') { if (lt && !was[2]) { this.inv.bagStep(-1); return true; } if (rt && !was[3]) { this.inv.bagStep(1); return true; } }
+    if (document.body.classList.contains('inv') && !this.shop.mode && this.inv.pg === 'talents') { const ax = gp.axes[0] || 0, lf = bt(14) || ax < -.6, rg = bt(15) || ax > .6, wl = this.navDL, wr = this.navDR; this.navDL = lf; this.navDR = rg; if ((lt && !was[2]) || (lf && !wl)) { this.inv.skStep(-1); return true; } if ((rt && !was[3]) || (rg && !wr)) { this.inv.skStep(1); return true; } } return false; }
   hubAt() { const B = document.body.classList; return B.contains('menu') ? 'game' : B.contains('bigmap') ? 'map' : this.shop.mode ? null : B.contains('inv') ? (this.inv.pg || 'char') : null; }
   hubStep(d) { const cur = this.hubAt(); if (!cur) return false; const K = cur === 'map' || cur === 'game' ? ['map', 'game'] : ['char', 'skills', 'talents']; this.goHub(K[(K.indexOf(cur) + d + K.length) % K.length]); return true; }
   goHub(k) { const B = document.body.classList; this.closeMap(); this.navI = 0; this.navBox = null;
@@ -7117,11 +7192,9 @@ class Game {
      does on the right, SAVE CHANGES / RESET TO DEFAULTS / CLOSE at the foot. Rows of the option table are kept in a draft until saved;
      sound, volume, graphics and the like act at once, as they always did. */
   optsTabs() { const O = k => 'opt:' + k, F = GFX_KEYS.map(([k]) => 'fx:' + k);
-    /* only what a player needs (owner: "what we really use, not everything that exists"): the language, the sound, the screen, and the keys.
-       The other switches keep their defaults; their rows are still known to optsRow, should one be wanted back */
-    return [
-      { n: 'GAME', s: [['GENERAL', ['lang']], ['AUDIO', ['sound', 'vol']], ['SCREEN', ['full', O('bright'), O('text'), 'calib']]] },
-      { n: 'CONTROLS', pages: ['KEYBOARD', 'CONTROLLER'], s: this.optsPage === 1 ? [['CONTROLLER', [...['attack', 'dodge', 'potion', 'skill1', 'skill2', 'skill3', 'skill4', 'root', 'map', 'up', 'down', 'pause'].map(a => 'pad:' + a), 'padreset']]] : [['KEYBOARD', [...Object.keys(BIND).map(a => 'key:' + a), 'keyreset']]] }]; }
+    /* the language and nothing else (owner: "OPTIONS (language)"). Every other switch keeps its default; N still mutes, F11 still fills the screen,
+       and the rows are still known to optsRow should one be wanted back */
+    return [{ n: 'OPTIONS', s: [['LANGUAGE', ['lang']]] }]; }
   /** what one row is: its label, the kind of control, its value as shown, and what it does */
   optsRow(id) { const v = this.optsDraft, A = this.audio, onoff = b => b ? 1 : 0;
     if (id.startsWith('opt:')) { const k = id.slice(4), r = OPT_ROWS.find(q => q[0] === k), cur = k in v ? v[k] : OPT[k], nm = r[3], lab = x => nm[x] !== undefined ? String(nm[x]) : String(x);
@@ -7138,7 +7211,7 @@ class Game {
       case 'vol': return { n: 'VOLUME', type: 'bar', num: Math.round(A.vol * 100), seg: Math.round(A.vol * 10) };
       case 'range': return { n: 'AUDIO MIX', type: 'dd', val: { full: 'FULL RANGE', night: 'NIGHT', handheld: 'HANDHELD' }[A.range] || A.range.toUpperCase() };
       case 'auto': return { n: 'AUTOPLAY', type: 'chk', on: !!this.auto };
-      case 'lang': return { n: 'LANGUAGE', type: 'dd', val: LANG.name };
+      case 'lang': return { n: 'ENGLISH / ESPA\u00d1OL', type: 'dd', val: LANG.name };
       case 'calib': return { n: 'CALIBRATE THE SCREEN', type: 'btn', val: 'START' };
       case 'keyreset': return { n: 'RESET THE KEYS', type: 'btn', val: 'RESET' }; case 'padreset': return { n: 'RESET THE BUTTONS', type: 'btn', val: 'RESET' };
       default: return { n: { whistle: 'BLOW THE RECALL WHISTLE', export: 'SAVE THIS CHARACTER TO A FILE', import: 'LOAD A CHARACTER FROM A FILE', photo: 'PHOTO MODE (P)', codex: 'CODEX', errlog: 'ERROR LOG', credits: 'CREDITS AND WHAT IS NEW', records: 'RECORDS' }[id] || id, type: 'btn', val: id === 'errlog' ? String((_gl('dd-errors') || []).length) : 'OPEN' }; } }
@@ -7180,7 +7253,7 @@ class Game {
   closeOpts(keep) { if (!keep && Object.keys(this.optsDraft || {}).length) this.hud.toast('CHANGES NOT SAVED'); this.optsDraft = {}; this.rebind = null; document.body.classList.remove('opts'); this.audio.play('uiback'); this.renderMenu(); }
   optsRender() { const el = $('opts'); if (!el || !document.body.classList.contains('opts')) return; const tabs = this.optsTabs(), tb = tabs[this.optsTab], pad = DEV() === 'pad';
     const ctl = R => R.type === 'chk' ? `<i class="ochk${R.on ? ' on' : ''}"></i>` : R.type === 'seg' ? `<em>${T(R.val)}</em><span class="oseg" data-n="${R.segs}">${Array.from({ length: R.segs }, (_, i) => `<u class="${i === R.seg ? 'at' : ''}"></u>`).join('')}</span>` : R.type === 'bar' ? `<em>${R.num}</em><span class="oseg obar" data-n="10">${Array.from({ length: 10 }, (_, i) => `<u class="${i < R.seg ? 'f' : ''}"></u>`).join('')}</span>` : R.type === 'bind' ? `<span class="obind">${R.val}</span><span class="obind none">-</span>` : R.type === 'btn' ? `<span class="obtn">${T(R.val)}</span>` : `<span class="odd">${T(R.val)}<i></i></span>`;
-    let h = `<div class="oh"><b><i>&#10230;</i> ${T('OPTIONS')}</b><nav>${pad ? '<kbd>LB</kbd>' : ''}${tabs.map((t, i) => `<span data-ot="${i}" class="${i === this.optsTab ? 'on' : ''}">${T(t.n)}</span>`).join('')}${pad ? '<kbd>RB</kbd>' : ''}</nav><span class="ox" data-ox="1" title="${T('CLOSE')}">&#8630;</span></div><div class="ob"><div class="ol" id="optsBox">`;
+    let h = `<div class="oh"><b><i>&#10230;</i> ${T('OPTIONS')}</b><nav>${pad && tabs.length > 1 ? '<kbd>LB</kbd>' : ''}${tabs.length < 2 ? '' : tabs.map((t, i) => `<span data-ot="${i}" class="${i === this.optsTab ? 'on' : ''}">${T(t.n)}</span>`).join('')}${pad && tabs.length > 1 ? '<kbd>RB</kbd>' : ''}</nav><span class="ox" data-ox="1" title="${T('CLOSE')}">&#8630;</span></div><div class="ob"><div class="ol" id="optsBox">`;
     if (tb.pages) h += `<div class="opg">${tb.pages.map((p, i) => `<span data-op="${i}" class="${i === this.optsPage ? 'on' : ''}">${T(p)}</span>`).join('')}</div>`;
     for (const [sn, ids] of tb.s) { h += `<div class="osec"><h5><i>&#10019;</i>${T(sn)}</h5>`; for (const id of ids) { const R = this.optsRow(id); h += `<div class="orow${R.big ? ' big' : ''}${R.draft && R.k in this.optsDraft ? ' chg' : ''}" data-orow="${id}"><span>${T(R.n)}</span><div class="oc">${ctl(R)}</div></div>`; } h += '</div>'; }
     const gl = (k, p) => pad ? `<kbd class="pg">${p}</kbd>` : '';
@@ -7248,9 +7321,9 @@ class Game {
     let up = padOn ? s.navUp : s.kUp, dn = padOn ? s.navDown : s.kDown; if (Math.abs(ay) > .6 && now - (this.navT || 0) > 220) { this.navT = now; if (ay < 0) up = true; else dn = true; }
     if (padOn && this.pick && gp) { const bt = padB(gp), ax = gp.axes[0] || 0, lf = bt(14) || bt(4) || ax < -.6, rg = bt(15) || bt(5) || ax > .6; if (lf && !this.pkL) this.pickAct('prev'); if (rg && !this.pkR) this.pickAct('next'); this.pkL = lf; this.pkR = rg; if (!this.pick) return true; /* A chooses the hero on show and B goes back, wherever the highlight is */ const A = bt(0), Bk = bt(1), Y = bt(3) || bt(2) || bt(12) || bt(13); if (Y && !this.pkY) this.pickAct('sex'); this.pkY = Y; if (A && !this.pkA) { this.pkA = true; this.pickAct('ok'); return true; } if (Bk && !this.pkB) { this.pkB = true; this.pickAct('back'); return true; } this.pkA = A; this.pkB = Bk; return true; }
     if (padOn && gp && !this.pick && this.bumpers(gp)) return true;
-    const items = [...box.querySelectorAll('.mi, .sr, .slot, .sp, #known span, .bt, .cst, .uc[data-use], #desc .da span')].filter(el => el.offsetParent !== null); if (!items.length) return true; if (this.navBox !== box) { this.navBox = box; this.navI = 0; }
+    const items = [...box.querySelectorAll('.mi, .sr, .slot, .sp, #known span, .bt, .cst, .uc[data-use], #desc .da span, .skn')].filter(el => el.offsetParent !== null); /* the tree's RESET comes last, so the highlight starts on a skill */ { const rs = items.findIndex(el => el.dataset.skr); if (rs >= 0) items.push(items.splice(rs, 1)[0]); } if (!items.length) return true; if (this.navBox !== box) { this.navBox = box; this.navI = 0; }
     this.navI = clamp((this.navI < 0 ? 0 : this.navI) + (dn ? 1 : 0) - (up ? 1 : 0), 0, items.length - 1);
-    items.forEach((el, i) => el.classList.toggle('focus', i === this.navI)); if (up || dn) { items[this.navI].scrollIntoView({ block: 'nearest' }); this.audio.play('uimove'); }
+    items.forEach((el, i) => el.classList.toggle('focus', i === this.navI)); { const f = items[this.navI]; if (f.dataset.sk && this.inv.skDesc !== f.dataset.sk) { this.inv.skDesc = f.dataset.sk; const d = $('skDesc'); if (d) d.innerHTML = this.inv.skText(f.dataset.sk); } } if (up || dn) { items[this.navI].scrollIntoView({ block: 'nearest' }); this.audio.play('uimove'); }
     if (!padOn) { if (s.kOk) { s.interact = false; items[this.navI].click(); } return false; }
     if (s.navA) items[this.navI].click();
     if (s.navB) { if (B.classList.contains('title')) { } else if (B.classList.contains('menu')) this.toggleMenu(); else if (this.shop.mode) this.shop.close(); else this.toggleInv(); }
@@ -7410,7 +7483,7 @@ class Game {
     for (const id in ids) { const el = $(id) && $(id).querySelector('kbd'); if (!el) continue; const a = ids[id], i = Object.keys(PM.b).find(k => PM.b[k] === (pa[a] || a)); el.dataset.k = keyName(BIND[a]); el.dataset.p = i === undefined ? '' : PAD_BTN[i]; const pd = this.input && DEV() === 'pad'; el.textContent = pd ? el.dataset.p : el.dataset.k; el.dataset.g = pd ? el.dataset.p : ''; } document.body.dataset.brand = PAD_BTN.brand || 'xbox';
   }
   /** the kit's bar holds the whistle and the stamina box; the left-corner layout keeps them in the corner of shortcuts */
-  kitPlace() { const kit = !document.body.classList.contains('hudl'), C = $('coreBar'), B2 = $('bar2'); if (!C || !B2) return; for (const id of ['aEsc', 'aRoot']) { const e = $(id); if (!e) continue; if (kit) { if (e.parentNode !== C) C.appendChild(e); } else if (e.parentNode !== B2) B2.insertBefore(e, $('aMap') || null); } if (!kit && $('aRoot') && $('aEsc') && $('aRoot').nextSibling !== $('aEsc')) B2.insertBefore($('aRoot'), $('aEsc')); }
+  kitPlace() { const kit = !document.body.classList.contains('hudl'), C = $('coreBar'), B2 = $('bar2'); if (!C || !B2) return; for (const id of ['aEsc']) { const e = $(id); if (!e) continue; if (kit) { if (e.parentNode !== C) C.appendChild(e); } else if (e.parentNode !== B2) B2.insertBefore(e, $('aMap') || null); } if (!kit && $('aRoot') && $('aEsc') && $('aRoot').nextSibling !== $('aEsc')) B2.insertBefore($('aRoot'), $('aEsc')); }
   setKeyBind(a, code) { if (code === 'Escape') { this.rebind = null; this.renderMenu(); this.optsRender(); return; } for (const k in BIND) if (BIND[k] === code && k !== a) BIND[k] = BIND[a]; BIND[a] = code; try { localStorage.setItem('dd-bind', JSON.stringify(BIND)); } catch (e) { } this.rebind = null; this.audio.play('uiok'); this.applyOpt(); this.renderMenu(); this.optsRender(); }
   setPadBind(a, i) { const cur = Object.assign({}, padMap().b), old = Object.keys(cur).find(k => cur[k] === a); if (cur[i] && old !== undefined) cur[old] = cur[i]; else if (old !== undefined) delete cur[old]; cur[i] = a; try { localStorage.setItem('dd-padbind', JSON.stringify(cur)); } catch (e) { } this.rebind = null; setOpt('layout', 0); for (const k in PADB_LIVE) delete PADB_LIVE[k]; Object.assign(PADB_LIVE, cur); this.audio.play('uiok'); this.applyOpt(); this.renderMenu();  this.optsRender(); }
   applyGfx() { if (this.lights && this.lights.torch) { const t = this.lights.torch, on = GFX.tier === 'ultra' && (!this.quality || this.quality.level === 0); if (on && !t.shadowSet) { t.shadowSet = true; t.shadow.mapSize.set(512, 512); t.shadow.camera.near = .2; t.shadow.camera.far = 11; t.shadow.bias = -.008; t.shadow.normalBias = .06; t.shadow.radius = 4; } t.castShadow = on; } if (this.lights && this.lights.pool[2]) this.lights.pool[2].castShadow = GFX.tier === 'ultra' && (!this.quality || this.quality.level === 0); const r = GFX_TIERS[GFX.tier].res; if (this.quality.res !== r && this.quality.level === 0) { this.quality.res = r; if (this.viewport) this.renderer.resize(this.viewport.S); } SCATTER.value = gfx('scatter') ? 1 : 0; PLIT.value = gfx('plit') ? 1 : 0; if (this.fx && this.fx.fog) this.fx.fog.visible = !!gfx('fog'); if (this.paused) this.renderMenu(); }
@@ -7537,7 +7610,7 @@ class Game {
     // screen axes follow the camera: +x goes down-right, +z goes down-left (same diamond as the diorama)
     g.save(); g.translate(cv.width / 2, cv.height / 2); g.rotate(Math.PI / 4); g.scale(.7, .7);
     /* LEFT CORNER: a light parchment map in ink, as in the reference; otherwise light lines on the dark */
-    const ink = document.body.classList.contains('hudl') && !document.body.classList.contains('bigmap'), col = ink ? { start: '#2a5aa8', stairs: '#a87810', boss: '#a82420', treasure: '#a85a10', secret: '#6a30a8', maze: '#5a5048' } : { start: '#5b9ff0', stairs: '#f0c040', boss: '#e5484d', treasure: '#f0a030', secret: '#b070ff', maze: '#8a8a8a' }, ln = ink ? 'rgba(52,36,22,' : 'rgba(236,236,236,';
+    const ink = false, col = ink ? { start: '#2a5aa8', stairs: '#a87810', boss: '#a82420', treasure: '#a85a10', secret: '#6a30a8', maze: '#5a5048' } : { start: '#5b9ff0', stairs: '#f0c040', boss: '#e5484d', treasure: '#f0a030', secret: '#b070ff', maze: '#8a8a8a' }, ln = ink ? 'rgba(52,36,22,' : 'rgba(236,236,236,';
     for (const v of this.seen.values()) { const x = (v.cx - pcx) * c, y = (v.cz - pcz) * c; if (Math.abs(v.cx - pcx) > R || Math.abs(v.cz - pcz) > R) continue;
       const nb = [[-1, 0], [1, 0], [0, -1], [0, 1]]; for (let i = 0; i < 4; i++) if (v.ex[i]) { const known = this.seen.has((v.cx + nb[i][0]) + ',' + (v.cz + nb[i][1])); g.strokeStyle = ln + (known ? '.8)' : '.3)'); g.lineWidth = c * .16; g.beginPath(); g.moveTo(x, y); g.lineTo(x + nb[i][0] * c * (known ? .5 : .46), y + nb[i][1] * c * (known ? .5 : .46)); g.stroke(); }
       g.fillStyle = col[v.type] || (ink ? '#6a5a48' : '#d0d0d0'); const s = c * (v.type === 'maze' ? .5 : .36); g.fillRect(x - s / 2, y - s / 2, s, s); }
@@ -7563,7 +7636,7 @@ class Game {
   offerPact(r) {
     const p = this.player, ids = Object.keys(PACTS).filter(k => !p.pacts.includes(k)), h = hash(r.x | 0, r.z | 0, this.seed, 88), pick = [0, 1, 2].map(i => ids[(h + i * 3) % ids.length]).filter((v, i, a) => v && a.indexOf(v) === i);
     if (!pick.length) { this.hud.toast('THE ALTAR HAS NOTHING LEFT TO OFFER'); return; }
-    this.shop.choose('DARK ALTAR', 'EVERY PACT HAS A PRICE, AND IT LASTS THE WHOLE RUN', pick.map(k => ({ label: PACTS[k].n, sub: PACTS[k].d, cls: 'r4', act: () => { p.pacts.push(k); teleF('pact', k); if (PACTS[k].once) PACTS[k].once(p); p.derive(); r.open = true; r.done = true; this.flags.add(r.id); this.inter.apply(r); this.inv.dirty = true; this.hud.banner(PACTS[k].n, 'THE PACT IS SEALED'); this.audio.play('bossintro'); this.fx.particles.emit('shock', r.x, 1, r.z, 40); } })), { at: r });
+    this.shop.choose('DARK ALTAR', 'A PACT GIVES AND TAKES, AND IT LASTS FOR THE REST OF THIS HERO\'S LIFE', pick.map(k => ({ label: PACTS[k].n, sub: PACTS[k].d, cls: 'r4', act: () => { p.pacts.push(k); teleF('pact', k); if (PACTS[k].once) PACTS[k].once(p); p.derive(); r.open = true; r.done = true; this.flags.add(r.id); this.inter.apply(r); this.inv.dirty = true; this.hud.banner(PACTS[k].n, 'THE PACT IS SEALED'); this.audio.play('bossintro'); this.fx.particles.emit('shock', r.x, 1, r.z, 40); } })), { at: r });
   }
   /** the stairway: how do you go down? */
   offerDescent(r) {
