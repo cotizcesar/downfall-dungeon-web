@@ -5339,13 +5339,15 @@ class FX {
       const ring = (a, b, color) => { const m = new THREE.Mesh(new THREE.RingGeometry(a, b, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false })); m.visible = false; m.renderOrder = 3; S.add(m); return m; };
       const disc = new THREE.Mesh(new THREE.CircleGeometry(1, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: this.softTex, color: 0xffb030, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); disc.visible = false; disc.renderOrder = 2; S.add(disc);
       this.lvl = { t: 0, p: null, outer: col(.95, 7, 0xffa020), inner: col(.4, 9.5, 0xfff0b0), r1: ring(.62, 1, 0xffb030), r2: ring(.8, 1, 0xfff0c0), disc }; }
-    const L = this.lvl; L.t = 2; L.p = p; this.wave(p.x, p.z, .9); this.flash(p.x, 1.6, p.z, 0xffc050, 26); this.particles.emit('goldburst', p.x, .2, p.z, 70); this.particles.emit('goldrise', p.x, 0, p.z, 46); }
+    const L = this.lvl; L.t = 2; L.p = p; L.hit = new Set(); this.wave(p.x, p.z, .9); this.flash(p.x, 1.6, p.z, 0xffc050, 26); this.particles.emit('goldburst', p.x, .2, p.z, 70); this.particles.emit('goldrise', p.x, 0, p.z, 46); }
   updLevel(dt) { const L = this.lvl; if (!L || L.t <= 0) return; L.t -= dt; const parts = [L.outer, L.inner, L.r1, L.r2, L.disc]; if (L.t <= 0) { for (const m of parts) m.visible = false; return; }
     const p = L.p, e = 2 - L.t, y = this.G.world.hAt(p.x, p.z), ease = k => 1 - Math.pow(1 - Math.min(1, k), 3), out = Math.min(1, L.t / .9);
     for (const m of parts) { m.visible = true; m.position.set(p.x, y + .04, p.z); }
     const bw = 1 + ease(e / .5) * 1.1; L.outer.scale.set(bw, ease(e / .25) * (1 + e * .2), bw); L.outer.material.opacity = .75 * out; L.outer.rotation.y += dt * 1.4;
     L.inner.scale.set(1 + e * .2, ease(e / .18), 1 + e * .2); L.inner.material.opacity = out; L.inner.rotation.y -= dt * 2.2;
-    const k1 = ease(e / .75), k2 = ease(Math.max(0, e - .18) / .9); L.r1.scale.setScalar(.3 + k1 * 4.2); L.r1.material.opacity = (1 - k1); L.r2.scale.setScalar(.2 + k2 * 3); L.r2.material.opacity = (1 - k2) * .7 * (e > .18 ? 1 : 0);
+    const k1 = ease(e / .75), k2 = ease(Math.max(0, e - .18) / .9); L.r1.scale.setScalar(.3 + k1 * 4.2); L.r1.material.opacity = (1 - k1);
+    /* the ring kills every creature it reaches (not a guardian nor a warden): each falls as a kill of the hero, with its experience */
+    if (e < 1) { const R = .8 + k1 * 4.2; for (const q of this.G.enemies.list) { if (!q.alive || q.type === 'boss' || L.hit.has(q)) continue; const dx = q.x - p.x, dz = q.z - p.z, d = Math.hypot(dx, dz); if (d > R) continue; L.hit.add(q); if (q.enter && !q.entered) continue; const n = d || 1; q.invulnT = 0; q.takeDamage(q.maxHp * 4 + 50, dx / n, dz / n, 1, true, 'level', true); if (q.alive) q.takeDamage(q.maxHp * 4 + 50, dx / n, dz / n, 1, true, 'level', true); } } L.r2.scale.setScalar(.2 + k2 * 3); L.r2.material.opacity = (1 - k2) * .7 * (e > .18 ? 1 : 0);
     L.disc.scale.setScalar(2 + e); L.disc.material.opacity = .9 * out;
     if (Math.random() < dt * 40 && L.t > .5) this.particles.emit('goldrise', p.x, 0, p.z, 2); }
   ripple(x, z, col = 0xd8f0ff) { const q = this.ripples[this.ripI++ % this.ripples.length]; q.t = .9; q.m.material.color.set(col); q.m.position.set(x, this.G.world.hAt(x, z) + .07, z); q.m.visible = true; }
