@@ -6880,10 +6880,12 @@ class AutoPilot {
    CAMERA CONTROLLER — fixed-angle orthographic iso camera, critically damped follow
    ============================================================ */
 class CameraController {
+  /** the picture slid down inside its square by k of the half-height (the frustum is moved, so everything that projects stays true) */
+  setShift(k) { if (this.shiftK === k) return; this.shiftK = k; const c = this.cam, V = this.V; c.top = V * (1 + k); c.bottom = -V * (1 - k); c.updateProjectionMatrix(); }
   constructor() {
     const V = Math.max(CFG.VIEW, CFG.CONTAIN * 2 * Math.SQRT2 * 1.05) / 2, D = 45, E = CFG.ELEV; /* never narrower than the slab's diagonal: the diorama is never cut at the sides */ this.cam = new THREE.OrthographicCamera(-V, V, V, -V, 1, 110);
     this.off = new V3(D * Math.cos(E) * Math.SQRT1_2, D * Math.sin(E), D * Math.cos(E) * Math.SQRT1_2); this.target = new V3(0, .6, 0);
-    this.cam.position.copy(this.off).add(this.target); this.cam.lookAt(this.target); this.cam.updateMatrixWorld(); // orientation is set once and never changes
+    this.cam.position.copy(this.off).add(this.target); this.cam.lookAt(this.target); this.cam.updateMatrixWorld(); this.V = V; // orientation is set once and never changes
     this.right = new V3().setFromMatrixColumn(this.cam.matrixWorld, 0); this.up = new V3().setFromMatrixColumn(this.cam.matrixWorld, 1); this.shake = 0; this.v = new V3(); this.la = new V3(); this.kv = new V3(); this.thud = 0; this.quake = 0; this.zoomK = 1; this.qt = 0;
   }
   snap(x, z) { this.target.set(x, .6 + (OPEN_VIEW ? (this.hy || 0) * .7 : 0), z); this.place(0, 0); }
@@ -7046,12 +7048,15 @@ class Renderer {
 /* ============================================================
    SQUARE VIEWPORT — strict 1:1 gameplay window, independent of the browser window shape
    ============================================================ */
+const SLAB_CORNER = .2813;
 class SquareViewport {
   constructor(G) { this.G = G; this.S = 600; addEventListener('resize', () => this.layout()); this.layout(); }
   layout() { // the square always spans the full window height (or width on narrow screens); the HUD lives inside it
     // the render square may be taller than the window: only empty space above and below the diorama is lost, and the slab is never cut
-    /* with no diorama (a phone) the square covers the whole screen and its sides are cropped */ const open = !!(this.G.container && this.G.container.open), U = Math.max(180, Math.min(innerWidth, innerHeight)), S = open ? Math.max(180, innerWidth, innerHeight) : Math.max(180, Math.floor(Math.min(innerWidth, innerHeight * 1.3))), st = document.documentElement.style;
+    /* with no diorama (a phone) the square covers the whole screen and its sides are cropped */ const open = !!(this.G.container && this.G.container.open), U = Math.max(180, Math.min(innerWidth, innerHeight)), S = open ? Math.max(180, innerWidth, innerHeight) : Math.max(180, Math.floor(Math.min(innerWidth, innerHeight * 1.56))), st = document.documentElement.style;
     st.setProperty('--S', S + 'px'); st.setProperty('--U', U + 'px'); this.S = S; this.G.renderer.resize(S);
+    /* THE DIORAMA REACHES THE BOTTOM OF THE SCREEN (owner): the slab's near corner sits 0.2813 of the square under its middle, so the picture is slid down until that corner touches the window's lower edge; the bar and the orbs lie over it */
+    this.shiftK = open ? 0 : Math.max(0, (innerHeight / 2 - SLAB_CORNER * S) / (S / 2)); if (this.G.cam) this.G.cam.setShift(this.shiftK);
   }
 }
 
@@ -7265,7 +7270,7 @@ class WorldContainer {
     /* on a phone there is no slab: the world runs to the edges of the screen. The device decides, not the way it is played */ const open = OPEN_VIEW; if (open !== this.open) { this.open = open; CFG.LOAD_DIST = open ? 21 : 16; CFG.UNLOAD_DIST = open ? 29 : 24; this.group.visible = this.base.visible = !open; if (this.G.viewport) this.G.viewport.layout(); }
     const cam = this.G.cam, t = cam.target, Rb = this.R0 + (CFG.ARENA - this.R0) * this.k, R = this.R = open ? 1e6 : Rb, P = this.planes; let z = this.R0 / Rb * (this.G.cam.zoomK || 1);
     /* the close view: zoom until the hero stands an eighth of the screen tall - but never so close that less than nine tiles of the world are in sight across the narrow side of the screen */
-    if (open && VIEW_CLOSE) { const G = this.G, S = (G.viewport && G.viewport.S) || 1, W = innerWidth, H = innerHeight, V2 = cam.cam.top * 2, hh = this.heroH(), want = HERO_FRAC * V2 * (H / S) / (hh * Math.cos(CFG.ELEV)), cap = V2 * (Math.min(W, H) / S) / 9; /* nine tiles across the narrow side at least: lets the hero reach an eighth of the window, as in the reference game */ this.closeZ = z = Math.max(1, Math.min(want, cap)) * (this.G.cam.zoomK || 1); }
+    if (open && VIEW_CLOSE) { const G = this.G, S = (G.viewport && G.viewport.S) || 1, W = innerWidth, H = innerHeight, V2 = cam.cam.top - cam.cam.bottom, hh = this.heroH(), want = HERO_FRAC * V2 * (H / S) / (hh * Math.cos(CFG.ELEV)), cap = V2 * (Math.min(W, H) / S) / 9; /* nine tiles across the narrow side at least: lets the hero reach an eighth of the window, as in the reference game */ this.closeZ = z = Math.max(1, Math.min(want, cap)) * (this.G.cam.zoomK || 1); }
     if (cam.cam.zoom !== z) { cam.cam.zoom = z; cam.cam.updateProjectionMatrix(); cam.place(0, 0); }
     P[0].constant = -(t.x - R); P[1].constant = t.x + R; P[2].constant = -(t.z - R); P[3].constant = t.z + R; if (this.plates) { this.plates[0].position.set(t.x, -BASE_H - PLINTH_H / 2, t.z + R - .002); this.plates[1].position.set(t.x + R - .002, -BASE_H - PLINTH_H / 2, t.z); const on = R < 1e4 && !this.G.titleOn; this.plates[0].visible = this.plates[1].visible = on; }
     const sc = Rb / this.R0; this.fz.scale.x = this.fx.scale.x = sc; this.fz.position.z = R - .01; this.fx.position.x = R - .01;
@@ -7296,7 +7301,7 @@ class Game {
     this.chunks = new ChunkManager(this); this.player = new Player(this); this.inv = new InventorySystem(this); this.hud = new HUD(this); this.audio = new AudioManager(this);
     const canvas = $('game'); this.mouse = new MouseController(this, canvas); this.input = new InputManager(this); this.pilot = new AutoPilot(this);
     this.shop = new Shop(this); this.applyBiome();
-    this.renderer = new Renderer(this, canvas); this.container = new WorldContainer(this); this.viewport = new SquareViewport(this); this.applyBiome(); this.applyGfx();
+    this.renderer = new Renderer(this, canvas); this.container = new WorldContainer(this); this.viewport = new SquareViewport(this); this.viewport.layout(); this.applyBiome(); this.applyGfx();
     const p = this.player;
     if (sv) {
       const s = sv.p; setTimeout(() => { if (!('familiar' in p.equip)) p.equip.familiar = null; }, 0); p.codex = s.codex && typeof s.codex === 'object' ? s.codex : {}; p.mod = RUNMODS[s.mod] ? s.mod : 'none'; p.mastery = s.mastery && typeof s.mastery === 'object' ? s.mastery : {}; if (s.stories && typeof s.stories === 'object') p.stories = s.stories; if (s.boon && typeof s.boon === 'object') p.boon = s.boon; this.cycle = sv.cycle | 0; Object.assign(p, { xp: s.xp, level: s.level, gold: s.gold, potions: s.potions, mpots: s.mpots === undefined ? 1 : s.mpots | 0, tp: s.tp | 0, keys: s.keys, kills: s.kills, found: s.found, bosses: s.bosses, bracelets: s.bracelets === undefined ? 1 : s.bracelets, cores: s.cores | 0, mats: s.mats | 0, matVal: s.matVal | 0, scrolls: s.scrolls === undefined ? 1 : s.scrolls, crystals: s.crystals | 0, fame: s.fame || 0, bounty: s.bounty || null, debt: s.debt | 0, debtCap: s.debtCap || (s.debt | 0) * 2, insured: s.insured | 0, arch: archKey(s.arch), sex: s.sex === 'f' ? 'f' : 'm', slots: s.slots || ['whirl', 'flare', null, null], known: s.known || [], perks: [], sk: s.sk && typeof s.sk === 'object' ? s.sk : null, tomes: s.tomes | 0, name: typeof s.name === 'string' ? s.name.slice(0, 18) : '', pacts: s.pacts || [], items: s.items || [], equip: Object.assign(Object.fromEntries(EQUIP_SLOTS.map(k => [k, null])), s.equip) });
