@@ -980,6 +980,22 @@ body:not(.title):not(.csel):not(.pick) #qcard{display:block}
 #qcard .qPan em{display:block;font-style:normal;font-size:calc(var(--p) * 13);letter-spacing:.22em;color:#c9a24a}
 #qcard .qPan b{display:block;margin-top:calc(var(--p) * 3);font-weight:400;font-size:calc(var(--p) * 25);letter-spacing:.05em;color:#f4efe4;text-shadow:0 1px 3px #000}
 #qcard .qPan p{margin:calc(var(--p) * 7) 0 0;font-size:calc(var(--p) * 16);line-height:1.4;color:#d8d2c2;text-transform:none}
+#qcard .qPan .qHd{margin:calc(var(--p) * -12) calc(var(--p) * -22) 0 calc(var(--p) * -30);padding:calc(var(--p) * 12) calc(var(--p) * 22) calc(var(--p) * 10) calc(var(--p) * 30)}
+#qcard .qPan.done .qHd{background:linear-gradient(90deg,rgba(28,92,82,.98),rgba(28,92,82,.85) 65%,rgba(22,67,60,0));border-bottom:1px solid rgba(95,184,166,.45)}
+#qcard .qPan.done em{color:#d8f0e8}
+#qcard .qRw{display:flex;align-items:center;gap:calc(var(--p) * 12);margin-top:calc(var(--p) * 10);font-size:calc(var(--p) * 17);letter-spacing:.06em;color:#e0d8c6}
+#qcard .qRw i{flex:none;width:calc(var(--p) * 16);height:calc(var(--p) * 16)}
+#qcard .qRw i.g{border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff0b0,#d8a830 60%,#8a6010)}
+#qcard .qRw i.r{transform:rotate(45deg);background:linear-gradient(135deg,#bff0e2,#5fb8a6 55%,#16433c);border:1px solid #0b0f10}
+#qcard .qRw u{width:1px;height:calc(var(--p) * 22);background:#4a5a56}
+#dlg{position:fixed;left:50%;top:calc(var(--p) * 742);width:calc(var(--p) * 880);transform:translateX(-50%);padding:calc(var(--p) * 14) calc(var(--p) * 60) calc(var(--p) * 16);box-sizing:border-box;text-align:center;pointer-events:none;z-index:6;opacity:0;transition:opacity .6s;font-family:Georgia,'Times New Roman',serif;background:linear-gradient(90deg,rgba(8,10,11,0),rgba(8,10,11,.9) 14%,rgba(8,10,11,.9) 86%,rgba(8,10,11,0));display:none}
+body:not(.title):not(.csel):not(.pick):not(.shop):not(.menu):not(.inv):not(.bigmap) #dlg{display:block}
+#dlg.in{animation:dlgIn .5s ease-out}@keyframes dlgIn{from{opacity:0}to{opacity:1}}
+#dlg .dOrn{position:absolute;left:50%;top:calc(var(--p) * -9);width:calc(var(--p) * 620);height:calc(var(--p) * 14);transform:translateX(-50%)}
+#dlg b{display:block;font-weight:400;font-size:calc(var(--p) * 20);letter-spacing:.12em;color:#f0eadc;text-transform:uppercase}
+#dlg i{display:block;margin:calc(var(--p) * 6) auto calc(var(--p) * 8);width:calc(var(--p) * 520);height:1px;background:linear-gradient(90deg,transparent,#5a6a66 20%,#5a6a66 80%,transparent)}
+#dlg p{margin:0;font-size:calc(var(--p) * 18);line-height:1.45;color:#d8d2c2}
+#dlg u{position:absolute;left:50%;bottom:calc(var(--p) * -12);width:calc(var(--p) * 30);height:calc(var(--p) * 2);margin-left:calc(var(--p) * -15);background:#8a8a80}
 #hcard .cRew{position:absolute;left:50%;top:calc(var(--p) * 737);width:calc(var(--p) * 500);transform:translateX(-50%);padding:calc(var(--p) * 8) calc(var(--p) * 18) calc(var(--p) * 14);box-sizing:border-box;text-align:center;background:linear-gradient(180deg,#141a1b,#0b0f10);border-top:calc(var(--p) * 2) solid #3a4a46;box-shadow:0 calc(var(--p) * 6) calc(var(--p) * 18) rgba(0,0,0,.8)}
 #hcard .cRew h6{margin:0 0 calc(var(--p) * 8);padding-bottom:calc(var(--p) * 5);font-weight:400;font-size:calc(var(--p) * 15);letter-spacing:.16em;color:#d8d2c2;border-bottom:1px solid #2c3a3a}
 #hcard .cRew div{display:flex;align-items:center;justify-content:center;gap:calc(var(--p) * 10)}
@@ -4287,7 +4303,7 @@ class Enemy {
   alert(spread) {
     if (this.state !== 'idle' && this.state !== 'patrol') return; const G = this.G; if (G.safe && this.type !== 'boss') return;
     this.state = 'chase'; this.repath = 0; this.alertT = .7; G.audio.play(this.snd('alert'), this.x, this.z, 1, this.vp);
-    if (this.type === 'boss' && !this.clone) { { const gv = GUARD_VOICE[G.biome.id]; G.hud.banner(this.S.name.replace(/ \[.*$/, '').replace(/ - RECOVERING$/, ''), bossEpithet(this)); if (gv && isGuardianFloor(G.depth) && !this.introDone) G.hud.caption('"' + gv[1] + '"', 0); } if (!this.introDone) { this.introDone = true; G.audio.play('bossintro'); G.shake(.5); G.fx.particles.emit('shock', this.x, 1, this.z, 40); } }
+    if (this.type === 'boss' && !this.clone) { { const gv = GUARD_VOICE[G.biome.id]; G.hud.banner(this.S.name.replace(/ \[.*$/, '').replace(/ - RECOVERING$/, ''), bossEpithet(this)); if (gv && isGuardianFloor(G.depth) && !this.introDone) G.hud.speak(this.S.name.replace(/ \[.*$/, ''), gv[1]); } if (!this.introDone) { this.introDone = true; G.audio.play('bossintro'); G.shake(.5); G.fx.particles.emit('shock', this.x, 1, this.z, 40); } }
     if (spread) for (const e of G.enemies.list) if (e !== this && e.alive && Math.hypot(e.x - this.x, e.z - this.z) < 5) e.alert(false);
   }
   /** this body's voice: alert / step / atk / death */
@@ -4405,7 +4421,7 @@ class Enemy {
   }
   die(pk, dx, dz) {
     const G = this.G; this.alive = false; this.state = 'dead'; this.deathT = 0; this.hp = 0;
-    if (this.type === 'boss' && !this.clone && isGuardianFloor(G.depth)) { const gv = GUARD_VOICE[G.biome.id]; if (gv) setTimeout(() => G.hud.banner(this.S.name.replace(/ \[.*$/, '') + ' FALLS', '"' + gv[2] + '"'), 900); }
+    if (this.type === 'boss' && !this.clone && isGuardianFloor(G.depth)) { const gv = GUARD_VOICE[G.biome.id]; if (gv) setTimeout(() => G.hud.speak(this.S.name.replace(/ \[.*$/, ''), gv[2]), 900); }
     /* the others see it fall: the sleeping wake, the bold flinch */
     for (const e of G.enemies.list) if (e !== this && e.alive && !e.resting && e.type !== 'boss' && Math.hypot(e.x - this.x, e.z - this.z) < 6) { if (e.state === 'idle' || e.state === 'patrol') e.alert(true); else if (Math.random() < .3 && e.state === 'chase') { e.flash = .6; e.alertT = .4; } }
     /* a kill that matters is confirmed: the last enemy of a locked room, an elite, a guardian */
@@ -6124,8 +6140,13 @@ class HUD {
     el.innerHTML = `<svg class='qBar' viewBox='0 0 360 16' preserveAspectRatio='none'><path d='M0 8L14 5H346L360 8L346 11H14Z' fill='#26302f' stroke='#0b0f10' stroke-width='1'/><path d='M14 6.5H346' stroke='#8a7238' stroke-width='.7' opacity='.7'/>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(i => `<path d='M${24 + i * 20} 5L${28 + i * 20} ${i % 2 ? 1 : 2}L${32 + i * 20} 5Z' fill='#26302f' stroke='#0b0f10' stroke-width='.5'/>`).join('')}</svg>`
       + `<svg class='qRib' viewBox='0 0 40 80'><path d='M2 0H38V80L20 66L2 80Z' fill='${c[2]}' stroke='#0b0f10' stroke-width='1.5'/><path d='M8 0V68M32 0V68' stroke='${c[1]}' stroke-width='1' opacity='.6'/></svg>`
       + `<svg class='qSeal' viewBox='0 0 80 80'><circle cx='40' cy='40' r='37' fill='#0b0f10' stroke='#c9a24a' stroke-width='3'/><circle cx='40' cy='40' r='29' fill='${c[0]}' stroke='#0b0f10' stroke-width='2'/><path d='M40 18L58 40L40 62L22 40Z' fill='none' stroke='#f2e6c0' stroke-width='3.5'/><path d='M40 29L49 40L40 51L31 40Z' fill='#f2e6c0'/></svg>`
-      + `<div class='qPan'><em>${T(o.kind === 'contract' ? 'NEW CONTRACT' : o.kind === 'step' ? 'STORY UPDATED' : 'NEW STORY')}</em><b>${T(o.name)}</b>${o.text ? `<p>${T(o.text)}</p>` : ''}</div>`;
+      + `<div class='qPan${o.done ? ' done' : ''}'><div class='qHd'><em>${T(o.done ? (o.kind === 'contract' ? 'CONTRACT COMPLETED' : 'STORY COMPLETED') : o.kind === 'contract' ? 'NEW CONTRACT' : o.kind === 'step' ? 'STORY UPDATED' : 'NEW STORY')}</em><b>${T(o.name)}</b></div>${o.text ? `<p>${T(o.text)}</p>` : ''}${o.reward ? `<div class='qRw'><i class='${o.gold ? 'g' : 'r'}'></i><u></u><span>${T(o.reward)}</span></div>` : ''}</div>`; el.className = o.done ? 'done' : '';
     el.style.opacity = 1; el.classList.remove('in'); void el.offsetWidth; el.classList.add('in'); clearTimeout(this.qTm); this.qTm = setTimeout(() => { el.style.opacity = 0; }, (o.dur || 7) * 1000); }
+  /** SOMEONE SPEAKS (owner's reference pictures): low in the middle, a dark band with an ornament on its top edge, the speaker's name,
+     a thin rule, the words, and a short dash under them. It leaves by itself */
+  speak(name, text, dur) { let el = $('dlg'); if (!el) { el = document.createElement('div'); el.id = 'dlg'; $('hud').appendChild(el); } const tx = T(text);
+    el.innerHTML = `<svg class='dOrn' viewBox='0 0 200 14' preserveAspectRatio='none'><path d='M0 9H78L88 3H112L122 9H200' fill='none' stroke='#5a6a66' stroke-width='1.2'/><path d='M94 3L100 9L106 3' fill='none' stroke='#c9a24a' stroke-width='1.2'/><path d='M100 0L103 3L100 6L97 3Z' fill='#c9a24a'/></svg><b>${T(name)}</b><i></i><p>${tx}</p><u></u>`;
+    el.style.opacity = 1; el.classList.remove('in'); void el.offsetWidth; el.classList.add('in'); clearTimeout(this.dlgTm); this.dlgTm = setTimeout(() => { el.style.opacity = 0; }, (dur || clamp(3 + tx.split(/\s+/).length * .33, 4, 11)) * 1000); }
   banner(title, sub) { const b = $('banner'), ts = T(sub || ''), n = ts ? ts.split(/\s+/).length : 0; b.innerHTML = `<b>${T(title)}</b><i></i>` + (ts ? `<small>${ts}</small>` : ''); b.style.opacity = 1; b.classList.remove('in'); void b.offsetWidth; b.classList.add('in'); this.bannerT = this.bannerDur = clamp(2.6 + n * .3, 2.8, 10); }
   toast(t) { this.toastTxt = T(t); this.toastT = clamp(1.6 + this.toastTxt.split(/\s+/).length * .25, 2.4, 7); this.chatAdd(this.toastTxt); }
   /** LEFT CORNER: the game's notices run as lines in the bottom-right corner, where the reference keeps its chat; each fades after a while */
@@ -6481,16 +6502,20 @@ const GAME_KEYS = new Set([...Object.keys(MOVE_KEYS), 'Space', 'KeyE', 'ShiftLef
 class GamepadController {
   constructor() {
     this.prev = []; this.index = -1;
-    addEventListener('gamepadconnected', e => { this.index = e.gamepad.index; if (G) G.hud.toast('GAMEPAD CONNECTED'); });
+    addEventListener('gamepadconnected', e => { if (this.index < 0) this.index = e.gamepad.index; if (G) G.hud.toast('GAMEPAD CONNECTED'); });
     addEventListener('gamepaddisconnected', e => { if (e.gamepad.index === this.index) { this.index = -1; this.prev = []; if (G) G.hud.toast('GAMEPAD DISCONNECTED'); } });
   }
   /** the pad in use: the one whose buttons are being pressed (handhelds list several devices and the first is often a silent one) */
   pick() {
     let pads = []; try { pads = navigator.getGamepads ? [...navigator.getGamepads()] : []; } catch (e) { }
-    const live = q => q && q.connected && q.buttons && q.axes, down = q => q.buttons.some(k => k && (k.pressed || k.value > .5));
+    const live = q => q && q.connected && q.buttons && q.axes, SE = this.seen || (this.seen = {});
+    /* which pads were just touched: a button that went down since the last look, or a stick pushed away from where it was first seen.
+       A device that lists a button as held for ever (handhelds and Linux show such phantoms) is never "touched", so it cannot take the game */
+    const fresh = []; for (const q of pads) { if (!live(q)) continue; const st = SE[q.index] && SE[q.index].id === q.id ? SE[q.index] : (SE[q.index] = { id: q.id, b: q.buttons.map(k => !!(k && (k.pressed || k.value > .5))), a: [...q.axes] }); let f = false;
+      for (let i = 0; i < q.buttons.length; i++) { const k = q.buttons[i], d = !!(k && (k.pressed || k.value > .5)); if (d && !st.b[i]) f = true; st.b[i] = d; } for (let i = 0; i < Math.min(4, q.axes.length); i++) if (Math.abs((q.axes[i] || 0) - (st.a[i] || 0)) > .6) f = true; if (f) fresh.push(q); }
     let gp = this.index >= 0 && live(pads[this.index]) ? pads[this.index] : null;
-    if (!gp || !down(gp)) { const other = pads.find(q => live(q) && q !== gp && down(q)); if (other) { gp = other; this.index = other.index; this.prev = []; } }
-    if (!gp) { gp = pads.find(live) || null; if (gp) this.index = gp.index; }
+    if (fresh.length && !fresh.includes(gp)) { gp = fresh.find(q => q.mapping === 'standard') || fresh[0]; this.index = gp.index; this.prev = []; }
+    if (!gp) { const L = pads.filter(live); gp = L.find(q => q.mapping === 'standard' && !SE[q.index].b.some(Boolean)) || L.find(q => !SE[q.index].b.some(Boolean)) || L[0] || null; if (gp) this.index = gp.index; }
     if (gp && typeof PAD_BRANDS !== 'undefined' && padBrand(gp.id) && G) G.applyOpt();
     if (!navigator.getGamepads && !this.warned && G && !isSecureContext) { this.warned = true; G.hud.toast('GAMEPAD NEEDS A SECURE PAGE - OPEN THE HTTPS ADDRESS'); }
     return gp;
@@ -7071,7 +7096,7 @@ class Shop {
       ...(late ? [{ id: 'master', icon: 'whetstone', label: 'MASTERWORK EDGE', cat: 'smithing', sub: !w ? 'YOU HOLD NO WEAPON' : w.master ? 'ALREADY DONE' : 'YOUR WEAPON NEVER DULLS AGAIN', price: this.cost(worth(t) * EC.masterwork), can: !!w && !w.master, act: () => { w.master = 1; w.wear = 0; p.derive(); G.inv.dirty = true; } },
         { id: 'reroll', icon: 'socket', label: 'CHANGE A CORE IN YOUR WEAPON', cat: 'smithing', sub: w && w.sock && w.sock.length ? 'ONE CORE IN YOUR WEAPON BECOMES ANOTHER KIND' : 'NO CORE SET IN YOUR WEAPON', price: this.cost(worth(t) * EC.reroll), can: !!(w && w.sock && w.sock.length), act: () => { const i = Math.random() * w.sock.length | 0, ks = Object.keys(SOCK).filter(k => k !== w.sock[i]), k = ks[Math.random() * ks.length | 0]; w.sock[i] = k; p.derive(); G.inv.dirty = true; G.hud.toast(k + ' CORE SET: ' + SOCK[k].d); } },
         { id: 'donate', icon: 'donate', label: 'A DONATION TO THE CITY', cat: 'donations', sub: '+1 FAME: FAME LOWERS THE PRICES ON FLOOR 1 AND BRINGS BETTER CONTRACTS - YOU HAVE ' + Math.floor(p.fame), price: Math.round(worth(t) * EC.donate), act: () => { p.fame++; } }] : []),
-      this.bountyDone() ? { id: 'bounty', icon: 'contract', label: 'COLLECT YOUR CONTRACT', sub: 'THE WORK IS DONE: TAKE YOUR PAY AND +1 FAME', price: 0, gain: b.pay, act: () => { if (b.ty === 'cores') p.cores -= b.need; p.gold += b.pay; G.led('contracts', b.pay); p.fame++; p.bounty = null; } }
+      this.bountyDone() ? { id: 'bounty', icon: 'contract', label: 'COLLECT YOUR CONTRACT', sub: 'THE WORK IS DONE: TAKE YOUR PAY AND +1 FAME', price: 0, gain: b.pay, act: () => { if (b.ty === 'cores') p.cores -= b.need; p.gold += b.pay; G.led('contracts', b.pay); p.fame++; p.bounty = null; G.hud.quest({ kind: 'contract', done: 1, gold: 1, name: b.ty === 'boss' ? 'A NOBLE\'S CONTRACT' : b.ty === 'cores' ? 'A MERCHANT\'S CONTRACT' : 'A GUILD CONTRACT', reward: b.pay + ' G  /  +1 FAME' }); } }
         : b ? { id: 'bounty', icon: 'contract', label: 'CONTRACT IN PROGRESS', sub: b.ty === 'cores' ? p.cores + ' / ' + b.need + ' CORES TO DELIVER' : b.ty === 'boss' ? 'THE NEXT GUARDIAN STILL BREATHES' : b.got + ' / ' + b.need + ' SLAIN ON FLOOR ' + b.min + ' OR DEEPER', price: 0, can: false }
         : !OPT.contracts ? null : (() => { const kinds = p.fame >= EC.nobleFame ? ['kills', 'boss', 'cores'] : ['kills', 'cores'], ty = kinds[(Math.floor(p.fame) + t + p.bosses) % kinds.length], py = ty === 'boss' ? pay * EC.nobleX : ty === 'cores' ? Math.round(15 * coreVal(t) * EC.merchantX) : pay;
           return { id: 'bounty', icon: 'contract', label: ty === 'boss' ? 'A NOBLE\'S CONTRACT' : ty === 'cores' ? 'A MERCHANT\'S CONTRACT' : 'A GUILD CONTRACT', sub: (ty === 'boss' ? 'SLAY THE NEXT GUARDIAN' : ty === 'cores' ? 'DELIVER 15 ENERGY CORES' : 'SLAY 25 CREATURES ON FLOOR ' + t + ' OR DEEPER') + ' FOR ' + py + ' G', price: 0, act: () => { p.bounty = { ty, need: ty === 'boss' ? 1 : ty === 'cores' ? 15 : 25, got: 0, min: t, pay: py }; G.hud.quest({ kind: 'contract', name: ty === 'boss' ? 'A NOBLE\'S CONTRACT' : ty === 'cores' ? 'A MERCHANT\'S CONTRACT' : 'A GUILD CONTRACT', text: (ty === 'boss' ? 'SLAY THE NEXT GUARDIAN' : ty === 'cores' ? 'DELIVER 15 ENERGY CORES' : 'SLAY 25 CREATURES ON FLOOR ' + t + ' OR DEEPER') + ' FOR ' + py + ' G' }); } }; })()
@@ -7554,7 +7579,7 @@ class Game {
     if (r[0] === 'hp' || r[0] === 'dmg' || r[0] === 'energy') { B[r[0]] += r[1]; txt = '+' + Math.round(r[1] * 100) + '% ' + ({ hp: 'HEALTH', dmg: 'DAMAGE', energy: 'ENERGY' })[r[0]] + ' FOR GOOD'; p.derive(); }
     else if (r[0] === 'charm') { p.bracelets += r[1]; txt = r[1] + ' LIFELINE CHARM' + (r[1] > 1 ? 'S' : ''); } else if (r[0] === 'fam') { this.inv.add(makeFamiliar(this.depth, null, r[1])); txt = 'A FAMILIAR'; } else if (r[0] === 'uniq') { const ids = uniqueIds(); this.inv.add(makeUnique(ids[Math.random() * ids.length | 0], this.depth)); txt = 'A UNIQUE'; }
     else if (r[0] === 'mastery') { const fk = famKey(p.equip.weapon), M0 = p.mastery || (p.mastery = {}); M0[fk] = (M0[fk] || 0) + r[1]; txt = 'MASTERY WITH THE ' + FAMILY[fk].n; p.derive(); }
-    this.hud.banner(st.n + ' - ENDED', st.end + ' (' + txt + ')'); this.audio.play('victory'); this.learn('lore', st.n, st.end); tele('stories');
+    this.hud.quest({ kind: 'story', done: 1, name: st.n, text: st.end, reward: txt }); this.audio.play('victory'); this.learn('lore', st.n, st.end); tele('stories');
   }
   storyFor(giver) { const p = this.player, S = p.stories || (p.stories = { on: null, step: 0, count: 0, done: [] }); if (S.on || !OPT.quests) return null; const best = Math.max(this.depth, (this.checkpoint || 1) - 1); return STORIES.find(q => (!giver || q.g === giver) && !S.done.includes(q.id) && best >= q.from) || null; }
   /** the season of this month: its rule is on for everybody, kills earn marks, marks pay a track of rewards (kept per browser) */
