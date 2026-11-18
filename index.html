@@ -7778,6 +7778,12 @@ class Game {
     const hid = []; try { this.scene.traverse(o => { if (!o.visible) { hid.push(o); o.visible = true; } }); const r = this.renderer.r, rt0 = r.getRenderTarget(), cp = r.clippingPlanes, E = this.warmSc || (this.warmSc = new THREE.Scene()); r.setRenderTarget(this.renderer.post.rt || null);
       for (const planes of [cp, cp.concat(this.renderer.refPlane || (this.renderer.refPlane = new THREE.Plane(new V3(0, 1, 0), -.04)))]) { r.clippingPlanes = planes; r.render(E, this.cam.cam); r.compile(this.scene, this.cam.cam); }
       r.clippingPlanes = cp; r.setRenderTarget(rt0); } catch (e) { } for (const o of hid) o.visible = false; }
+  /** the loading screen stays until the new place is really there: every chunk in reach built, nothing still dropping into place, and
+     four smooth frames drawn in a row (the first frames of a place are slow: its shaders and textures reach the graphics card then).
+     Never less than 0.45 s, never more than 6 s */
+  whenDrawn(cb) { const p = this.player, t0 = performance.now(); let good = 0, last = t0; const step = () => { const now = performance.now(), dt = now - last; last = now;
+      try { this.chunks.update(p.x, p.z, true); } catch (e) { } for (const ch of this.chunks.loaded.values()) if (ch.drop > 0) { ch.drop = 0; ch.group.position.y = 0; }
+      good = !this.chunks.queue.length && dt < 50 ? good + 1 : 0; if ((good >= 4 && now - t0 > 450) || now - t0 > 6000) { cb(); return; } requestAnimationFrame(step); }; requestAnimationFrame(step); }
   gotoFloor(n) {
     if (POCKET) { POCKET = null; this.world.gen.mz.clear(); this.world.gen.rt.clear(); } /* a new floor is never a pocket */
     setTimeout(() => this.warm(), 0); this.floorT = 0; this.late = false;
@@ -7853,7 +7859,7 @@ class Game {
     setTimeout(() => {
       let n = to || this.depth + 1;
       if (n > 100) { n = 1; this.epoch++; this.epochAt = Date.now(); this.grave = null; } // a conquered labyrinth reshapes itself
-      this.gotoFloor(n); this.player.descT = 0; this.transition = false; this.loading(null);
+      this.gotoFloor(n); this.player.descT = 0; this.whenDrawn(() => { this.transition = false; this.loading(null); });
     }, st ? 1150 : 500);
   }
   /** the world is thrown away and made again in place: what a new floor does, without the bookkeeping of one */
@@ -7904,13 +7910,13 @@ class Game {
     this.transition = true; this.loading('ENTERING ' + P.n); this.audio.play('door', p.x, p.z);
     setTimeout(() => { POCKET = { k, T: P, seed, path, end: path[path.length - 1], set, open, biome: pocketBiome(k), spec: Object.assign({}, WARDEN, { name: P.boss, adds: P.adds, addN: 2, hint: 'IT KEEPS WHAT THIS PLACE KEPT' }), fee, back };
       this.floorRule = null; this.seen = new Map(); this.swapWorld(); this.learn('lore', P.n, P.d);
-      setTimeout(() => { this.transition = false; this.loading(null); this.hud.banner(P.n, 'A PLACE APART - FIND ITS KEEPER'); }, 600); }, 700);
+      this.whenDrawn(() => { this.transition = false; this.loading(null); this.hud.banner(P.n, 'A PLACE APART - FIND ITS KEEPER'); }); }, 700);
   }
   leavePocket(won) {
     if (!POCKET || this.transition) return; const b = POCKET.back, p = this.player, town = !!POCKET.town; this.transition = true; this.loading('BACK TO FLOOR ' + this.depth); this.audio.play('door', p.x, p.z);
     setTimeout(() => { POCKET = null; this.floorRule = b.rule; this.seen = b.seen; this.swapWorld(b.flags);
       if (this.spotOpen(b.x, b.z)) { p.stair = null; p.x = b.x; p.z = b.z; p.clearOrders(); this.cam.snap(p.x, p.z); this.chunks.update(p.x, p.z, true); this.refreshStairs(true); }
-      setTimeout(() => { this.transition = false; this.loading(null); this.hud.card('area', { name: this.biome.name, sub: 'FLOOR ' + this.depth + ' - ' + (town ? 'BACK WHERE YOU OPENED THE PORTAL' : won ? 'THE DOOR CLOSED BEHIND YOU FOR GOOD' : 'YOU LEFT WHAT IT KEPT') }); this.save.save(); }, 600); }, 700);
+      this.whenDrawn(() => { this.transition = false; this.loading(null); this.hud.card('area', { name: this.biome.name, sub: 'FLOOR ' + this.depth + ' - ' + (town ? 'BACK WHERE YOU OPENED THE PORTAL' : won ? 'THE DOOR CLOSED BEHIND YOU FOR GOOD' : 'YOU LEFT WHAT IT KEPT') }); this.save.save(); }); }, 700);
   }
   /** the keeper of a pocket falls: what it kept, and a third of the fee */
   pocketWon(e) { const p = this.player, P = POCKET; p.raiseT = 1.5; this.audio.play('victory'); tele('pocketWon'); this.loot.drop('item', e.x, e.z, { item: makeItem(this.depth + 3, Math.random() < .15 ? TOP : LEG) }); { const back = Math.round(P.fee / 3); p.gold += back; this.led('prizes', back); this.hud.number(e.x, 2.4, e.z, '+' + back + ' G', '#ffd75a'); } this.hud.banner(P.T.boss + ' FALLS', 'TAKE WHAT IT KEPT - THE STAIRS LEAD BACK'); }
@@ -8105,7 +8111,7 @@ class Game {
     this.transition = true; this.loading('THE CAMP');
     setTimeout(() => { POCKET = { k: 'town', T: POCKETS.town, seed: hash(realm, this.seed, 17) & 0xffff, path: [[0, 0]], end: [9, 9], set: new Set(['0,0']), open: new Set(), biome: Object.assign({}, bm, { hazard: null, corridors: 0, pocket: 'town', enemyMul: 0 }), spec: null, fee: 0, back, town: 1, realm };
       this.floorRule = null; this.seen = new Map(); this.swapWorld();
-      setTimeout(() => { this.transition = false; this.loading(null); this.hud.card('area', { name: 'THE CAMP', sub: bm.name + ' - ' + 'SAFE GROUND' }); }, 600); }, 700); }
+      this.whenDrawn(() => { this.transition = false; this.loading(null); this.hud.card('area', { name: 'THE CAMP', sub: bm.name + ' - ' + 'SAFE GROUND' }); }); }, 700); }
   /** a bought chart: the rooms between you and the stairs appear on the map */
   chart(fake) {
     const p = this.player, a = [Math.floor(p.x / 24), Math.floor(p.z / 24)], st = fake ? [(a[0] + (Math.random() < .5 ? -4 : 4)) * 24, (a[1] + (Math.random() < .5 ? -4 : 4)) * 24] : this.stairs || [p.x, p.z], b = [Math.floor(st[0] / 24), Math.floor(st[1] / 24)]; this.charted = true; this.chartLie = !!fake;
