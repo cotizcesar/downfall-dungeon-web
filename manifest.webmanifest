@@ -1,0 +1,12 @@
+{
+  "name": "DOWNFALL DUNGEON",
+  "short_name": "Downfall",
+  "description": "An isometric dungeon crawler in a single page: a hundred floors, one hero, a charm between you and a final death.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0b0e10",
+  "theme_color": "#0b0e10",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
