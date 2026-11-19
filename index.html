@@ -5817,6 +5817,8 @@ class LightingManager {
     const lr = p.M.light * (OMEN.light || 1) * CFG.DARK.light * (G.zone === 'dark' ? CFG.DARK.light : 1) * (G.floorRule === 'dark' ? .5 : 1); this.torch.distance = 10 * lr; this.base = 22 * Math.sqrt(lr); this.torch.position.set(p.x + 1.1, 2.3 + (p.gy || 0), p.z + 1.1); this.key.position.set(p.x + 1.3, 1.5 + (p.gy || 0), p.z + 1.3); this.key.intensity = p.dead ? 0 : 2.6; // a touch towards the camera: the sides we look at are the lit ones // the hero's light radius: it never depends on what the hands are doing
     const fl = .84 + .1 * Math.sin(t * 13.1) + .07 * Math.sin(t * 7.3 + 1.3) + .05 * Math.sin(t * 23.7 + .5) + (Math.random() - .5) * .05;
     this.torch.intensity = this.base * fl * (p.dead ? Math.max(.15, 1 - p.deadT * .5) : 1);
+    /* where the light dies, the torches, lamps and braziers of the place go out (a guardian's own glow does not): they fade in under half a second and come back on the way out */
+    { const k = this.outK = (this.outK === undefined ? 1 : this.outK) + ((G.zone === 'dark' ? 0 : 1) - (this.outK === undefined ? 1 : this.outK)) * Math.min(1, dt * 5); const ft = G.flameT || [1, 1, 1]; MAT.flame.uniforms.uTint.value.set(ft[0] * k, ft[1] * k, ft[2] * k); MAT.flame.visible = k > .04; }
     this.pickT -= dt;
     if (this.pickT <= 0) {
       this.pickT = .2; const S = this.sources; for (const s of S) s.d = Math.hypot(s.x - p.x, s.z - p.z); S.sort((a, b) => a.d - b.d);
@@ -5824,7 +5826,7 @@ class LightingManager {
     }
     for (let i = 0; i < this.pool.length; i++) {
       const l = this.pool[i], s = this.sources[i], hl = G.fx.halos[i]; if (!s) { l.intensity = 0; if (hl) hl.visible = false; continue; }
-      const fade = clamp((this.cut - s.d) / 3, 0, 1) * clamp((22 - s.d) / 5, 0, 1);
+      const fade = clamp((this.cut - s.d) / 3, 0, 1) * clamp((22 - s.d) / 5, 0, 1) * (s.key === '_dyn' ? 1 : this.outK);
       l.position.set(s.x, s.y, s.z); if (i < 2) { l.position.x += Math.sin(t * 13.1 + i * 2.1) * .05 + Math.sin(t * 31.7 + i) * .02; l.position.y += Math.sin(t * 17.3 + i) * .05; l.position.z += Math.cos(t * 11.7 + i * 1.3) * .05 + Math.cos(t * 27.1) * .02; } l.color.set(s.color); l.distance = s.range;
       l.intensity = s.int * fade * (.88 + .12 * Math.sin(t * 11 + s.x * 3.7 + s.z * 1.9) + .06 * Math.sin(t * 19.3 + s.z)) * (s.d < 1.7 && p.speed > .4 ? .72 + .28 * Math.sin(t * 43 + i) : 1); /* a flame gutters when someone hurries past it */
       if (hl) { hl.visible = fade > .02; hl.position.set(s.x, s.y + .1, s.z); hl.material.color.set(s.color); hl.material.opacity = .32 * fade * Math.min(1, s.int / 9); const hs = Math.min(4.2, s.range * .42) * (.94 + .06 * Math.sin(t * 9 + s.x)); hl.scale.set(hs, hs, 1); }
@@ -8130,7 +8132,7 @@ class Game {
       if (md === 'dusk') { L.fill.color.lerp(_colT.setHex(0xff9a50), .45); L.fill.intensity *= .85; L.amb.intensity *= .93; } else if (md === 'storm') { L.fill.color.lerp(_colT.setHex(0x7088b0), .5); L.fill.intensity *= .6; L.amb.intensity *= .9; } }
     MAT.floor.map = TEX[b.ft]; MAT.wall.map = MAT.cap.map = TEX[b.wt]; MAT.low.map = TEX[b.ft]; MAT.pit.map = TEX[b.ft]; MAT.pit.needsUpdate = true; MAT.floor.normalMap = MAT.low.normalMap = normalOf(TEX[b.ft]); MAT.wall.normalMap = MAT.cap.normalMap = normalOf(TEX[b.wt]); MAT.floor.normalScale.set(.9, .9); MAT.wall.normalScale.set(1, 1); if (!MAT.water.normalMap) { MAT.water.normalMap = normalOf(TEX.mud).clone(); MAT.water.normalMap.needsUpdate = true; MAT.water.normalScale.set(.5, .5); MAT.water.needsUpdate = true; }
     MAT.floor.needsUpdate = MAT.wall.needsUpdate = MAT.low.needsUpdate = MAT.cap.needsUpdate = true; GEO.wallTall = wallGeoFor(b.top);
-    const ft = b.flame || [1, 1, 1]; MAT.flame.uniforms.uTint.value.set(1 + (ft[0] - 1) * .55, 1 + (ft[1] - 1) * .55, 1 + (ft[2] - 1) * .55);
+    const ft = b.flame || [1, 1, 1]; this.flameT = [1 + (ft[0] - 1) * .55, 1 + (ft[1] - 1) * .55, 1 + (ft[2] - 1) * .55]; MAT.flame.uniforms.uTint.value.set(this.flameT[0], this.flameT[1], this.flameT[2]);
     this.mirrorOn = !['desert', 'volcano', 'puzzle', 'sanctum'].includes(b.id) && (!this.quality || this.quality.level === 0);
     { const out = ['meadow', 'swamp', 'tundra', 'desert', 'elite'].includes(b.id) && (!this.quality || this.quality.level === 0); if (out) L.fill.shOff = false; if (L.fill.castShadow !== out) { L.fill.castShadow = out; for (const k in MAT) if (MAT[k].isMaterial) MAT[k].needsUpdate = true; } if (out) L.fill.intensity = Math.max(L.fill.intensity, .5); }
     if (this.fx) { const fu = this.fx.fog.material.uniforms, fc = new THREE.Color(b.amb), FA = { swamp: .3, undead: .3, tundra: .26, cave: .2, elite: .24, volcano: .2, sanctum: .2, desert: .14, meadow: .14, ruins: .18, puzzle: .16 }; fu.uCol.value.set(.1 + fc.r * .22, .1 + fc.g * .22, .1 + fc.b * .22); fu.uA.value = (FA[b.id] || .16) * 1.3; }
