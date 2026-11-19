@@ -860,7 +860,7 @@ body:not(.inv) #cTabs{display:none !important}#cTabs .hx{display:none !important
 #shopPanel .sr.st{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25em;aspect-ratio:1/1.12;margin:0;padding:.4em .2em .3em;border:1px solid #2c3a3a;border-left-width:1px;background:linear-gradient(180deg,#1a2122,#0e1213);box-shadow:inset 0 0 .6em rgba(0,0,0,.8);cursor:pointer;min-width:0}
 #shopPanel .sr.st .sico{width:62%;height:auto;aspect-ratio:1;margin:0;flex:none}#shopPanel .sr.st .sico0{display:flex;align-items:center;justify-content:center;font-size:1.6em;color:#c9a24a}
 #shopPanel .sr.st b{font-size:.78em;font-weight:600;color:#e8c070;letter-spacing:.02em;min-height:1.1em;white-space:nowrap}
-#shopPanel .sr.st.no{opacity:.45}#shopPanel .sr.st.no b{color:#c0705a}
+#shopPanel .sr.st.no{opacity:.45}#shopPanel .sr.st.no b{color:#ff5a5a}
 #shopPanel .sr.st.r1{border-color:#3a6a3a}#shopPanel .sr.st.r2{border-color:#3a5a9a}#shopPanel .sr.st.r3{border-color:#7a4a9a}#shopPanel .sr.st.r4{border-color:#a8823a}
 #shopPanel .sr.st:hover,#shopPanel .sr.st.focus{border-color:#5fb8a6 !important;box-shadow:inset 0 0 .8em rgba(95,184,166,.3),0 0 .5em rgba(95,184,166,.35)}
 #shopDesc{position:sticky;bottom:0;margin-top:1em;padding:.8em .9em;min-height:7.5em;border:1px solid #6a5a30;background:linear-gradient(180deg,#141a1b,#0b0f10);box-shadow:0 -.6em 1em rgba(8,10,12,.95);font-size:.86em;line-height:1.5;letter-spacing:.04em;color:#d8d2c2;text-transform:uppercase}
@@ -4238,9 +4238,9 @@ class Player {
   cast(k, tgt) {
     const G = this.G, S = SPELLS[k]; if (!S || this.dead || this.casting || this.dodgeT > 0 || this.sx.freeze || this.sx.stun) return false;
     if (!this.known.includes(k)) return false; if (k === 'whirl' && this.atkT > 0) return false; if (S.sk) { const why = skUsable(this, S.sk); if (why) { if (!G.auto && G.time - (this.whyT || -9) > 1) { this.whyT = G.time; G.hud.toast(why); } return false; } }
-    if (G.zone === 'null') { G.hud.toast('DEAD MAGIC - YOUR POWERS FAIL HERE'); return false; } if (G.floorRule === 'silence') { if (!G.auto) G.hud.toast('THE SILENT FLOOR: NO SPELL ANSWERS'); return false; } if (this.sx.silence) { G.hud.toast('SILENCED'); return false; }
+    /* silenced - by a creature, by a place of dead magic or by the silent floor: one state, shown with the others by the life and, when it is the place, under the map */ if (G.zone === 'null' || G.floorRule === 'silence' || this.sx.silence) return false;
     const cost = skCost(this, k); if (this.cds[k] > 0 || this.st < cost || (S.price && this.hp <= this.maxHp * S.price + 1)) return false; if (this.atkT > 0 && !G.auto) { this.hold('slot', this.slots.indexOf(k)); return false; }
-    const e = tgt || (SP_SELF.includes(k) ? null : this.spellTarget(k)); if (SP_TGT.includes(k) && !e && !SP_FREE.includes(k)) { if (!this.G.auto) G.hud.toast('NO TARGET IN SIGHT'); return false; }
+    const e = tgt || (SP_SELF.includes(k) ? null : this.spellTarget(k)); if (SP_TGT.includes(k) && !e && !SP_FREE.includes(k)) return false;
     this.st -= cost; if (S.price) this.hurtRaw(Math.round(this.maxHp * S.price), '#c03040'); this.cds[k] = S.sk && S.sk.v.cd ? skHi(skV(this, k, 'cd')) : S.cd; this.castLock = S.sk && !S.cast ? .12 : (S.cast || 0) + .28; if (e) this.facing = Math.atan2(e.x - this.x, e.z - this.z);
     /* the pose of the spell's school; its release (50 %) falls on the moment the spell fires */
     if (!(S.sk && !S.cast)) { const sc = S.sk ? ({ shot: 'throw', nova: 'slam', curse: 'channel', corpse: 'channel', misc: 'channel' })[S.sk.k] || 'raise' : ['lance', 'chain', 'hex', 'bone', 'javelin', 'volley'].includes(k) ? 'throw' : ['drain', 'smite', 'mend', 'hallow'].includes(k) ? 'channel' : ['quake', 'nova', 'flare', 'cry', 'leap', 'vines'].includes(k) ? 'slam' : 'raise', dur = S.cast > 0 ? S.cast * 2 : .5; this.castPose = { k: sc, t0: this.t - (S.cast > 0 ? 0 : dur * .38), dur }; }
@@ -4296,9 +4296,9 @@ class Player {
     }
     G.dsrc = null;
   }
-  whirlOld() { if (this.dead || this.atkT > 0 || this.dodgeT > 0 || this.st < 45) return; if (this.G.zone === 'null') { this.G.hud.toast('DEAD MAGIC - YOUR POWERS FAIL HERE'); return; } this.st -= 45; this.spin = true; this.combo = 3; this.atkDur = .5; this.atkT = .5; this.atkHit = false; this.comboT = 0; this.G.audio.play('swing', this.x, this.z, 1.4); }
+  whirlOld() { if (this.dead || this.atkT > 0 || this.dodgeT > 0 || this.st < 45) return; if (this.G.zone === 'null') return; this.st -= 45; this.spin = true; this.combo = 3; this.atkDur = .5; this.atkT = .5; this.atkHit = false; this.comboT = 0; this.G.audio.play('swing', this.x, this.z, 1.4); }
   flareOld() {
-    const G = this.G; if (this.dead || this.st < 55) return; if (G.zone === 'null') { G.hud.toast('DEAD MAGIC - YOUR POWERS FAIL HERE'); return; } this.st -= 55; this.raiseT = .6;
+    const G = this.G; if (this.dead || this.st < 55) return; if (G.zone === 'null') return; this.st -= 55; this.raiseT = .6;
     G.fx.particles.emit('flare', this.tip.x, this.tip.y, this.tip.z, 60); G.fx.flash(this.x, 1.3, this.z, 0xffa040, 60); G.audio.play('flare', this.x, this.z); G.shake(.3);
     for (const e of G.enemies.list) { if (!e.alive) continue; const dx = e.x - this.x, dz = e.z - this.z, d = Math.hypot(dx, dz); if (d < 3.6 + e.r) { e.takeDamage(this.dmg * 1.1, dx / d, dz / d, 1.2, false); e.stun(e.type === 'boss' ? .5 : 1.4); } }
   }
@@ -4343,10 +4343,10 @@ class Player {
   }
   gainMana(n) { if (this.dead || !(n > 0)) return; this.st = Math.min(this.stMax || 100, this.st + n * (this.stMax || 100) / 100); }
   /** a draught of mana: a good part of the pool at once. The potion button drinks one too when there is no wound to mend */
-  useMana() { const G = this.G; if (this.mod === 'dry') { if (!G.auto) G.hud.toast('DRY: NO POTIONS ON THIS DESCENT'); return false; } if (this.dead || !(this.mpots > 0) || this.mpotCd > 0 || this.st >= (this.stMax || 100) * .95) return false;
+  useMana() { const G = this.G; if (this.mod === 'dry') return false; if (this.dead || !(this.mpots > 0) || this.mpotCd > 0 || this.st >= (this.stMax || 100) * .95) return false;
     this.mpots--; this.mpotCd = 1; tele('manapots'); this.st = Math.min(this.stMax || 100, this.st + (this.stMax || 100) * CB.manaPot); this.raiseT = .4; G.fx.particles.emit('frost', this.x, .6, this.z, 18); G.audio.play('potion', this.x, this.z, 1, 1.35); G.hud.number(this.x, 1.4, this.z, '+MANA', '#7ab8ff'); return true; }
   usePotion() {
-    const G = this.G; if (this.mod === 'dry') { if (!G.auto) G.hud.toast('DRY: NO POTIONS ON THIS DESCENT'); return false; } if (!this.dead && this.hp >= this.maxHp && this.st < (this.stMax || 100) * .6) return this.useMana(); if (this.dead || this.potions <= 0 || this.potionCd > 0 || this.hp >= this.maxHp) return false;
+    const G = this.G; if (this.mod === 'dry') return false; if (!this.dead && this.hp >= this.maxHp && this.st < (this.stMax || 100) * .6) return this.useMana(); if (this.dead || this.potions <= 0 || this.potionCd > 0 || this.hp >= this.maxHp) return false;
     this.potions--; this.potionCd = 1; tele('potions'); this.hp = Math.min(this.maxHp, this.hp + this.maxHp * .45 * this.M.potion); this.poisonT = 0; if (this.sx) delete this.sx.poison; /* a potion also clears poison */ this.raiseT = .4;
     G.fx.particles.emit('heal', this.x, .6, this.z, 22); G.audio.play('potion', this.x, this.z); G.audio.play('heal', this.x, this.z); G.hud.number(this.x, 1.4, this.z, '+HP', '#7fe07a'); return true;
   }
@@ -4646,7 +4646,7 @@ class Enemy {
       case 'spiral': for (let i = 0; i < 16; i++) { const a = i * .62 + this.pmN, rr = 1.6 + i * .42; Z(hx + Math.cos(a) * rr, hz + Math.sin(a) * rr, 1.05, .8 + i * .16, 'fire'); } break;
       case 'mirror': { const have = G.enemies.list.filter(e => e.alive && e.clone).length; for (let i = have; i < 3; i++) { const a = rand(TAU), x = hx + Math.cos(a) * 4.5, z = hz + Math.sin(a) * 4.5; if (!G.world.free(x, z)) continue; const e = G.enemies.spawn('boss', x, z, null, this.chunkKey, { clone: true }); e.state = 'chase'; e.bossPhase = 3; G.fx.particles.emit('shock', x, 1, z, 24); } break; }
       case 'wheel': { const b0 = (this.pmN * .55) % TAU; for (const b of [b0, b0 + Math.PI / 2]) for (let i = -6; i <= 6; i++) { if (Math.abs(i) < 2) continue; Z(hx + Math.cos(b) * i * 1.35, hz + Math.sin(b) * i * 1.35, .95, 1 + Math.abs(i) * .05, 'lightning'); } break; }
-      case 'eye': G.fx.telegraph(this.x, this.z, 3, 2.2); for (let i = 0; i < 20; i++) { const a = rand(TAU), rr = rand(4.2, 9); Z(this.x + Math.cos(a) * rr, this.z + Math.sin(a) * rr, 1.6, 1.8 + rand(.5), 'lightning'); } G.hud.toast('GET TO ITS FEET'); break;
+      case 'eye': G.fx.telegraph(this.x, this.z, 3, 2.2); for (let i = 0; i < 20; i++) { const a = rand(TAU), rr = rand(4.2, 9); Z(this.x + Math.cos(a) * rr, this.z + Math.sin(a) * rr, 1.6, 1.8 + rand(.5), 'lightning'); } break;
     }
     this.lpx = p.x; this.lpz = p.z;
   }
@@ -5045,12 +5045,12 @@ class InteractionSystem {
     const G = this.G, p = G.player; if (r.done || r.gone) return false;
     if (G.depth === 95 && G.refugeVisit && (r.t === 'stairs' || (G.checkpoint <= 90 && (r.t === 'tavern' || r.t === 'lab' || r.t === 'waystone')))) { G.hud.toast(r.t === 'stairs' ? 'VISITORS GO BACK THROUGH THE DOOR THEY CAME BY' : 'VISITORS MAY USE ONLY THE INN AND THE ARMOURY'); G.audio.play('locked'); return false; }
     switch (r.t) {
-      case 'chest': if (r.o.relic && POCKET) G.dungeonRelic(r.x, r.z); if (r.o.rich && !r.o.keyed) { r.o.keyed = 1; if (p.keys > 0) { p.keys--; G.hud.say(r.x, r.z, 'OPENED'); G.audio.play('unlock', r.x, r.z); } else { r.o.rich = false; if (!G.auto) G.hud.toast('NO KEY: THE INNER LOCK STAYS SHUT'); } } G.story('chest'); r.open = true; r.done = true; G.flags.add(r.id); G.audio.play('chest', r.x, r.z); G.rumbleP('chest'); G.loot.chestLoot(r); p.raiseT = .5; if (!r.o.rich && G.depth >= 6 && Math.random() < .1) G.chestTrap(r); break;
+      case 'chest': if (r.o.relic && POCKET) G.dungeonRelic(r.x, r.z); if (r.o.rich && !r.o.keyed) { r.o.keyed = 1; if (p.keys > 0) { p.keys--; G.hud.say(r.x, r.z, 'OPENED'); G.audio.play('unlock', r.x, r.z); } else { r.o.rich = false; if (!G.auto) G.hud.say(r.x, r.z, 'LOCKED', '#e58a8a'); } } G.story('chest'); r.open = true; r.done = true; G.flags.add(r.id); G.audio.play('chest', r.x, r.z); G.rumbleP('chest'); G.loot.chestLoot(r); p.raiseT = .5; if (!r.o.rich && G.depth >= 6 && Math.random() < .1) G.chestTrap(r); break;
       case 'door': {
         const k = r.o.kind;
-        if (k === 'locked') { if (p.keys <= 0) { G.hud.toast('LOCKED - FIND A KEY'); G.audio.play('locked', r.x, r.z); return false; } p.keys--; G.audio.play('unlock', r.x, r.z); G.hud.toast('DOOR UNLOCKED'); }
+        if (k === 'locked') { if (p.keys <= 0) { G.hud.say(r.x, r.z, 'LOCKED', '#e58a8a'); G.audio.play('locked', r.x, r.z); return false; } p.keys--; G.audio.play('unlock', r.x, r.z); G.hud.toast('DOOR UNLOCKED'); }
         else if (k === 'riddle') { G.riddle(r); return false; }
-        else if (k === 'gate') { G.hud.toast('A LEVER OPENS THIS GATE'); G.audio.play('locked', r.x, r.z); return false; }
+        else if (k === 'gate') { G.hud.say(r.x, r.z, 'LOCKED', '#e58a8a'); G.audio.play('locked', r.x, r.z); return false; }
         else if (k === 'secret') { G.hud.toast('SECRET PASSAGE!'); G.fx.particles.emit('debris', r.x, 1, r.z, 24); G.shake(.3); }
         this.openDoor(r); break;
       }
@@ -5070,7 +5070,7 @@ class InteractionSystem {
       case 'waystone': G.shop.open('way', r); break;
       case 'refuge': G.refugeDoor(r); break;
       case 'stairs': if (r.o.fake) { G.flags.add(r.key + ':fake'); G.fx.particles.emit('shock', p.x, 1, p.z, 30); G.audio.play('flare', p.x, p.z); G.placeAtStart(); G.pilot.obj = null; return true; }
-        if (this.sealed(r)) return false; if (POCKET && POCKET.mode === 'lava' && !POCKET.hordeDone) { G.hud.toast('THE DOOR STAYS SHUT WHILE THE HORDE STANDS'); return false; } if (POCKET) G.leavePocket(true); else G.offerDescent(r); break;
+        if (this.sealed(r)) return false; if (POCKET && POCKET.mode === 'lava' && !POCKET.hordeDone) { G.hud.say(r.x, r.z, 'LOCKED', '#e58a8a'); G.audio.play('locked', r.x, r.z); return false; } if (POCKET) G.leavePocket(true); else G.offerDescent(r); break;
     }
     return true;
   }
@@ -5428,13 +5428,13 @@ class InventorySystem {
   /** the skill tree: three branches side by side, six tiers down, a line from each node to the ones it opens; a click puts a point in */
   /** the next or the last branch of the tree (LT / RT, the arrows, or a click on its tab) */
   skStep(d, to) { const n = (SKILLS[archKey(this.G.player.arch)] || []).length || 1; this.skPage = to !== undefined ? to : ((this.skPage | 0) + d + n) % n; this.skDesc = null; this.G.audio.play('uimove'); this.drawTree(); }
-  add(it, keep) { const p = this.G.player; if (p.items.length >= this.max) { this.G.hud.toast('BAG IS FULL'); return false; } p.items.push(it); const hd = this.G.auto && !this.G.pilot.hands(); if (it.slot === 'tome') { if (hd) this.learn(it); this.dirty = true; return true; } const pref = x => itemScore(x) * (x && x.slot === 'weapon' && famKey(x) === famKey({ name: ARCH[p.arch].w }) ? 2.6 : 1), k = eqKey(p, it); /* taken from the ground by hand it stays in the bag (keep); bought or given, it goes on where nothing is worn; the game playing itself puts on what is better */ if (this.fits(it) && (hd ? !p.equip[k] || pref(it) > pref(p.equip[k]) : !keep && !p.equip[k])) this.equip(it); this.dirty = true; return true; }
+  add(it, keep) { const p = this.G.player; if (p.items.length >= this.max) { if (this.G.time - (this.fullT || -9) > 1.5) { this.fullT = this.G.time; this.G.hud.say(p.x, p.z, 'INVENTORY FULL', '#e58a8a', 2.3); } return false; } p.items.push(it); const hd = this.G.auto && !this.G.pilot.hands(); if (it.slot === 'tome') { if (hd) this.learn(it); this.dirty = true; return true; } const pref = x => itemScore(x) * (x && x.slot === 'weapon' && famKey(x) === famKey({ name: ARCH[p.arch].w }) ? 2.6 : 1), k = eqKey(p, it); /* taken from the ground by hand it stays in the bag (keep); bought or given, it goes on where nothing is worn; the game playing itself puts on what is better */ if (this.fits(it) && (hd ? !p.equip[k] || pref(it) > pref(p.equip[k]) : !keep && !p.equip[k])) this.equip(it); this.dirty = true; return true; }
   /** can the hero put this on as things stand: the class allows it, and a hand is free for it */
   fits(it) { const p = this.G.player; return canWield(p, it) && !(it.slot === 'off' && twoH(p.equip.weapon)); }
-  equip(it) { const p = this.G.player, i = p.items.indexOf(it); if (i < 0) return; if (it.slot === 'tome') { this.learn(it); return; } if (!canWield(p, it)) { this.G.hud.toast('A ' + archName(p.arch, p.sex) + (it.slot === 'weapon' ? ' CANNOT WIELD A ' + famOf(it).n : ' CANNOT CARRY A ' + (baseOf(it) || 'THING LIKE THIS'))); this.G.audio.play('uierr'); return; }
-    if (it.slot === 'off' && twoH(p.equip.weapon)) { this.G.hud.toast('BOTH HANDS ARE ON THE ' + famOf(p.equip.weapon).n); this.G.audio.play('uierr'); return; }
+  equip(it) { const p = this.G.player, i = p.items.indexOf(it); if (i < 0) return; if (it.slot === 'tome') { this.learn(it); return; } if (!canWield(p, it)) { this.G.audio.play('uierr'); return; }
+    if (it.slot === 'off' && twoH(p.equip.weapon)) { this.G.audio.play('uierr'); return; }
     /* a two-handed weapon or a pair takes both hands: what the off hand held goes back to the bag */
-    const k = eqKey(p, it), old = p.equip[k], off = it.slot === 'weapon' && twoH(it) ? p.equip.off : null; if (old && off && p.items.length >= this.max) { this.G.hud.toast('BAG IS FULL'); this.G.audio.play('uierr'); return; }
+    const k = eqKey(p, it), old = p.equip[k], off = it.slot === 'weapon' && twoH(it) ? p.equip.off : null; if (old && off && p.items.length >= this.max) { this.G.hud.say(p.x, p.z, 'INVENTORY FULL', '#e58a8a', 2.3); this.G.audio.play('uierr'); return; }
     p.items.splice(i, 1); if (old) p.items.push(old); if (off) { p.items.push(off); p.equip.off = null; } p.equip[k] = it; p.derive(); this.dirty = true; this.G.audio.play('equip'); }
   /** a tome is read for one more skill point (what it is written about is only its look now) */
   learn(it) { const p = this.G.player, i = p.items.indexOf(it); if (i < 0) return; p.items.splice(i, 1); p.tomes = (p.tomes | 0) + 1; p.derive(); this.G.hud.banner('A TOME OF ' + SPELLS[it.spell].n, '+1 SKILL POINT - ' + p.tp + ' TO SPEND IN THE TREE'); this.G.audio.play('cast'); this.dirty = true; }
@@ -5466,7 +5466,7 @@ class InventorySystem {
     for (const k of ks) { const d = (it.s[k] || 0) - ((eq.s || {})[k] || 0); if (Math.abs(d) < .005) continue; const pct = Math.abs(it.s[k] || 0) < 3 && Math.abs((eq.s || {})[k] || 0) < 3 && k !== 'dmg' && k !== 'armor' && k !== 'hp'; out.push(`<span style="color:${d > 0 ? '#8ad08a' : '#e58a8a'}">${d > 0 ? '\u25B2' : '\u25BC'} ${T(STAT_NAME[k] || (AFFIXES.find(a => a.k === k) || {}).t || k.toUpperCase())} ${d > 0 ? '+' : ''}${pct ? Math.round(d * 100) + '%' : Math.round(d * 10) / 10}</span>`); }
     return '<br>COMPARED WITH ' + eq.name + ': ' + (out.length ? out.join(' &middot; ') : 'THE SAME'); }
   sort() { const ord = { weapon: 0, off: .5, helm: 1, armor: 1.2, gloves: 1.4, boots: 1.6, ring: 2, amulet: 2.2, familiar: 2.5, tome: 3 }; this.G.player.items.sort((a, b) => (ord[a.slot] ?? 9) - (ord[b.slot] ?? 9) || b.rar - a.rar || b.value - a.value); this.dirty = true; this.G.audio.play('equip'); }
-  sellJunk() { const p = this.G.player, js = p.items.filter(i => i.junk); if (!js.length) { this.G.hud.toast(say('NOTHING IS MARKED AS JUNK (SHIFT + CLICK AN ITEM)', 'NOTHING IS MARKED AS JUNK (CHOOSE AN ITEM, THEN JUNK)')); return 0; } let g = 0; for (const it of js) { g += it.value; this.sell(it); } this.G.hud.toast(js.length + ' PIECES OF JUNK SOLD FOR ' + g + ' GOLD'); return js.length; }
+  sellJunk() { const p = this.G.player, js = p.items.filter(i => i.junk); if (!js.length) return 0; let g = 0; for (const it of js) { g += it.value; this.sell(it); } this.G.hud.toast(js.length + ' PIECES OF JUNK SOLD FOR ' + g + ' GOLD'); return js.length; }
   tool(t) { if (t === 'sort') this.sort(); else if (t === 'junk') this.sellJunk(); else if (t === 'filter') { const F = ['all', 'weapon', 'armor', 'jewel', 'tome']; this.filter = F[(F.indexOf(this.filter || 'all') + 1) % F.length]; $('invFilter').textContent = 'SHOW: ' + (this.filter === 'jewel' ? 'JEWELLERY' : this.filter.toUpperCase()); this.dirty = true; } }
   render() {
     if (document.body.classList.contains('inv') && ((this.xt = (this.xt || 0) + 1) % 15 === 0 || this.dirty)) { this.extra(); this.G.dollShot(null, undefined, 320, 480); }
@@ -6454,7 +6454,7 @@ class HUD {
     { const dev = DEV(); if (this.c.dev !== dev) { this.c.dev = dev; const pad = dev === 'pad'; this.c.pad = pad; document.body.classList.toggle('pad', pad); document.body.dataset.dev = dev; for (const el of document.querySelectorAll('kbd[data-k]')) { el.textContent = pad ? el.dataset.p : el.dataset.k; el.dataset.g = pad ? el.dataset.p : ''; } document.body.dataset.brand = PAD_BTN.brand || 'xbox'; G.onDevice(dev); this.c.due = -1; } }
     /* statuses as icons with the seconds left (the name stays in the tooltip) */
     { let h = ''; const chip = (k, col, name, t) => `<span class="sx" style="color:${col}" title="${name}"><svg viewBox="0 0 24 24"><path d="${STATUS_ICON[k] || STATUS_ICON.curse}"/></svg>${OPT.cb ? name + ' ' : ''}<small>${t > 0 ? Math.ceil(t) + 's' : ''}</small></span>`;
-      for (const k in p.sx) h += chip(k, STATUS[k].col, STATUS[k].n + (k === 'chill' ? ' ' + p.chillN : ''), p.sx[k]); if (p.poisonT > 0) h += chip('poison', '#9ae04a', 'POISON', p.poisonT); if (p.slowT > 0 && !p.sx.slow) h += chip('slow', '#b0b0b0', 'SLOW', p.slowT); if (p.wardT > 0) h += chip('ward', '#d0e8ff', 'WARD', p.wardT); if (p.casting) h += `<span style="color:#ffe9a0">CASTING ${SPELLS[p.casting.k].n}</span>`; if (this.c.st !== h) { this.c.st = h; $('status').innerHTML = h; } } this.cls('aPot', 'off', p.potions <= 0); this.set2('aPot', p.potionCd > 0 && p.potions > 0 ? Math.ceil(p.potionCd) + 's' : ''); this.set('sMana', p.mpots | 0); this.cls('aMana', 'off', !(p.mpots > 0)); { const rn = p.rollN === undefined ? CB.rollN : p.rollN; this.cls('aDodge', 'off', rn < 1); this.set2('aDodge', rn < CB.rollN ? Math.max(1, Math.ceil(CB.rollCd * p.M.roll - (p.rollT || 0))) + 's' : ''); if (this.c.rollN !== rn) { this.c.rollN = rn; let el = $('aDodge').querySelector('small'); if (!el) { el = document.createElement('small'); $('aDodge').insertBefore(el, $('aDodge').querySelector('b')); } el.textContent = rn; } const need = CB.rollCd * p.M.roll, sf = Math.min(1, (rn + (rn < CB.rollN ? (p.rollT || 0) / need : 0)) / CB.rollN); if (this.c.stf !== sf) { this.c.stf = sf; const f = $('stFill'); if (f) f.style.width = (sf * 100).toFixed(1) + '%'; } } this.set('sChm', p.bracelets); this.cls('aChm', 'off', !(p.bracelets > 0)); { let e = $('sEsc'); if (!e && $('aEsc')) { e = document.createElement('small'); e.id = 'sEsc'; $('aEsc').insertBefore(e, $('aEsc').querySelector('b')); } if (e) this.set('sEsc', ''); this.cls('aEsc', 'off', !!(POCKET && !POCKET.town) || !!G.lock); } { const due = G.talentsDue(); this.cls('aTal', 'due', due > 0); }
+      for (const k in p.sx) h += chip(k, STATUS[k].col, STATUS[k].n + (k === 'chill' ? ' ' + p.chillN : ''), p.sx[k]); if (!p.sx.silence && (G.zone === 'null' || G.floorRule === 'silence')) h += chip('silence', STATUS.silence.col, STATUS.silence.n, 0); if (p.poisonT > 0) h += chip('poison', '#9ae04a', 'POISON', p.poisonT); if (p.slowT > 0 && !p.sx.slow) h += chip('slow', '#b0b0b0', 'SLOW', p.slowT); if (p.wardT > 0) h += chip('ward', '#d0e8ff', 'WARD', p.wardT); if (p.casting) h += `<span style="color:#ffe9a0">CASTING ${SPELLS[p.casting.k].n}</span>`; if (this.c.st !== h) { this.c.st = h; $('status').innerHTML = h; } } this.cls('aPot', 'off', p.potions <= 0); this.set2('aPot', p.potionCd > 0 && p.potions > 0 ? Math.ceil(p.potionCd) + 's' : ''); this.set('sMana', p.mpots | 0); this.cls('aMana', 'off', !(p.mpots > 0)); { const rn = p.rollN === undefined ? CB.rollN : p.rollN; this.cls('aDodge', 'off', rn < 1); this.set2('aDodge', rn < CB.rollN ? Math.max(1, Math.ceil(CB.rollCd * p.M.roll - (p.rollT || 0))) + 's' : ''); if (this.c.rollN !== rn) { this.c.rollN = rn; let el = $('aDodge').querySelector('small'); if (!el) { el = document.createElement('small'); $('aDodge').insertBefore(el, $('aDodge').querySelector('b')); } el.textContent = rn; } const need = CB.rollCd * p.M.roll, sf = Math.min(1, (rn + (rn < CB.rollN ? (p.rollT || 0) / need : 0)) / CB.rollN); if (this.c.stf !== sf) { this.c.stf = sf; const f = $('stFill'); if (f) f.style.width = (sf * 100).toFixed(1) + '%'; } } this.set('sChm', p.bracelets); this.cls('aChm', 'off', !(p.bracelets > 0)); { let e = $('sEsc'); if (!e && $('aEsc')) { e = document.createElement('small'); e.id = 'sEsc'; $('aEsc').insertBefore(e, $('aEsc').querySelector('b')); } if (e) this.set('sEsc', ''); this.cls('aEsc', 'off', !!(POCKET && !POCKET.town) || !!G.lock); } { const due = G.talentsDue(); this.cls('aTal', 'due', due > 0); }
     // health bars over wounded monsters
     let bi = 0; for (const e of G.enemies.list) { if (bi >= this.ebars.length) break; if (!e.alive || (e.hp >= e.maxHp && !e.role && !e.elite && !Object.keys(e.sx).length) || (e.type === 'boss' && !e.clone)) continue; if (Math.abs(e.x - p.x) > 11 || Math.abs(e.z - p.z) > 11) continue;
       const b = this.ebars[bi++], v = G.cam.project(e.x, (e.gy || 0) + (e.type === 'rat' || e.type === 'slime' ? .8 : 1.75) * (e.S.scale || 1) + .15, e.z), w = Math.round(e.hp / e.maxHp * 100);
@@ -6478,6 +6478,7 @@ class HUD {
       let h = `<div class="tkq"><b>${T(POCKET ? POCKET.T.n : 'FLOOR ' + G.depth)}</b><i>\u25C6</i></div>`;
       if (POCKET && POCKET.town) h += row('SAFE GROUND - NOTHING HUNTS HERE') + row('THE PORTAL TAKES YOU BACK TO FLOOR ' + G.depth); else
       h += L && !L.out ? row('THE ROOM IS SEALED - CREATURES LEFT', L.members.filter(e => e.alive).length) : sealed ? row(POCKET ? 'SLAY THE KEEPER OF THIS PLACE' : 'SLAY THE GUARDIAN OF THE STAIRS') : row(POCKET ? (POCKET.mode === 'gas' ? 'THE AIR EATS YOU: REACH THE LAST HALL' : POCKET.mode === 'lava' ? 'CROSS THE LAVA TO THE LAST HALL' : POCKET.mode === 'flood' ? 'WADE TO THE KEEPER' : 'FIND THE KEEPER, 20 HALLS IN') : 'FIND THE STAIRS', Math.round(Math.hypot(tx, tz)) + ' M');
+      if (G.zone === 'null' || G.floorRule === 'silence') h += row('SILENCED - NO SKILL ANSWERS HERE');
       if (G.airT > 0) h += row('LEVERS PULLED', (G.airN || 0) + '/3', G.airN >= 3);
       if (this.sideL && this.sideL.length) { const now = performance.now(); this.sideL = this.sideL.filter(q => q.until > now); for (const q of this.sideL) h += `<div class="tkr tkf">${q.t}</div>`; }
       /* the stories and the contract follow in the tracker below (qTrack) */
@@ -7513,8 +7514,8 @@ class Shop {
   buy(i) {
     const G = this.G, p = G.player, e = this.entries()[i]; if (!e) return false;
     if (this.mode === 'choice' && !G.auto && performance.now() < (this.armAt || 0)) return false;
-    if (e.can === false) { if (!G.auto) { G.hud.toast('NOT POSSIBLE RIGHT NOW'); G.audio.play('uierr'); } return false; }
-    if (p.gold < e.price) { G.hud.toast('NOT ENOUGH GOLD'); G.audio.play('uierr'); return false; }
+    if (e.can === false) { if (!G.auto) G.audio.play('uierr'); return false; }
+    if (p.gold < e.price) { G.audio.play('uierr'); return false; }
     if (e.item) { if (!G.inv.add(e.item)) return false; if (e.item === this.tome) this.tome = null; else this.stock.splice(this.stock.indexOf(e.item), 1); }
     p.gold -= e.price; if (e.price) { G.audio.play('buy'); G.led(e.cat || 'other', e.price); } teleF('buy', e.id || (e.item ? 'gear' : e.label) || '?'); if (e.act) e.act(); if (this.mode) this.render(); return true;
   }
@@ -8096,14 +8097,14 @@ class Game {
     const p = this.player;
     if (this.depth === 95) { const f = this.refugeFrom; if (!f) return; this.refugeFrom = null; if (f.epoch === this.epoch) this.pendingPlace = { x: f.x, z: f.z }; this.descend(f.depth); return; }
     /* everywhere else it opens on a small safe room: nothing follows you in, wounds and poison are seen to, and the game is saved */
-    const fee = this.shop.cost(worth(this.depth) * EC.refuge), rest = () => { if (p.gold < fee) { this.hud.toast('NOT ENOUGH GOLD'); return; } p.gold -= fee; this.led('fees', fee); tele('refugeVisits'); p.hp = p.maxHp; p.st = p.stMax || 100; p.poisonT = 0; for (const k in p.sx) delete p.sx[k]; this.enemies.calm(); this.fx.particles.emit('heal', p.x, .8, p.z, 40); this.audio.play('heal', p.x, p.z); this.hud.banner('YOU REST BEHIND THE GREEN DOOR', 'FULL HEALTH - NOTHING FOLLOWED YOU IN'); this.save.save(); };
+    const fee = this.shop.cost(worth(this.depth) * EC.refuge), rest = () => { if (p.gold < fee) { this.audio.play('uierr'); return; } p.gold -= fee; this.led('fees', fee); tele('refugeVisits'); p.hp = p.maxHp; p.st = p.stMax || 100; p.poisonT = 0; for (const k in p.sx) delete p.sx[k]; this.enemies.calm(); this.fx.particles.emit('heal', p.x, .8, p.z, 40); this.audio.play('heal', p.x, p.z); this.hud.banner('YOU REST BEHIND THE GREEN DOOR', 'FULL HEALTH - NOTHING FOLLOWED YOU IN'); this.save.save(); };
     this.shop.choose('THE REFUGE', 'A SMALL ROOM WITH A BOLT ON THE INSIDE. NOTHING OF THIS FLOOR COMES THROUGH THE GREEN DOOR.',
       [{ label: 'REST - ' + fee + ' G', icon: 'bed', sub: p.gold >= fee ? 'FULL HEALTH AND ENERGY, POISON AND WOUNDS GONE, THE GAME SAVED' : 'NOT ENOUGH GOLD', act: rest }, { label: 'NOT NOW', sub: '', act: () => { } }], { at: r, auto: () => p.hp < p.maxHp * .5 && p.gold >= fee ? 0 : 1 });
   }
   /** floors 96-99: each realm of the four wyrms has its own way of killing */
   elemental(dt, el) {
     const p = this.player, P = this.fx.particles, res = k => { let v = 0; for (const q in p.equip) { const it = p.equip[q]; if (it && it.s && it.s[k]) v += it.s[k]; } return Math.min(.9, v); }; this.elT = (this.elT || 0) - dt;
-    if (!this.elTold) { this.elTold = 1; this.hud.toast({ quake: 'THE FLOOR QUAKES WITHOUT WARNING - WATCH FOR FALLING ROCK', thunder: 'LIGHTNING FINDS THE UNLUCKY - WATCH THE GROUND', frozen: 'STAND STILL HERE AND YOU FREEZE', blaze: 'THE AIR ITSELF BURNS - ONLY HEAT-WARDED GEAR HELPS' }[el]); }
+    if (!this.elTold) { this.elTold = 1; }
     const fall = this.elFall || (this.elFall = []);
     for (const f of fall) { f.t -= dt; if (f.t > 0) continue; f.done = 1; if (f.k === 'bolt') { this.fx.decal('scorch', f.x, f.z, 1.1, 10); this.fx.flash(f.x, 3, f.z, 0xb0d0ff, 80); P.emit('spark', f.x, .5, f.z, 24); { const dd = Math.hypot(p.x - f.x, p.z - f.z); setTimeout(() => this.audio.play('thunder', f.x, f.z), dd * 45); } this.shake(.3); } else { this.fx.decal('crack', f.x, f.z, 1.3, 12); this.fx.wave(f.x, f.z, .4); P.emit('debris', f.x, 1.5, f.z, 22); this.audio.play('slam', f.x, f.z); this.shake(.25); } if (Math.hypot(p.x - f.x, p.z - f.z) < f.r && p.dodgeT <= 0) { teleF('elHit', f.k); p.takeDamage(p.maxHp * (f.k === 'bolt' ? CB.boltDmg : CB.quakeDmg) + this.depth, null); p.lastHit = f.k; } }
     this.elFall = fall.filter(f => !f.done);
@@ -8246,7 +8247,7 @@ class Game {
       const px = c.px === undefined ? x : c.px, pz = c.pz === undefined ? z : c.pz, sd = (qx, qz) => { const vx = x - px, vz = z - pz, l2 = vx * vx + vz * vz, t = l2 ? clamp(((qx - px) * vx + (qz - pz) * vz) / l2, 0, 1) : 0; return Math.hypot(qx - px - vx * t, qz - pz - vz * t); }; c.px = x; c.pz = z;
       c.mesh.position.set(x, this.world.hAt(x, z) || 0, z); c.mesh.rotation.y = Math.atan2(-dz, dx);
       for (const e of this.enemies.list) { if (!e.alive || e.type === 'boss' || sd(e.x, e.z) > .85) continue; e.takeDamage(e.maxHp * 9, dx, dz, 4, true, 'blunt'); this.audio.play('carthit', e.x, e.z); }
-      if (!c.hitP && !p.dead && !(p.iframe > 0) && sd(p.x, p.z) < .8) { c.hitP = true; p.hurtRaw(p.maxHp * .5); this.audio.play('carthit', p.x, p.z); this.shake(.9); this.hud.toast('THE CART RUNS YOU DOWN'); }
+      if (!c.hitP && !p.dead && !(p.iframe > 0) && sd(p.x, p.z) < .8) { c.hitP = true; p.hurtRaw(p.maxHp * .5); this.audio.play('carthit', p.x, p.z); this.shake(.9); }
       if (c.run >= 1) { c.run = -1; c.t = 8 + Math.random() * 9; c.warned = 0; c.mesh.visible = false; c.px = c.pz = undefined; } }
     /* carts of halls no longer loaded go away with them */
     if (this.cartsOn) for (const M of this.cartsOn) if (!live.has(M)) { if (M.st && M.st.mesh) this.scene.remove(M.st.mesh); M.st = null; this.cartsOn.delete(M); }
@@ -8522,30 +8523,30 @@ class Game {
   lab(r) {
     const p = this.player, w = p.equip.weapon;
     this.shop.choose('THE SECRET LABORATORY', 'WHAT CANNOT BE SHOWN UPSTAIRS IS TESTED HERE. YOU CARRY ' + p.cores + ' CORES.', [
-      { label: 'INFUSE YOUR WEAPON', icon: 'infuse', sub: !w ? 'YOU HOLD NO WEAPON' : w.rar >= LEG ? 'IT CANNOT RISE ANY HIGHER' : 'RAISE IT ONE QUALITY GRADE - 40 CORES', act: () => { if (w && w.rar < LEG && p.cores >= 40) { p.cores -= 40; this.raiseItem(w); } else this.hud.toast('NOT POSSIBLE RIGHT NOW'); } },
-      { label: 'INFUSE FOR GOLD', icon: 'infuse', sub: !w || w.rar >= LEG ? 'NOTHING TO INFUSE' : 'RAISE IT ONE QUALITY GRADE - ' + Math.round(worth(this.depth) * EC.labGold) + ' G', act: () => { const c = Math.round(worth(this.depth) * EC.labGold); if (w && w.rar < LEG && p.gold >= c) { p.gold -= c; this.led('smithing', c); this.raiseItem(w); } else this.hud.toast('NOT POSSIBLE RIGHT NOW'); } },
-      { label: 'RE-SET A SOCKET', icon: 'socket', sub: 'SWAP YOUR LAST CORE FOR ANOTHER KIND - 5 CORES', act: () => { if (w && w.sock && w.sock.length && p.cores >= 5) { p.cores -= 5; const ks = Object.keys(SOCK).filter(k => k !== w.sock[w.sock.length - 1]), k = ks[Math.random() * ks.length | 0]; w.sock[w.sock.length - 1] = k; p.derive(); this.inv.dirty = true; this.hud.toast(k + ' CORE SET: ' + SOCK[k].d); } else this.hud.toast('NOT POSSIBLE RIGHT NOW'); } },
-      { label: 'DISTIL TWO POTIONS', icon: 'potion', sub: '10 CORES', act: () => { if (p.cores >= 10 && p.potions <= BELT - 2) { p.cores -= 10; p.potions += 2; this.audio.play('pickup'); } else this.hud.toast('NOT POSSIBLE RIGHT NOW'); } }
+      { label: 'INFUSE YOUR WEAPON', icon: 'infuse', sub: !w ? 'YOU HOLD NO WEAPON' : w.rar >= LEG ? 'IT CANNOT RISE ANY HIGHER' : 'RAISE IT ONE QUALITY GRADE - 40 CORES', act: () => { if (w && w.rar < LEG && p.cores >= 40) { p.cores -= 40; this.raiseItem(w); } else this.audio.play('uierr'); } },
+      { label: 'INFUSE FOR GOLD', icon: 'infuse', sub: !w || w.rar >= LEG ? 'NOTHING TO INFUSE' : 'RAISE IT ONE QUALITY GRADE - ' + Math.round(worth(this.depth) * EC.labGold) + ' G', act: () => { const c = Math.round(worth(this.depth) * EC.labGold); if (w && w.rar < LEG && p.gold >= c) { p.gold -= c; this.led('smithing', c); this.raiseItem(w); } else this.audio.play('uierr'); } },
+      { label: 'RE-SET A SOCKET', icon: 'socket', sub: 'SWAP YOUR LAST CORE FOR ANOTHER KIND - 5 CORES', act: () => { if (w && w.sock && w.sock.length && p.cores >= 5) { p.cores -= 5; const ks = Object.keys(SOCK).filter(k => k !== w.sock[w.sock.length - 1]), k = ks[Math.random() * ks.length | 0]; w.sock[w.sock.length - 1] = k; p.derive(); this.inv.dirty = true; this.hud.toast(k + ' CORE SET: ' + SOCK[k].d); } else this.audio.play('uierr'); } },
+      { label: 'DISTIL TWO POTIONS', icon: 'potion', sub: '10 CORES', act: () => { if (p.cores >= 10 && p.potions <= BELT - 2) { p.cores -= 10; p.potions += 2; this.audio.play('pickup'); } else this.audio.play('uierr'); } }
     ], { at: r, auto: () => 0 });
   }
   /** chests that bite, sleep or burst */
   chestTrap(r) {
     const p = this.player, q = Math.random(), dmg = (8 + this.depth * 2.2) * 2;
     if (q < .4) { p.takeDamage(6 + this.depth * 1.4, null); this.enemies.spawn('rat', p.x - (r.x - p.x) * .9, p.z - (r.z - p.z) * .9, null, r.key); this.audio.play('tick', r.x, r.z); }
-    else if (q < .7) { this.fx.zone(p.x, p.z, 1.9, .5, 'poison', dmg * .7); p.slowT = Math.max(p.slowT, 3); this.hud.toast('SLEEP GAS - YOUR LEGS GO HEAVY'); }
-    else { this.fx.zone(r.x, r.z, 2.3, .8, 'fire', dmg * 1.3); this.hud.toast('IT IS RIGGED - RUN!'); this.audio.play('trapclick', r.x, r.z); }
+    else if (q < .7) { this.fx.zone(p.x, p.z, 1.9, .5, 'poison', dmg * .7); p.slowT = Math.max(p.slowT, 3); }
+    else { this.fx.zone(r.x, r.z, 2.3, .8, 'fire', dmg * 1.3); this.audio.play('trapclick', r.x, r.z); }
   }
   /** darts, falling ceilings, gas and ambushes: up here they warn you, down there they do not */
   springTrap(t, ch) {
     const d = this.depth, p = this.player, delay = (d < 20 ? 1.05 : d < 50 ? .7 : .42) * (ARCH[p.arch] && ARCH[p.arch].trap ? 1.5 : 1), dmg = (8 + d * 2.2) * 2, Z = this.fx; t.cd = this.time + 6; this.audio.play('trapclick', t.x, t.z);
     if (t.k === 'dart') { let best = null; for (const [ax, az] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (let q = 1; q <= 6; q++) { const x = t.x + ax * q, z = t.z + az * q; if (this.world.wallH(Math.floor(x), Math.floor(z)) !== 0) { if (!best || q < best.q) best = { q, ax, az, x: t.x + ax * (q - .55), z: t.z + az * (q - .55) }; break; } }
-      if (best) { for (let i = 0; i < 3; i++) setTimeout(() => { if (this.depth === d) this.fx.shoot(best.x, .9, best.z, -best.ax * 11, -best.az * 11, dmg * .5, 'arrow'); }, (delay * .6 + i * .12) * 1000 / this.speed); this.fx.particles.emit('spark', best.x, 1, best.z, 8); this.hud.toast('DARTS FROM THE WALL!'); }
-      else { Z.zone(t.x, t.z, 1.15, delay, 'poison', dmg); this.hud.toast('POISON DARTS!'); } }
-    else if (t.k === 'fall') { Z.zone(t.x, t.z, 2.1, delay + .25, 'rock', dmg * 1.5); this.shake(.25); Z.particles.emit('debris', t.x, 3, t.z, 14); this.hud.toast('THE CEILING!'); }
+      if (best) { for (let i = 0; i < 3; i++) setTimeout(() => { if (this.depth === d) this.fx.shoot(best.x, .9, best.z, -best.ax * 11, -best.az * 11, dmg * .5, 'arrow'); }, (delay * .6 + i * .12) * 1000 / this.speed); this.fx.particles.emit('spark', best.x, 1, best.z, 8); }
+      else { Z.zone(t.x, t.z, 1.15, delay, 'poison', dmg); } }
+    else if (t.k === 'fall') { Z.zone(t.x, t.z, 2.1, delay + .25, 'rock', dmg * 1.5); this.shake(.25); Z.particles.emit('debris', t.x, 3, t.z, 14); }
     else if (t.k === 'gas' && d >= 60) { p.poisonT = Math.max(p.poisonT, 6); }
     else if (t.k === 'boulder') { let best = [1, 0, 0]; for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { let n = 0; while (n < 7 && this.world.wallH(Math.floor(t.x + dx * (n + 1)), Math.floor(t.z + dz * (n + 1))) === 0) n++; if (n > best[2]) best = [dx, dz, n]; }
       const [dx, dz, n] = best, sx = t.x - dx * Math.min(2, n), sz = t.z - dz * Math.min(2, n); for (let i = 0; i <= n + 2; i++) { const x = sx + dx * i, z = sz + dz * i; if (this.world.wallH(Math.floor(x), Math.floor(z)) !== 0) continue; Z.zone(x, z, .95, delay + i * .16, 'rock', dmg * 1.3); }
-      if (!this.rock) { this.rock = new THREE.Mesh(new THREE.SphereGeometry(.8, 10, 8), new THREE.MeshStandardMaterial({ color: 0x8c867a, roughness: 1, metalness: 0, flatShading: true })); this.rock.castShadow = true; this.scene.add(this.rock); } this.roll = { x: sx, z: sz, dx, dz, n: n + 2, t: -delay }; this.shake(.3); this.hud.toast('A BOULDER!'); }
+      if (!this.rock) { this.rock = new THREE.Mesh(new THREE.SphereGeometry(.8, 10, 8), new THREE.MeshStandardMaterial({ color: 0x8c867a, roughness: 1, metalness: 0, flatShading: true })); this.rock.castShadow = true; this.scene.add(this.rock); } this.roll = { x: sx, z: sz, dx, dz, n: n + 2, t: -delay }; this.shake(.3); }
     else if (t.k === 'spin') { for (let a = 0; a < 14; a++) { const an = Math.random() * TAU, r = 2.5 + Math.random() * 2, x = t.x + Math.cos(an) * r, z = t.z + Math.sin(an) * r; if (this.world.wallH(Math.floor(x), Math.floor(z)) !== 0 || this.world.hazAt(x, z) || this.col.hit(x, z, p.r + .05)) continue; Z.particles.emit('shock', p.x, 1, p.z, 20); p.x = x; p.z = z; p.facing = Math.random() * TAU; p.clearOrders(); break; } this.shake(.3); }
     else if (t.k === 'flood') { if (this.lock) { t.cd = this.time + 30; return; } if (!this.water) { this.water = new THREE.Mesh(new THREE.BufferGeometry(), MAT.mirFlood); this.water.renderOrder = 1; this.water.frustumCulled = false; this.scene.add(this.water); }
       { const dd = ch.data, v = []; for (let k = 0; k < 576; k++) if (dd.tiles[k] && !dd.hole[k]) { const x = k % 24, z = (k / 24) | 0, y = dd.fh[k] - (dd.rh || 0); v.push(x, y, z, x, y, z + 1, x + 1, y, z + 1, x, y, z, x + 1, y, z + 1, x + 1, y, z); }
@@ -8558,7 +8559,7 @@ class Game {
       L.waves = 2 + (d >= 50 ? 1 : 0); L.wave = 0; this.ambushWave(L); this.airT = AIR_S; this.airAcc = 0; this.airCap = 0; this.airKey = ch.key; this.airLevers(ch);
       this.hud.banner('NO AIR IN HERE', 'ONE MINUTE OF BREATH - PULL THE THREE LEVERS - THE BARS LIFT WHEN THE ROOM IS EMPTY'); }
     else if (t.k === 'shift') { t.cd = this.time + 60; this.seen = new Map(); this.charted = false; this.visit(Math.floor(p.x / 24), Math.floor(p.z / 24)); this.shake(.4); this.audio.play('gate', t.x, t.z); this.hud.side('THE WALLS MOVE BEHIND YOU - YOUR MAP IS WORTHLESS'); }
-    else if (t.k === 'gas') { for (let i = 0; i < 3; i++) Z.zone(t.x + Math.cos(i * 2.1) * 1.3, t.z + Math.sin(i * 2.1) * 1.3, 1.5, delay, 'poison', dmg * .8); this.hud.toast('GAS!'); }
+    else if (t.k === 'gas') { for (let i = 0; i < 3; i++) Z.zone(t.x + Math.cos(i * 2.1) * 1.3, t.z + Math.sin(i * 2.1) * 1.3, 1.5, delay, 'poison', dmg * .8); }
     else if (t.k === 'ambush') { t.cd = 1e9; tele('ambushes'); this.startLock(t.x, t.z, 0, 'ambush', []); const L = this.lock; if (L) { L.waves = 2 + (d >= 30 ? 1 : 0) + (d >= 70 ? 1 : 0); L.wave = 0; this.ambushWave(L); this.hud.banner('MONSTER ROOM', L.waves + ' WAVES - THE BARS FALL AND NO ONE WALKS OUT UNTIL THEY ARE ALL DEAD'); } }
   }
   onPlayerDeath() { const p = this.player; if (this.auto) { const W = this.pilotWall || (this.pilotWall = { floor: 0, n: 0, lvl: 0 }); if (W.floor === this.depth) W.n++; else { W.floor = this.depth; W.n = 1; } if (W.n === 3) { W.lvl = p.level; W.t = this.time; } } if (this.depth > 1) this.rule(p.bracelets > 0 ? 'the_lifeline_charm' : 'final_death', p.bracelets > 0 ? 'A CHARM ON YOUR WRIST CARRIES YOU BACK TO THE ENTRANCE WHEN YOU FALL. IT BREAKS DOING SO: BUY ANOTHER BEFORE YOU GO DOWN AGAIN.' : 'WITHOUT A LIFELINE CHARM, DEATH IN THE LABYRINTH IS FINAL. THE CHARACTER IS GONE.'); this.hud.card('death', { title: this.depth === 1 || p.bracelets > 0 ? 'YOU FELL' : 'YOU DIED', text: this.depth === 1 ? 'THE TRAINING FLOOR REVIVES EVERYONE - NOTHING IS LOST' : p.bracelets > 0 ? 'IN 10 SECONDS YOUR LIFELINE CHARM CARRIES YOU TO THE ENTRANCE' : 'YOU CARRIED NO LIFELINE CHARM - THIS HERO IS LOST' }); }
@@ -8597,7 +8598,7 @@ class Game {
     if (!this.lock && !this.transition && !p.dead) { const bs = this.enemies.list.filter(e => e.type === 'boss' && e.alive && !e.clone); const b = bs.find(e => e.state !== 'idle' && e.state !== 'patrol' && Math.floor(p.x / 24) === Math.floor(e.hx / 24) && Math.floor(p.z / 24) === Math.floor(e.hz / 24)); if (b) { this.startLock(b.hx, b.hz, 0, 'boss', bs.filter(e => e.chunkKey === b.chunkKey)); } }
     if (!this.transition && !p.dead) {
       const pd = this.world.data(Math.floor(p.x / 24), Math.floor(p.z / 24)), zn = pd.zone || 0;
-      if (zn !== this.zone) { this.zone = zn; if (zn === 'dark') this.hud.banner('BLACKOUT', 'THE LIGHT DIES HERE'); else if (zn) this.hud.toast('DEAD MAGIC - YOUR POWERS FAIL HERE'); }
+      if (zn !== this.zone) { this.zone = zn; if (zn === 'dark') this.hud.banner('BLACKOUT', 'THE LIGHT DIES HERE'); this.hud.trkT = 0; }
       const ud = this.renderer.post.mat.uniforms.uDark, tg = (b.dark === undefined ? .62 : b.dark) + (zn === 'dark' ? .9 : 0); ud.value += (tg - ud.value) * Math.min(1, dt * 2);
       if (pd.signs) for (const sg of pd.signs) { const near = Math.hypot(p.x - sg.x, p.z - sg.z) < 2; if (near && !sg.on && sg.n >= 100) { const L = LORE[(sg.n - 100) % LORE.length]; if (this.learn('lore', L[0], L[1])) { this.audio.play('chime'); this.story('lore'); } this.hud.banner(L[0], L[1]); } else if (near && !sg.on) this.hud.toast(sg.n === -2 ? 'NO CHART SHOWS IT, BUT ONE OF THESE WALLS SOUNDS HOLLOW' : sg.n < 0 ? 'LAST INN BEFORE THE GUARDIAN - REST, EAT, BATHE' : say(...SIGNS[sg.n])); sg.on = near; }
       if (pd.plates && !this.flags.has(pd.key + ':plates')) { let all = true; const c = pd.plates;
@@ -8844,7 +8845,7 @@ Object.assign(Player.prototype, {
       if (any) G.shake(.14); if (o.dash === 2) { G.fx.decal('crack', this.x, this.z, 2.2); G.fx.wave(this.x, this.z, .7); } };
     if (o.whirl) { /* it turns through them as it goes: a blow all round, four times */ this.spin = true; for (let k = 0; k < 4; k++) this.skLater(k * .16, () => { one(k); this.atkT = Math.min(this.atkT, .1); /* it does not root the hero: the whirl is walked through them */ if (k === 3) this.spin = false; }); return; }
     for (let k = 0; k < hits; k++) if (k === 0) one(0); else this.skLater(k * per, () => one(k)); },
-  skNova(s, c) { const G = this.G, id = s.id, o = s.o, t = o.dt || 'fire'; let x = this.x, z = this.z; if (o.at === 'target') { x = c.e && c.e.alive ? c.e.x : c.tx; z = c.e && c.e.alive ? c.e.z : c.tz; } else if (o.at === 'demon') { const dm = G.allies.list.find(a => a.unit === 'demon'); if (!dm) { G.hud.toast('NOTHING IS BOUND TO YOU'); this.st += skCost(this, id); return; } x = dm.x; z = dm.z; dm.hp -= dm.maxHp * skV(this, id, 'lifeCost') / 100; }
+  skNova(s, c) { const G = this.G, id = s.id, o = s.o, t = o.dt || 'fire'; let x = this.x, z = this.z; if (o.at === 'target') { x = c.e && c.e.alive ? c.e.x : c.tx; z = c.e && c.e.alive ? c.e.z : c.tz; } else if (o.at === 'demon') { const dm = G.allies.list.find(a => a.unit === 'demon'); if (!dm) { this.st += skCost(this, id); return; } x = dm.x; z = dm.z; dm.hp -= dm.maxHp * skV(this, id, 'lifeCost') / 100; }
     const r = s.v.rad ? skYd(skHi(skV(this, id, 'rad'))) : skYd(o.r || 6), go = () => { G.fx.wave(x, z, .8); G.fx.decal(t === 'frost' ? 'frost' : t === 'fire' ? 'scorch' : 'crack', x, z, Math.min(4, r)); G.fx.particles.emit(t === 'frost' ? 'frost' : t === 'storm' ? 'shock' : t === 'poison' ? 'acid' : t === 'void' ? 'dark' : t === 'blunt' ? 'debris' : 'flare', x, .6, z, 60); G.shake(.25);
       this.skNear(x, z, r, e => { if (o.cone && Math.abs(angDiff(Math.atan2(e.x - this.x, e.z - this.z), this.facing)) > 1.1) return; if (t === 'poison') this.skPoison(e, skRoll(skV(this, id, 'd')), skV(this, id, 'pdur'), id); else this.skDmg(e, skRoll(skV(this, id, 'd')), t, o.kb || .4, id); if (s.v.d2) this.skDmg(e, skRoll(skV(this, id, 'd2')), 'blunt', .2, id);
         if (!e.alive) return; if (s.v.chill) { applyStatus(e, 'chill', skV(this, id, 'chill')); applyStatus(e, 'slow', Math.min(8, skV(this, id, 'chill'))); } if (s.v.stun) e.stun(e.type === 'boss' ? skV(this, id, 'stun') * .25 : skV(this, id, 'stun')); if (o.kb > 1) { const dx = e.x - x, dz = e.z - z, d = Math.hypot(dx, dz) || 1; G.col.move(e, dx / d * o.kb * .5, dz / d * o.kb * .5); }
@@ -8867,7 +8868,7 @@ Object.assign(Player.prototype, {
           G.allies.skZone({ x, z, r, t: dur, dps: o.shards ? () => skRoll(skV(this, id, 'd')) * .9 : dps, type: t, id, col, each: hitFx, pull: o.pull, first: o.pull ? () => skRoll(skV(this, id, 'd')) : null, n: s.v.n ? Math.round(V('n')) : 0 }); };
         if (o.delay) { G.fx.telegraph(x, z, r, o.delay); this.skLater(o.delay, land); } else land(); } } },
   /** a power the hero wears for a while: its numbers go on the hero's own (see skMods) until it runs out. Those of one group replace each other */
-  skBuff(s, c) { const G = this.G, id = s.id, o = s.o; if (o.eatDemon) { const dm = G.allies.list.find(a => a.unit === 'demon'); if (!dm) { G.hud.toast('NOTHING IS BOUND TO YOU'); this.st += skCost(this, id); this.cds[id] = 0; return; } G.allies.drop(dm); }
+  skBuff(s, c) { const G = this.G, id = s.id, o = s.o; if (o.eatDemon) { const dm = G.allies.list.find(a => a.unit === 'demon'); if (!dm) { this.st += skCost(this, id); this.cds[id] = 0; return; } G.allies.drop(dm); }
     if (o.group) for (const k in this.sbuf) if (SKS[k] && SKS[k].o.group === o.group && k !== id) delete this.sbuf[k];
     let dur = s.v.dur ? skV(this, id, 'dur') : o.durC || 30; if (o.form) dur += this.M.formDur || 0; const B = this.sbuf[id] = { t: G.time + dur, tick: 0 };
     if (s.v.absorb) B.pool = skV(this, id, 'absorb'); if (s.v.absorbE) B.poolE = skV(this, id, 'absorbE'); const hp0 = this.maxHp; this.derive(); if (this.maxHp > hp0) this.hp += this.maxHp - hp0;
@@ -8884,7 +8885,7 @@ Object.assign(Player.prototype, {
   skSummon(s, c) { const G = this.G; G.allies.skSpawn(this, s, c); },
   /** what is done with a body that lies near: it bursts, it gives up a potion or a piece, it stands again */
   skCorpse(s, c) { const G = this.G, id = s.id, o = s.o, V = k => s.v[k] ? skV(this, id, k) : 0, B = G.corpses || [], x0 = c.e && c.e.alive ? c.e.x : c.tx, z0 = c.e && c.e.alive ? c.e.z : c.tz; let b = null, bd = 9; for (const q of B) { if (q.used) continue; const d = Math.hypot(q.x - x0, q.z - z0) + Math.hypot(q.x - this.x, q.z - this.z) * .3; if (d < bd && Math.hypot(q.x - this.x, q.z - this.z) < 10) { bd = d; b = q; } }
-    if (!b) { if (!G.auto) G.hud.toast('NO BODY LIES NEAR'); this.st = Math.min(this.stMax || 100, this.st + skCost(this, id)); this.cds[id] = .2; return; } b.used = 1; G.fx.particles.emit('bone', b.x, .5, b.z, 30); G.fx.wave(b.x, b.z, .6);
+    if (!b) { this.st = Math.min(this.stMax || 100, this.st + skCost(this, id)); this.cds[id] = .2; return; } b.used = 1; G.fx.particles.emit('bone', b.x, .5, b.z, 30); G.fx.wave(b.x, b.z, .6);
     switch (o.mode) {
       case 'boom': { const pc = skV(this, id, 'pct', 0, 1), r = skYd(skHi(V('rad'))), dm = b.hp * rand(pc[0], pc[1]) / 100 * SKC.corpse; G.fx.decal('scorch', b.x, b.z, Math.min(3, r)); G.shake(.3); this.skNear(b.x, b.z, r, e => { this.skDmg(e, dm * .5, 'fire', .6, id); this.skDmg(e, dm * .5, 'blunt', .2, id); }); break; }
       case 'poison': this.skNear(b.x, b.z, skYd(o.r || 5), e => this.skPoison(e, skRoll(skV(this, id, 'd')), V('pdur'), id)); G.fx.particles.emit('acid', b.x, .6, b.z, 50); break;
@@ -8899,7 +8900,7 @@ Object.assign(Player.prototype, {
     if (o.mode === 'leap') { this.leapT = .3; const kr = skYd(skV(this, id, 'krad')); G.fx.wave(this.x, this.z, .7); this.skNear(this.x, this.z, kr, e => { if (e.type === 'boss') return; const ex = e.x - this.x, ez = e.z - this.z, ed = Math.hypot(ex, ez) || 1; G.col.move(e, ex / ed * 1.6, ez / ed * 1.6); e.stun(.5); }); } },
   skMisc(s, c) { const G = this.G, id = s.id;
     if (s.o.fn === 'static') { /* it takes a share of the life each still has, never the last of it */ const r = skYd(skV(this, id, 'rad')), pc = skV(this, id, 'pct') / 100; G.fx.wave(this.x, this.z, .8); G.fx.particles.emit('shock', this.x, 1, this.z, 50); this.skNear(this.x, this.z, r, e => { const floor = e.maxHp * (e.type === 'boss' ? .5 : .1); if (e.hp > floor) { G.dsrc = 'spell'; G.dsk = id; e.takeDamage(Math.min(e.hp - floor, e.hp * pc * (e.type === 'boss' ? .3 : 1)), 0, 0, 0, false, 'storm'); G.dsrc = null; } }); }
-    else if (s.o.fn === 'bind') { /* a creature brought low is made to serve */ const e = c.e && c.e.alive ? c.e : this.spellTarget(id); if (!e || e.type === 'boss' || e.hp > e.maxHp * .35) { if (!G.auto) G.hud.toast('IT MUST BE BROUGHT LOW FIRST'); this.st += skCost(this, id); this.cds[id] = .3; return; } const hp = e.maxHp, dm = e.S.dmg * e.dmgMul; e.hp = 0; e.takeDamage(1, 0, 0, 0, false, 'void'); G.allies.skSpawn(this, s, c, { x: e.x, z: e.z, hp: hp / skW(), dmg: dm, bound: 1 }); } },
+    else if (s.o.fn === 'bind') { /* a creature brought low is made to serve */ const e = c.e && c.e.alive ? c.e : this.spellTarget(id); if (!e || e.type === 'boss' || e.hp > e.maxHp * .35) { this.st += skCost(this, id); this.cds[id] = .3; return; } const hp = e.maxHp, dm = e.S.dmg * e.dmgMul; e.hp = 0; e.takeDamage(1, 0, 0, 0, false, 'void'); G.allies.skSpawn(this, s, c, { x: e.x, z: e.z, hp: hp / skW(), dmg: dm, bound: 1 }); } },
   /** every tick: what waits its turn, the powers that run out, the banner's pulse, the storm overhead, the burning wake, the charges that fade */
   skTick(dt) { const G = this.G, now = G.time; if (this.dead) { this.skQ = null; return; }
     if (this.skQ && this.skQ.length) { const Q = this.skQ; for (let i = Q.length - 1; i >= 0; i--) { Q[i].t -= dt; if (Q[i].t <= 0) { const f = Q[i].fn; Q.splice(i, 1); try { f(); } catch (e) { console.error(e); } } } }
@@ -8959,7 +8960,7 @@ Object.assign(Allies.prototype, {
     if (q.sigil === 'spite' && !q.on !== !(Math.hypot(q.x - p.x, q.z - p.z) < q.r)) { q.on = Math.hypot(q.x - p.x, q.z - p.z) < q.r; p.derive(); } },
   /** call up what a skill of the book calls: its kind, its life and its damage from the skill's table; body: the dead thing it is made from (a second life, the enslaved) */
   skSpawn(p, s, c, body) { const G = this.G, id = s.id, o = s.o, V = k => s.v[k] ? skV(p, id, k) : 0, M = p.M, unit = body && body.bound ? 'bound' : o.mode === 'revive' ? 'bones' : o.unit, U = SK_UNIT[unit] || SK_UNIT.bones;
-    if (o.corpse && !body) { const B = (G.corpses || []).filter(q => !q.used && Math.hypot(q.x - p.x, q.z - p.z) < 9).sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z))[0]; if (!B) { if (!G.auto) G.hud.toast('NO BODY LIES NEAR'); p.st = Math.min(p.stMax || 100, p.st + skCost(p, id)); p.cds[id] = .2; return null; } B.used = 1; body = B; }
+    if (o.corpse && !body) { const B = (G.corpses || []).filter(q => !q.used && Math.hypot(q.x - p.x, q.z - p.z) < 9).sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z))[0]; if (!B) { p.st = Math.min(p.stMax || 100, p.st + skCost(p, id)); p.cds[id] = .2; return null; } B.used = 1; body = B; }
     const max = unit === 'demon' || unit === 'bound' ? Math.max(1, Math.round(M.dMax || 1)) : s.v.max ? Math.max(1, Math.round(V('max'))) : o.maxc || (o.trap ? 5 : 1), grp = o.group, mine = a => a.sk && (grp ? SKS[a.sk].o.group === grp : a.sk === id);
     if (grp && grp !== 'bound' && grp !== 'wolves') for (const a of this.list.filter(a => a.sk && a.sk !== id && SKS[a.sk].o.group === grp)) this.drop(a);
     if (grp === 'wolves') for (const a of this.list.filter(a => a.sk && a.sk !== id && SKS[a.sk].o.group === grp)) this.drop(a);
