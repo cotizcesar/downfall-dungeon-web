@@ -1311,6 +1311,8 @@ const CFG = {
     festEvery: 5, festDisc: .3, shady: .2, dmgRamp: .045, rampFrom: 8, rampMax: 2, mercyStep: .1, mercyMax: .4 },
   /* COMBAT tuning — tables (families, types, statuses, spells, archetypes, roles, affixes) live next to ENEMY / PERKS / SOCK */
   /* the skill book's translation into this world: flat damage and life of the tables x W, a yard in tiles, the mana a shell of mana drinks, what a burst body is worth */
+  /* the dark of the labyrinth (owner): every floor is as dark as a place where the light dies used to be - the lamp reaches 'light' of what it did and the edges close in by 'add'; where the light does die, the same amounts are laid on once more */
+  DARK: { add: .9, light: .4, expo: 1.16 },
   SKILLS: { W: 6.5, ramp: .5, rampFrom: 10, rampTo: 50 /* between floors 10 and 50 the creatures' life grows half as much again (CB.hpBook), and the tables' flat numbers with it */, deepFrom: 40, deep: .035 /* past floor 40 the tables' flat numbers grow 3.5% a floor: the creatures' life goes on growing after a skill has its twenty levels */, YARD: .45, shell: .25, corpse: .5 },
   COMBAT: { hpX: 2 /* part 65: 1.3 - with the skill book a blow of the weapon carries two to four times what it did. 2.6 was tried for a longer game: the strong builds were no slower (the druid stood on floor 100 after 27 hours and one death) and the guardian of floor 60 took the huntress 75 times */, guardHp: 2.6, guardDmg: .85, xpExp: 1.62, crit: 1.8, interrupt: .08, castSlow: .4, tomeChest: .06, tomeRich: .2, tomeBoss: .35, roleFrom: 11, roleChance: .3, eliteFrom: 11, elite: .08, eliteMid: .11, eliteDeep: .14,
     awaken: [150, 450], expert: 1.15, xpBase: 100, arrowCost: 0, manaLv: .025, dmgBook: 1.5 /* part 65: with the skill book's coats, banners and shapes a hero stands far more; from floor 12 on every blow of a creature is this much heavier */, manaRegen: 4.5, manaCalm: 3, manaHit: 7, manaHeavy: 12, manaShot: 4, rollN: 2, rollCd: 3.4, manaPot: .6, beltM: 3, block: .25, shatter: 1.8, chainN: 3, chainK: .6, adaptRes: .35, enemyInterrupt: .15, reviveT: 10, recover: 300,
@@ -5812,7 +5814,7 @@ class LightingManager {
     { const tx = 34 / this.fill.shadow.mapSize.x; if (!this.sr) { const d = new THREE.Vector3(-10, 16, 12).normalize(); this.sr = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), d).normalize(); this.su = new THREE.Vector3().crossVectors(d, this.sr).normalize(); }
       const a = p.x * this.sr.x + p.z * this.sr.z, b = p.x * this.su.x + p.z * this.su.z, da = Math.round(a / tx) * tx - a, db = Math.round(b / tx) * tx - b, sx = p.x + this.sr.x * da + this.su.x * db, sz = p.z + this.sr.z * da + this.su.z * db, sy = this.su.y * db;
       this.fill.position.set(sx - 10, 16 + sy, sz + 12); this.fill.target.position.set(sx, sy, sz); this.fill.target.updateMatrixWorld(); }
-    const lr = p.M.light * (OMEN.light || 1) * (G.zone === 'dark' ? .4 : 1) * (G.floorRule === 'dark' ? .5 : 1); this.torch.distance = 10 * lr; this.base = 22 * Math.sqrt(lr); this.torch.position.set(p.x + 1.1, 2.3 + (p.gy || 0), p.z + 1.1); this.key.position.set(p.x + 1.3, 1.5 + (p.gy || 0), p.z + 1.3); this.key.intensity = p.dead ? 0 : 2.6; // a touch towards the camera: the sides we look at are the lit ones // the hero's light radius: it never depends on what the hands are doing
+    const lr = p.M.light * (OMEN.light || 1) * CFG.DARK.light * (G.zone === 'dark' ? CFG.DARK.light : 1) * (G.floorRule === 'dark' ? .5 : 1); this.torch.distance = 10 * lr; this.base = 22 * Math.sqrt(lr); this.torch.position.set(p.x + 1.1, 2.3 + (p.gy || 0), p.z + 1.1); this.key.position.set(p.x + 1.3, 1.5 + (p.gy || 0), p.z + 1.3); this.key.intensity = p.dead ? 0 : 2.6; // a touch towards the camera: the sides we look at are the lit ones // the hero's light radius: it never depends on what the hands are doing
     const fl = .84 + .1 * Math.sin(t * 13.1) + .07 * Math.sin(t * 7.3 + 1.3) + .05 * Math.sin(t * 23.7 + .5) + (Math.random() - .5) * .05;
     this.torch.intensity = this.base * fl * (p.dead ? Math.max(.15, 1 - p.deadT * .5) : 1);
     this.pickT -= dt;
@@ -7318,7 +7320,7 @@ void main(){
   if(uFogA>0.0 && d<0.99999){ float hg=wp.y-uFogY; float f=(1.0-smoothstep(-0.5,0.55,hg))*smoothstep(0.35,0.85,vn(wp.xz*0.3+vec2(uTime*0.05,uTime*0.032)));
     float lit=1.0-smoothstep(1.2,7.5,length(wp.xz-uHero.xz)); col=mix(col,uFogCol*(0.35+0.55*lit),clamp(f*uFogA,0.0,0.22)); }
   // the dark closes in around the hero: everything far from the torch sinks into a tinted gloom (Diablo-like low key)
-  float rd=length((vUv-vec2(0.5,0.47))*vec2(1.0,1.3)); float dk=smoothstep(0.22,0.7,rd)*uDark*0.45; col=mix(col,col*uShade,dk);
+  float rd=length((vUv-vec2(0.5,0.47))*vec2(1.0,1.3)); float dk=min(1.0,smoothstep(0.22,0.7,rd)*uDark*0.45); col=mix(col,col*uShade,dk);
   col+=texture2D(tBloom,uv).rgb*uBloom; // glow of fire, magic and magma bleeds over the scene
   col*=1.1; col=(col*(2.51*col+0.03))/(col*(2.43*col+0.59)+0.14); col=clamp(col,0.0,1.0);
   float l=dot(col,vec3(0.299,0.587,0.114));
@@ -7390,7 +7392,7 @@ class Renderer {
     const fight = !!G.lock || G.enemies.list.some(e => e.alive && e.state !== 'idle' && e.state !== 'patrol' && Math.hypot(e.x - p.x, e.z - p.z) < 7);
     const fd = gfx('fog') ? (FOGD[b.el] !== undefined ? FOGD[b.el] : FOGD[b.id] !== undefined ? FOGD[b.id] : .2) * (fight ? .6 : 1) : 0; u.uFogA.value += (fd - u.uFogA.value) * Math.min(1, dt * 2); if (G.fx.fog) u.uFogCol.value.copy(G.fx.fog.material.uniforms.uCol.value);
     const gr = GRADE[b.el] || GRADE[b.id] || GRADE.ruins; u.uGradeK.value = gfx('grade') ? 1 : 0; const k = Math.min(1, dt * 1.5); /* the eye adapts: a little brighter in the dark zones, a little dimmer beside lava and under lightning; clamped so a fight never goes dim */
-    { const want = clamp(G.zone === 'dark' ? 1.16 : b.id === 'volcano' || b.el === 'blaze' ? .94 : 1, .9, 1.2); this.expo = (this.expo || 1) + (want - (this.expo || 1)) * Math.min(1, dt * 1.2); } u.uSharp.value = this.n < (this.full || this.n) * .93 ? .5 : gfx('sharp') ? .35 : 0; u.uDofK.value = clamp(this.n / 1300, .3, 1.15);
+    { const want = clamp(b.id === 'volcano' || b.el === 'blaze' ? .94 * CFG.DARK.expo : CFG.DARK.expo, .9, 1.2); this.expo = (this.expo || 1) + (want - (this.expo || 1)) * Math.min(1, dt * 1.2); } u.uSharp.value = this.n < (this.full || this.n) * .93 ? .5 : gfx('sharp') ? .35 : 0; u.uDofK.value = clamp(this.n / 1300, .3, 1.15);
     { const md = G.mood, ml = md === 'dusk' ? [.016, .006, -.008] : md === 'storm' ? [-.008, -.004, .006] : [0, 0, 0]; u.uLift.value.lerp(_v3a.set(gr.lift[0] + ml[0], gr.lift[1] + ml[1], gr.lift[2] + ml[2]), k); } u.uGain.value.lerp(_v3a.set(...gr.gain).multiplyScalar(this.expo), k); u.uSat.value += (gr.sat - u.uSat.value) * k;
     const hr = gfx('grade') && !p.dead ? clamp((.35 - p.hp / p.maxHp) / .35, 0, 1) : 0; u.uHurt.value += (hr * (.4 + .6 * OPT.flash / 10) - u.uHurt.value) * Math.min(1, dt * 4);
     G.heatT = Math.max(0, (G.heatT || 0) - dt); u.uHeat.value = gfx('distort') ? OPT.motion / 10 * Math.max(b.el === 'blaze' ? .9 : b.id === 'volcano' ? .7 : b.id === 'desert' ? .3 : 0, Math.min(1, G.heatT) * .6) : 0;
@@ -8132,7 +8134,7 @@ class Game {
     this.mirrorOn = !['desert', 'volcano', 'puzzle', 'sanctum'].includes(b.id) && (!this.quality || this.quality.level === 0);
     { const out = ['meadow', 'swamp', 'tundra', 'desert', 'elite'].includes(b.id) && (!this.quality || this.quality.level === 0); if (out) L.fill.shOff = false; if (L.fill.castShadow !== out) { L.fill.castShadow = out; for (const k in MAT) if (MAT[k].isMaterial) MAT[k].needsUpdate = true; } if (out) L.fill.intensity = Math.max(L.fill.intensity, .5); }
     if (this.fx) { const fu = this.fx.fog.material.uniforms, fc = new THREE.Color(b.amb), FA = { swamp: .3, undead: .3, tundra: .26, cave: .2, elite: .24, volcano: .2, sanctum: .2, desert: .14, meadow: .14, ruins: .18, puzzle: .16 }; fu.uCol.value.set(.1 + fc.r * .22, .1 + fc.g * .22, .1 + fc.b * .22); fu.uA.value = (FA[b.id] || .16) * 1.3; }
-    if (this.renderer) { const pu = this.renderer.post.mat.uniforms, sh = b.shade || [.3, .32, .5]; pu.uDark.value = b.dark === undefined ? .62 : b.dark; pu.uShade.value.set(.34 + (sh[0] - .34) * .35, .36 + (sh[1] - .36) * .35, .44 + (sh[2] - .44) * .35); pu.uBloom.value = (b.bloom || .6) * .5;
+    if (this.renderer) { const pu = this.renderer.post.mat.uniforms, sh = b.shade || [.3, .32, .5]; pu.uDark.value = (b.dark === undefined ? .62 : b.dark) + CFG.DARK.add; pu.uShade.value.set(.34 + (sh[0] - .34) * .35, .36 + (sh[1] - .36) * .35, .44 + (sh[2] - .44) * .35); pu.uBloom.value = (b.bloom || .6) * .5;
       // backdrop: a deep neutral that leans to the realm's gloom; the slab's shadow is the same hue, darker
       const mean = (sh[0] + sh[1] + sh[2]) / 3, bg = [0, 1, 2].map(i => clamp(.078 + (sh[i] - mean) * .11, .03, .16)); pu.uBg.value.set(bg[0], bg[1], bg[2]); pu.uSh.value.set(bg[0] * .36, bg[1] * .36, bg[2] * .38);
       document.documentElement.style.setProperty('--bg', `rgb(${bg.map(v => Math.round(v * 255)).join(',')})`); this.container.setBase(b); } if (this.audio) this.audio.setBiome(b);
@@ -8602,7 +8604,7 @@ class Game {
     if (!this.transition && !p.dead) {
       const pd = this.world.data(Math.floor(p.x / 24), Math.floor(p.z / 24)), zn = pd.zone || 0;
       if (zn !== this.zone) { this.zone = zn; if (zn === 'dark') this.hud.banner('BLACKOUT', 'THE LIGHT DIES HERE'); this.hud.trkT = 0; }
-      const ud = this.renderer.post.mat.uniforms.uDark, tg = (b.dark === undefined ? .62 : b.dark) + (zn === 'dark' ? .9 : 0); ud.value += (tg - ud.value) * Math.min(1, dt * 2);
+      const ud = this.renderer.post.mat.uniforms.uDark, tg = (b.dark === undefined ? .62 : b.dark) + CFG.DARK.add + (zn === 'dark' ? CFG.DARK.add : 0); ud.value += (tg - ud.value) * Math.min(1, dt * 2);
       if (pd.signs) for (const sg of pd.signs) { const near = Math.hypot(p.x - sg.x, p.z - sg.z) < 2; if (near && !sg.on && sg.n >= 100) { const L = LORE[(sg.n - 100) % LORE.length]; if (this.learn('lore', L[0], L[1])) { this.audio.play('chime'); this.story('lore'); } this.hud.banner(L[0], L[1]); } else if (near && !sg.on) sg.on = near; }
       if (pd.plates && !this.flags.has(pd.key + ':plates')) { let all = true; const c = pd.plates;
         if (pd.plateSeq && !pd.told && Math.hypot(p.x - (c[0].x + c[3].x) / 2, p.z - (c[0].z + c[3].z) / 2) < 5) { pd.told = 1; }
