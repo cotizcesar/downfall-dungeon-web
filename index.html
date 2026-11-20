@@ -5734,8 +5734,8 @@ class InventorySystem {
 /* ============================================================
    PARTICLE MANAGER (pooled GPU points) + FX (arcs, markers, telegraphs, projectiles)
    ============================================================ */
-/* the light of the game (owner, 2026-11-20, after the trial: "leave the lighting with torches only, it looks great"): no general light - no sky, no bounce off the ground, no sun. What lights a place is its torches, what powers throw, and the hero's own light. ?lights=all brings the general light back, to compare */
-const LIGHTS_ONLY = !/[?&]lights=all/.test(location.search);
+/* the light of the game (owner, 2026-11-20, after the trial: "leave the lighting with torches only, it looks great"): no general light - no sky, no bounce off the ground, no sun. What lights a place is its torches, what powers throw, and the hero's own light */
+const LIGHTS_ONLY = true;
 const SCATTER = { value: 1 }, PLIT = { value: 1 }, HERO_P = { value: new THREE.Vector3() };
 const PART_AMB = { dust: 1, firefly: 1, spore: 1, snow: 1, sand: 1, ash: 1, wisp: 1, sparkle: 1, glint: 1, leaf: 1 };
 /** how much of what is asked for is made, by kind (part 92) */
