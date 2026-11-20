@@ -758,6 +758,8 @@ body.pad .fBtn[data-cs="back"]::after{content:'B';background:#cc2222;color:#6e10
 #press .pLogo i{display:block;margin:calc(var(--p) * 22) auto 0;width:calc(var(--p) * 470);height:calc(var(--p) * 4);background:radial-gradient(ellipse at 50% 50%,#ffd070,#ff7a20 40%,rgba(200,60,10,.4) 70%,transparent 75%);filter:blur(.5px)}
 /* the words of a button and of the title's line are measured by their capitals, so they sit in the middle whatever typeface the machine has */
 .fT{display:block;font:inherit;font-weight:inherit;line-height:1;text-box:trim-both cap alphabetic}
+/* the spacing between letters also follows a word's last letter: taken back, so the disc stands as far from PRESS as from TO, and the line is truly centred */
+#press .pKey .fT{margin-right:-.2em}
 #press .pKey{position:absolute;left:0;right:0;top:calc(var(--p) * 835);height:calc(var(--p) * 48);display:flex;align-items:center;justify-content:center;gap:.55em;margin:0;text-align:center;font-size:calc(var(--p) * 27);letter-spacing:.2em;color:#b4c0c2;text-transform:uppercase;animation:pKey 2.2s ease-in-out infinite}@keyframes pKey{50%{opacity:.55}}
 #press .pKey .pA{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:1.75em;height:1.75em;line-height:1;border-radius:50%;border:0;background:#86c244;color:#2e5e10;font:900 1em 'Arial Black',Arial,Helvetica,sans-serif;letter-spacing:0;text-align:center;margin:0;flex:none;font-style:normal;text-shadow:none;animation:none}
 #press .pEmb{position:absolute;left:calc(50% + var(--p) * -25);top:calc(var(--p) * 920);width:calc(var(--p) * 50);height:calc(var(--p) * 50)}#press .pEmb svg,#calib .cEmb svg{width:100%;height:100%;fill:none;stroke:#c9a24a;stroke-width:3}
