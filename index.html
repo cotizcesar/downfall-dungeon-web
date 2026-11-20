@@ -2222,20 +2222,20 @@ const BIOME_RES = { meadow: { fire: 1.2 }, swamp: { poison: .5, fire: 1.2 }, cav
   undead: { holy: 1.5, poison: 0 }, puzzle: { slash: .55, pierce: .65, storm: 1.5, blunt: 1.25 }, elite: { holy: 1.4, void: .3 }, sanctum: { holy: .5, void: 1.4 } };
 /** the guardians' telegraphed kinds land on the same damage types */
 const ZK_TYPE = { fire: 'fire', lava: 'fire', lightning: 'storm', poison: 'poison', web: 'poison', ice: 'frost', rock: 'blunt', soul: 'void', void: 'void', wind: 'storm' };
-const STATUS = { burn: { n: 'BURN', col: '#ff8a3a' }, chill: { n: 'CHILL', col: '#8ad0ff' }, freeze: { n: 'FROZEN', col: '#d8f4ff' }, shock: { n: 'SHOCK', col: '#c8b0ff' }, bleed: { n: 'BLEED', col: '#e5484d' },
+const STATUS = { burn: { n: 'BURN', col: '#ff8a3a' }, chill: { n: 'CHILL', col: '#8ad0ff' }, freeze: { n: 'FROZEN', col: '#d8f4ff' }, shock: { n: 'SHOCK', col: '#c8b0ff' }, bleed: { n: 'BLEED', col: '#e5484d' }, poison: { n: 'POISON', col: '#7fe04a' },
   stun: { n: 'STUN', col: '#ffe060' }, slow: { n: 'SLOW', col: '#b0b0b0' }, curse: { n: 'CURSE', col: '#c080ff' }, silence: { n: 'SILENCE', col: '#f0f0f0' } };
 /** put a status on the hero or a creature; chill stacks into freeze */
-function applyStatus(o, k, t, dps) {
+function applyStatus(o, k, t, dps) { if (o && o.under) return; /* nothing clings to a creature that is not in the world yet */
   if (!o || o.dead || o.alive === false) return; const s = o.sx || (o.sx = {});
   if (k === 'chill') { o.chillN = Math.min(5, (o.chillN || 0) + 1); s.chill = Math.max(s.chill || 0, t); if (o.chillN >= 4) { o.chillN = 0; delete s.chill; s.freeze = Math.max(s.freeze || 0, 1.3); if (o.onFreeze) o.onFreeze(); } return; }
   s[k] = Math.max(s[k] || 0, t); if (dps) o['dps_' + k] = Math.max(o['dps_' + k] || 0, dps); if (o.G) o['src_' + k] = o.G.dsrc || 'weapon';
 }
 function tickStatus(o, dt, hurt) {
   const s = o.sx; if (!s) return;
-  for (const k in s) { s[k] -= dt; if (s[k] <= 0) { delete s[k]; if (k === 'chill') o.chillN = 0; if (k === 'burn' || k === 'bleed') o['dps_' + k] = 0; continue; }
-    if (k === 'burn' || k === 'bleed') { o['acc_' + k] = (o['acc_' + k] || 0) + dt; if (o['acc_' + k] >= .5) { o['acc_' + k] = 0; if (k === 'burn' || o.moving) hurt(Math.max(1, Math.round((o['dps_' + k] || 1) * .5)), STATUS[k].col, k); } } }
+  for (const k in s) { s[k] -= dt; if (s[k] <= 0) { delete s[k]; if (k === 'chill') o.chillN = 0; if (k === 'burn' || k === 'bleed' || k === 'poison') o['dps_' + k] = 0; continue; }
+    if (k === 'burn' || k === 'bleed' || k === 'poison') { o['acc_' + k] = (o['acc_' + k] || 0) + dt; if (o['acc_' + k] >= .5) { o['acc_' + k] = 0; if (k !== 'bleed' || o.moving) hurt(Math.max(1, Math.round((o['dps_' + k] || 1) * .5)), STATUS[k].col, k); } } }
 }
-const STATUS_ICON = { burn: 'M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z', chill: 'M12 3v18M4 7l16 10M20 7L4 17', freeze: 'M12 3v18M4 7l16 10M20 7L4 17M9 4l3 3 3-3M9 20l3-3 3 3', shock: 'M13 2L5 14h6l-1 8 8-12h-6z', bleed: 'M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z',
+const STATUS_ICON = { poison: 'M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12zM9 15a3 3 0 0 0 3 3', burn: 'M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z', chill: 'M12 3v18M4 7l16 10M20 7L4 17', freeze: 'M12 3v18M4 7l16 10M20 7L4 17M9 4l3 3 3-3M9 20l3-3 3 3', shock: 'M13 2L5 14h6l-1 8 8-12h-6z', bleed: 'M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z',
   curse: 'M12 3a7 7 0 0 0-4 13v3h8v-3a7 7 0 0 0-4-13zM9 11h.01M15 11h.01', stun: 'M12 3l2.6 6 6.4.6-4.8 4.2 1.5 6.2-5.7-3.4-5.7 3.4 1.5-6.2L3 9.6 9.4 9z', silence: 'M5 5l14 14M9 9v6h3l4 3V9', slow: 'M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9',
   poison: 'M12 4a4 4 0 0 0-2 7l-4 8h12l-4-8a4 4 0 0 0-2-7z', ward: 'M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z' };
 const SCHOOL_ICON = { blade: 'M13 2L4 14h7l-1 8 9-12h-7z', fire: 'M12 22c4 0 7-3 7-7 0-3-2-5-3-7-1 2-2 3-3 3 0-3-1-6-4-9 0 4-4 7-4 13 0 4 3 7 7 7z', frost: 'M12 2v20M4 6l16 12M20 6L4 18',
@@ -3200,6 +3200,8 @@ class WorldManager {
   /** what a tile costs the hero's way (enemies do not pay it): the layout's own cost, and the ground: lava and poison are walked round when there is any way round, mud and ice a little */
   costAt(tx, tz) { const cx = Math.floor(tx / 24), cz = Math.floor(tz / 24), d = this.data(cx, cz), k = (tz - cz * 24) * 24 + (tx - cx * 24), h = d.haz ? d.haz[k] : 0; return d.cost[k] + (!h ? 0 : h === 2 ? 20 : h === 3 ? 1 : d.hazKind === 'lava' ? 30 : d.hazKind === 'mud' ? 3 : d.hazKind === 'ice' ? 2 : 0); }
   free(x, z) { return this.code(Math.floor(x), Math.floor(z)) === 0; }
+  /** part 91: where a creature may stand nearest to (x, z) - the point itself when its tile is floor and nothing solid is there, else the middle of the nearest tile that is (rings of tiles outward, eight tiles at most). Nothing is ever set down in a wall, in a thing, in a river's bed or in the mouth of the stairs: those tiles are not floor */
+  spot(x, z, r = .3) { const G = this.G, ok = (a, b) => this.code(Math.floor(a), Math.floor(b)) === 0 && !(G.col && G.col.hit(a, b, r)); if (ok(x, z)) return [x, z]; const tx = Math.floor(x), tz = Math.floor(z); for (let R = 1; R <= 8; R++) { let best = null, bd = 1e9; for (let dz = -R; dz <= R; dz++) for (let dx = -R; dx <= R; dx++) { if (Math.max(Math.abs(dx), Math.abs(dz)) !== R) continue; const a = tx + dx + .5, b = tz + dz + .5; if (!ok(a, b)) continue; const d = Math.hypot(a - x, b - z); if (d < bd) { bd = d; best = [a, b]; } } if (best) return best; } return [x, z]; }
   los(ax, az, bx, bz) {
     const dx = bx - ax, dz = bz - az, n = Math.ceil(Math.hypot(dx, dz) / .35);
     for (let i = 1; i < n; i++) { const c = this.code(Math.floor(ax + dx * i / n), Math.floor(az + dz * i / n)); if (c === 1 || c >= 3) return false; }
@@ -4331,7 +4333,7 @@ class Player {
       a bow, a staff, a wand or a spell picks the enemy nearest to the line the hero looks along - within sixty degrees each side, in sight and in range - and the shot follows it home, so it never misses; with nobody there it simply flies where the hero looks.
       A blade picks the enemy within reach: the one in front first, the one behind if it is the only one, and the hero turns to it */
   aimTarget(ranged, R) { const G = this.G, T = this.targetE; { const L = this.lockE; if (L && L.alive && Math.hypot(L.x - this.x, L.z - this.z) - L.r < R + 3) return L; } if (T && T.alive && Math.hypot(T.x - this.x, T.z - this.z) - T.r < R) return T; let b = null, bs = 1e9;
-    for (const e of G.enemies.list) { if (!e.alive || e.hidden > 0 || (e.enter && !e.entered)) continue; const d = Math.hypot(e.x - this.x, e.z - this.z) - e.r; if (d > R) continue; const a = Math.abs(angDiff(Math.atan2(e.x - this.x, e.z - this.z), this.facing)); if (ranged && a > 1.05) continue; if (!G.world.los(this.x, this.z, e.x, e.z)) continue; const sc = ranged ? a + d * .04 : d + a * .5; if (sc < bs) { bs = sc; b = e; } }
+    for (const e of G.enemies.list) { if (!e.alive || e.under || (e.enter && !e.entered)) continue; const d = Math.hypot(e.x - this.x, e.z - this.z) - e.r; if (d > R) continue; const a = Math.abs(angDiff(Math.atan2(e.x - this.x, e.z - this.z), this.facing)); if (ranged && a > 1.05) continue; if (!G.world.los(this.x, this.z, e.x, e.z)) continue; const sc = ranged ? a + d * .04 : d + a * .5; if (sc < bs) { bs = sc; b = e; } }
     return b; }
   /** a fading ribbon behind the blade while it swings, coloured by rarity or by an awakened edge */
   updateTrail(on) {
@@ -4399,7 +4401,7 @@ class Player {
     if (WU > 0) { this.casting = { k, t: 0, dur: WU, e, tx, tz }; this.atkT = 0; G.fx.telegraph(tx, tz, S.r || 1, WU); G.audio.play('cast', this.x, this.z, .8); this.raiseT = WU + .2; return true; }
     this.castNow(k, { e, tx, tz }); return true;
   }
-  spellTarget(k) { const G = this.G, R = k === 'lance' ? 9 : 8; /* first whoever the hero is looking at; failing that the nearest in sight, as before */ if (OPT.assist) { const a = this.aimTarget(true, R); if (a) return a; } let b = null, bd = R; for (const e of G.enemies.list) { if (!e.alive || e.hidden > 0 || e.resting) continue; const d = Math.hypot(e.x - this.x, e.z - this.z); if (d < bd && G.world.los(this.x, this.z, e.x, e.z)) { bd = d; b = e; } } return this.targetE && this.targetE.alive && Math.hypot(this.targetE.x - this.x, this.targetE.z - this.z) < R ? this.targetE : b; }
+  spellTarget(k) { const G = this.G, R = k === 'lance' ? 9 : 8; /* first whoever the hero is looking at; failing that the nearest in sight, as before */ if (OPT.assist) { const a = this.aimTarget(true, R); if (a) return a; } let b = null, bd = R; for (const e of G.enemies.list) { if (!e.alive || e.under || e.resting) continue; const d = Math.hypot(e.x - this.x, e.z - this.z); if (d < bd && G.world.los(this.x, this.z, e.x, e.z)) { bd = d; b = e; } } return this.targetE && this.targetE.alive && Math.hypot(this.targetE.x - this.x, this.targetE.z - this.z) < R ? this.targetE : b; }
   interrupt() { const c = this.casting; if (!c) return; this.casting = null; this.castBusy = Math.min(this.castBusy || 0, .2); this.cds[c.k] = SPELLS[c.k].cd * .5 + (SPELLS[c.k].sk ? .3 : 1) /* part 72: a second on top was the price when a cast took a fifth of one */; this.G.hud.number(this.x, 2, this.z, 'INTERRUPTED', '#ffffff'); this.G.audio.play('interrupt', this.x, this.z); }
   castNow(k, c) {
     teleF('spell', k);
@@ -4476,7 +4478,7 @@ class Player {
       if (dealt) { G.fx.particles.emit(type === 'blunt' ? 'debris' : 'spark', e.x, .9, e.z, c ? 14 : 5); if (c) G.fx.flash(e.x, 1.2, e.z, 0xfff0c0, 25); }
       if (e.alive && dealt) { if (F.bleed && Math.random() < F.bleed + (aw >= 1 && famKey(w) === 'axe' ? .2 : 0)) applyStatus(e, 'bleed', 4, this.dmg * .18);
         if (F.stun && Math.random() < F.stun + (aw >= 1 && famKey(w) === 'mace' ? .1 : 0)) e.stun(e.type === 'boss' ? .3 : .9); if (F.poison && Math.random() < F.poison + (aw >= 1 && famKey(w) === 'daggers' ? .15 : 0)) applyStatus(e, 'poison', 4, this.dmg * .12);
-        if (type === 'fire') applyStatus(e, 'burn', 3, this.dmg * .15); else if (type === 'storm') applyStatus(e, 'shock', .5); else if (type === 'frost') applyStatus(e, 'chill', 3); }
+        if (type === 'fire') applyStatus(e, 'burn', 3, this.dmg * .15); else if (type === 'storm') applyStatus(e, 'shock', .5); else if (type === 'frost' && e.elT !== G.time) applyStatus(e, 'chill', 3); /* the blow itself has chilled it already (part 93): not twice for one blow */ }
     }
     G.dsrc = null;
     if (G.inter.strike(this.x, this.z, this.facing, range, arc)) any = true;
@@ -4682,6 +4684,8 @@ const enemyDmgOld = dd => (1 + .28 * dd + .002 * dd * dd) * (1 + CB.earlyDmg * M
 const enemyDmgOld2 = d => d <= 2 ? enemyDmgOld(d - 1) : (d <= CB.dmgKnee ? enemyDmgOld(d - 1) * CB.dmgEarly : enemyDmgOld(CB.dmgKnee - 1) * CB.dmgEarly + CB.dmgSlope * (d - CB.dmgKnee)) * (1 + (CB.dmgBook - 1) * Math.min(1, (d - 2) / 28)) * (1 + CB.dmgDeep * clamp((d - 30) / 40, 0, 1));
 /* part 75: a creature's blow is the reference's line for its level (see refM) */ const enemyDmg = d => refM('mdm', d) * REFK.dm * CB.refDmg;
 class Enemy {
+  /** not yet in the world: hidden in the ground, or still coming out of it (or down its thread). Such a one shows no bar, is nobody's target and takes no blow */
+  get under() { return this.hidden > 0 || (!!this.enter && !this.entered); }
   constructor(G, type, x, z, id, chunkKey, o = {}) {
     this.G = G; this.type = type; this.id = id; this.chunkKey = chunkKey; this.uid = ENEMY_UID++;
     const B = ENEMY[type], dd = G.depth - 1, dm = 1 + .34 * dd + .006 * dd * dd, boss = type === 'boss'; // the deeper the floor, the denser the magic
@@ -4825,7 +4829,7 @@ class Enemy {
       if (Math.random() < .25) { if (b === 'tundra') applyStatus(p, 'chill', 3); else if (b === 'volcano') applyStatus(p, 'burn', 3, p.maxHp * .015); else if (b === 'elite' || b === 'undead') applyStatus(p, 'curse', 3); else if (this.type === 'warrior' && Math.random() < .3) applyStatus(p, 'bleed', 3, p.maxHp * .012); } }
   }
   takeDamage(dmg, dirx, dirz, pow, crit, type = 'slash', guard) {
-    if (this.enter && !this.entered && this.entT === undefined) { this.wakeNow = 1; return 0; } /* it is not here yet - but a blow that finds its hiding place brings it out */
+    if (this.enter && !this.entered) { if (this.entT === undefined) this.wakeNow = 1; return 0; } /* it is not here yet - a blow that finds its hiding place brings it out, and none hurts it until it stands on the floor (owner, 2026-11-20) */
     if (this.resting) { this.G.restingStrike(this); return 0; }
     if (!this.alive || this.hidden > 0) return 0; const G = this.G; this.lastHit = this.t; if (this.openT > 0) dmg *= 1.5; if (this.cz) dmg *= skEnemyTaken(this, type); this.hitDx = dirx || 0; this.hitDz = dirz || 0; this.lastType = type; this.lastPow = pow || 0;
     if (this.invulnT > 0) { if (Math.random() < .3) G.hud.number(this.x, 2.4 * this.S.scale, this.z, 'IMMUNE', '#ffd040'); return 0; }
@@ -4842,7 +4846,9 @@ class Enemy {
     dmg = Math.max(1, Math.round(dmg)); teleF('sd', G.dsrc === 'spell' ? G.dsk || 'spell' : G.sigOn ? 'signature' : 'weapon', Math.min(dmg, Math.max(0, this.hp))); this.hp -= dmg; this.flash = 1; G.fx.impact(this.x - (dirx || 0) * this.r * .6, .55 * this.S.scale + .2, this.z - (dirz || 0) * this.r * .6, type, (pow || .4) + dmg / Math.max(1, this.maxHp) * 2, dirx || 0, dirz || 0, crit, this.surf()); { const sf = this.surf(), pw = dmg / Math.max(1, this.maxHp || this.S.hp || 30) * 4 + (pow || 0) * .25; G.audio.hit(this.x, this.z, type === 'slash' || type === 'pierce' || type === 'blunt' ? type : 'arcane', sf, pw, crit); if (this.hp > 0 && Math.random() < .35) G.audio.play('ehurt', this.x, this.z, 1, this.vp); if (this.hp > 0 && Math.random() < .3) G.audio.play(({ bone: 'rattle', armour: 'clank', stone: 'tink', slime: 'squish', spectral: 'whisper' })[sf] || 'ehurt', this.x, this.z, 1 / clamp(this.S.scale || 1, .6, 2)); } this.dmgBy[type] = (this.dmgBy[type] || 0) + dmg; G.dmgStat[G.dsrc || 'weapon'] = (G.dmgStat[G.dsrc || 'weapon'] || 0) + dmg;
     G.hud.number(this.x, 1.1 * this.S.scale + .3, this.z, (crit ? '\u2726 ' : tag === 'WEAK' || tag === 'SHATTER' ? '\u25B2 ' : tag === 'RESIST' || tag === 'BLOCKED' ? '\u25BC ' : '') + '\u2212' + dmg + (crit ? '!' : '') + (tag ? ' ' + tag : ''), tag === 'WEAK' || tag === 'SHATTER' ? '#ffd040' : tag === 'RESIST' || tag === 'BLOCKED' ? '#9aa4ae' : crit ? '#f0a030' : TYPE_COL[type] && type !== 'slash' ? TYPE_COL[type] : '#e5484d', this.uid, dmg);
     this.kx += dirx * pow * this.S.kb * 7.5; this.kz += dirz * pow * this.S.kb * 7.5;
-    const pk = this.type === 'skeleton' ? 'bone' : this.type === 'slime' ? 'slime' : 'blood'; G.fx.particles.emit(pk, this.x, .6 * this.S.scale, this.z, 7, dirx, dirz); G.fx.particles.emit('spark', this.x, .7 * this.S.scale, this.z, 4);
+    /* part 93 (owner, 2026-11-20): what the blow is made of decides what flies and what stays. Fire: flame and embers, and it burns. Poison: its green, and it poisons. Frost: its pale blue, and it slows (four of them freeze, as before). Storm: blue sparks and a jolt. An arrow, a blade, a club - any plain weapon: blood */
+    const pk = type === 'fire' ? 'fire' : type === 'poison' ? 'acid' : type === 'frost' ? 'frost' : type === 'storm' ? 'volt' : type === 'void' ? 'dark' : type === 'holy' ? 'holy' : 'blood'; G.fx.particles.emit(pk, this.x, .6 * this.S.scale, this.z, 7, dirx, dirz); if (type === 'fire') G.fx.particles.emit('ember', this.x, .7 * this.S.scale, this.z, 2); else if (pk === 'blood' && (crit || pow >= 1)) G.fx.particles.emit('spark', this.x, .7 * this.S.scale, this.z, 3);
+    if (this.hp > 0) { if (type === 'fire') applyStatus(this, 'burn', 3, Math.max(1, dmg * .08)); else if (type === 'poison') applyStatus(this, 'poison', 5, Math.max(1, dmg * .05)); else if (type === 'frost') { if (this.elT !== G.time) { this.elT = G.time; applyStatus(this, 'chill', 3); } } else if (type === 'storm') applyStatus(this, 'shock', .5); }
     if (this.hp <= 0) { this.die(pk, dirx, dirz); return dmg; }
     if (this.state === 'idle' || this.state === 'patrol') this.alert(true);
     if (this.type !== 'boss' && this.state !== 'hurt' && !(this.type === 'warrior' && this.state === 'windup') && !(this.elite && this.state === 'windup')) { this.state = 'hurt'; this.st = .22; this.atkAnim = -1; }
@@ -4989,7 +4995,8 @@ class Enemy {
     return false;
   }
   update(dt) {
-    const G = this.G, p = G.player, S = this.S; this.t += dt; if (this.enter && !this.entered && this.alive && !this.arrive(dt, p)) return true; this.buffT -= dt; this.openT = (this.openT || 0) - dt; if (this.trick) this.terrain(dt, p); if (this.type === 'boss' && !this.clone && this.alive && this.state !== 'idle' && this.state !== 'patrol' && isGuardianFloor(G.depth)) { this.arenaMech(dt, p); this.phaseMove(dt, p); } if (this.hidden > 0) { this.hidden -= dt; this.model.root.visible = this.hidden <= 0; if (this.hidden > 0) return true; } else if (!this.model.root.visible && this.alive) this.model.root.visible = true; this.flash = Math.max(0, this.flash - dt * 7); this.cd -= dt; this.cd2 -= dt; this.st -= dt;
+    const G = this.G, p = G.player, S = this.S; this.t += dt; if (this.alive && (this.spotT = (this.spotT || 0) - dt) <= 0) { this.spotT = .5; /* twice a second: thrown, pulled or carried onto a tile that is not floor, it is set back on the nearest that is */ if (!(this.hidden > 0) && G.world.code(Math.floor(this.x), Math.floor(this.z)) !== 0) { const q = G.world.spot(this.x, this.z, .3); if (q[0] !== this.x || q[1] !== this.z) { this.x = q[0]; this.z = q[1]; this.gy = G.world.hAt(this.x, this.z); tele('unstuck'); } } }
+    if (this.enter && !this.entered && this.alive && !this.arrive(dt, p)) return true; this.buffT -= dt; this.openT = (this.openT || 0) - dt; if (this.trick) this.terrain(dt, p); if (this.type === 'boss' && !this.clone && this.alive && this.state !== 'idle' && this.state !== 'patrol' && isGuardianFloor(G.depth)) { this.arenaMech(dt, p); this.phaseMove(dt, p); } if (this.hidden > 0) { this.hidden -= dt; this.model.root.visible = this.hidden <= 0; if (this.hidden > 0) return true; } else if (!this.model.root.visible && this.alive) this.model.root.visible = true; this.flash = Math.max(0, this.flash - dt * 7); this.cd -= dt; this.cd2 -= dt; this.st -= dt;
     if (this.state === 'dead') { this.deathT += dt; this.animate(dt, 0); return this.deathT < 1.2; }
     if (this.resting) { this.animate(dt, 0); return true; }
     { const sx = this.sx; tickStatus(this, dt, (n, c, k) => this.hurtDot(n, c, k)); if (!this.alive) { this.animate(dt, 0); return true; }
@@ -5018,13 +5025,13 @@ class Enemy {
   }
   animate(dt, mv) {
     this.animate0(dt, mv); const m = this.model, r = m.root, G = this.G, p = G.player;
-    if (this.baseScale === undefined) this.baseScale = r.scale.x; this.age = (this.age || 0) + dt;
+    if (this.baseScale === undefined) { this.baseScale = r.scale.x; if (this.id != null && this.age === undefined) this.age = 1; /* a creature of the floor itself is whole from the start: only those called into a fight grow in */ } this.age = (this.age || 0) + dt;
     const rise = this.clone ? 1 : Math.min(1, this.age / .5), ease = 1 - Math.pow(1 - rise, 3), hit = this.flash || 0, boss = this.type === 'boss';
     const breathe = this.alive ? 1 + Math.sin(this.t * (boss ? 1.6 : 2.4) + this.slot) * (boss ? .03 : .02) * (mv > .3 ? .4 : 1) : 1;
     /* anticipation and follow-through: crouch and lean back while winding up, stretch forward as the blow lands */
     const wind = this.alive && this.state === 'windup' ? 1 - this.st / (this.windDur || 1) : 0; this.follow = this.state === 'recover' || this.state === 'charging' ? Math.min(1, (this.follow || 0) + dt * 10) : Math.max(0, (this.follow || 0) - dt * 4);
     const sq = this.alive ? hit * .14 + wind * .1 - this.follow * .06 : 0; r.scale.set(this.baseScale * ease * (1 + sq), this.baseScale * ease * breathe * (1 - sq * .8), this.baseScale * ease * (1 + sq * .6));
-    r.position.y += (this.gy || 0) - (1 - ease) * .5; if (this.alive) r.rotation.x = -hit * .22 - wind * .16 + this.follow * .2;
+    r.position.y += (this.gy || 0); /* a creature grows into the world where it stands; it no longer starts half a tile under the floor (one whose first half second was not yet over when it came into sight stood sunk and small) */ if (this.alive) r.rotation.x = -hit * .22 - wind * .16 + this.follow * .2;
     if (rise < 1 && Math.random() < dt * 30) G.fx.particles.emit('dustpuff', this.x, .1, this.z, 1);
     if (m.head && this.alive && this.state !== 'idle' && this.state !== 'patrol') { const want = clamp(angDiff(Math.atan2(p.x - this.x, p.z - this.z), this.facing), -.7, .7); m.head.rotation.y += (want - m.head.rotation.y) * Math.min(1, dt * 8); }
     if (!this.alive && m.mat) { const k = clamp((this.deathT - .35) / .75, 0, 1); if (k > 0) { if (!m.mat.transparent) { m.mat.transparent = true; m.mat.depthWrite = false; } m.mat.opacity = 1 - k; if (Math.random() < dt * 40 * (1 - k)) G.fx.particles.emit(this.type === 'skeleton' ? 'bone' : boss ? 'flare' : 'dark', this.x + rand(-.4, .4) * this.S.scale, rand(.2, 1.4) * this.S.scale, this.z + rand(-.4, .4) * this.S.scale, 1); } }
@@ -5053,7 +5060,7 @@ class Enemy {
   }
   animate0(dt, mv) {
     const m = this.model, S = this.S, dead = this.state === 'dead' ? clamp(this.deathT / .5, 0, 1) : 0; this.phase += dt * mv * S.spd * 3.4;
-    m.root.position.x = this.x; m.root.position.y = 0; m.root.position.z = this.z; m.root.rotation.y = this.facing; this.gy = this.gy === undefined ? this.G.world.hAt(this.x, this.z) : this.gy + (this.G.world.hAt(this.x, this.z) - this.gy) * Math.min(1, dt * 12);
+    m.root.position.x = this.x; m.root.position.y = 0; m.root.position.z = this.z; m.root.rotation.y = this.facing; { const h = this.G.world.hAt(this.x, this.z); /* stepping up to a terrace the body is on its floor at once (it sank a third of a tile into the higher floor while it caught up); stepping down it eases */ if (this.gy === undefined || h > this.gy) this.gy = h; } this.gy = this.gy === undefined ? this.G.world.hAt(this.x, this.z) : this.gy + (this.G.world.hAt(this.x, this.z) - this.gy) * Math.min(1, dt * 12);
     const wind = this.state === 'windup' ? 1 - this.st / this.windDur : 0;
     if (m.kind === 'human') {
       const cast = this.state === 'windup' && (this.atk === 'summon' || this.atk === 'slam' || this.atk === 'nova') ? wind : 0;
@@ -5121,7 +5128,7 @@ class EnemyManager {
   constructor(G) { this.G = G; this.list = []; }
   /** attack tokens: how many common enemies may be winding up a blow at the same moment (story 2, standard 3, hard 5); elites and guardians ignore it */
   mayStrike(e) { if (e.elite || e.type === 'boss') return true; let n = 0; for (const q of this.list) if (q !== e && q.alive && !q.elite && q.type !== 'boss' && (q.state === 'windup' || q.state === 'charging')) n++; return n < 3; }
-  spawn(type, x, z, id, key, o) { const e = new Enemy(this.G, type, x, z, id, key, o); this.list.push(e); return e; }
+  spawn(type, x, z, id, key, o) { /* part 91: whoever asks for a creature, and wherever: it is made on floor (a pack's extra one was set half a tile aside without looking, a boss's escort two and a half; those landed in walls, in things and in the beds of rivers and were seen under the floor) */ try { const q = this.G.world.spot(x, z, .3); x = q[0]; z = q[1]; } catch (err) { } const e = new Enemy(this.G, type, x, z, id, key, o); this.list.push(e); return e; }
   removeChunk(k) { this.list = this.list.filter(e => { if (e.chunkKey === k) { e.dispose(); return false; } return true; }); }
   clear() { this.list.forEach(e => e.dispose()); this.list = []; }
   calm() { for (const e of this.list) if (e.alive) { e.state = 'idle'; e.st = 2; e.atkAnim = -1; } }
@@ -5537,14 +5544,14 @@ class LootManager {
     const G = this.G; let px = x, pz = z;
     for (let a = 0; a < 8; a++) { const tx = x + rand(-.7, .7), tz = z + rand(-.7, .7); if (G.world.free(tx, tz)) { px = tx; pz = tz; break; } }
     const geo = kind === 'grave' ? GEO.bag3 : kind === 'gold' ? GEO.coin : kind === 'potion' || kind === 'rejuv' ? GEO.potion : kind === 'mana' ? GEO.mana : kind === 'key' ? GEO.key : kind === 'crystal' ? GEO.crystal : null;
-    const gear = kind === 'item', tr = gear ? clamp(o.item.rar | 0, 0, TOP) : 0, g = new THREE.Group(); let m, disc = null;
+    const gear = kind === 'item', orbd = gear || kind === 'key' /* a key lies on the ground as every other find does (owner, 2026-11-20): the globe, the disc and the beam, in the brass of a rare thing - it was a small model of a key with a square of light */, tr = gear ? clamp(o.item.rar | 0, 0, TOP) : kind === 'key' ? 2 : 0, g = new THREE.Group(); let m, disc = null;
     
-    if (gear) { m = new THREE.Group(); const orb = new THREE.Mesh(GEO.sph, this.orbM[tr]); orb.scale.setScalar(.27); orb.position.y = .2; m.add(orb); g.add(m);
+    if (orbd) { m = new THREE.Group(); const orb = new THREE.Mesh(GEO.sph, this.orbM[tr]); orb.scale.setScalar(.27); orb.position.y = .2; m.add(orb); g.add(m);
       disc = new THREE.Mesh(this.discG, this.discM[tr]); disc.position.y = .03; disc.scale.setScalar(1.5 + tr * .22); disc.renderOrder = 2; g.add(disc); const bm = new THREE.Sprite(this.beamM[tr]); bm.center.set(.5, 0); bm.scale.set(.8 + tr * .07, 1.7 + tr * .5, 1); bm.position.y = .05; bm.renderOrder = 3; g.add(bm); }
     else { m = new THREE.Mesh(geo, MAT.vc); m.castShadow = true; if (kind === 'rejuv') m.scale.setScalar(1.35); g.add(m); } g.position.set(px, G.world.hAt(px, pz), pz);
-    if (kind !== 'gold' && !gear) { const gl = new THREE.Mesh(GEO.floorTile, this.glowMats[kind === 'key' || kind === 'rejuv' ? 2 : 3]); gl.position.y = .03; gl.scale.setScalar(.8); g.add(gl); }
+    if (kind !== 'gold' && !orbd) { const gl = new THREE.Mesh(GEO.floorTile, this.glowMats[kind === 'key' || kind === 'rejuv' ? 2 : 3]); gl.position.y = .03; gl.scale.setScalar(.8); g.add(gl); }
     G.scene.add(g);
-    { if (!this.blobG) { this.blobG = new THREE.CircleGeometry(.3, 14).rotateX(-Math.PI / 2); this.blobM = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .32, depthWrite: false }); } if (gfx('ao') && !gear) { const sh = new THREE.Mesh(this.blobG, this.blobM); sh.position.y = .018; g.add(sh); } }
+    { if (!this.blobG) { this.blobG = new THREE.CircleGeometry(.3, 14).rotateX(-Math.PI / 2); this.blobM = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .32, depthWrite: false }); } if (gfx('ao') && !orbd) { const sh = new THREE.Mesh(this.blobG, this.blobM); sh.position.y = .018; g.add(sh); } }
     const rar = kind === 'item' ? o.item.rar : kind === 'crystal' || kind === 'grave' ? 3 : kind === 'key' ? 2 : 0;
     /* rare and better stand under a beam of their colour */
     if (rar >= 2 && !gear) { const bm = new THREE.Mesh(GEO.box, new THREE.MeshBasicMaterial({ color: new THREE.Color(GLOW_COL[Math.min(3, rar)]).multiplyScalar(EMISSIVE.beam), transparent: true, opacity: .32, blending: THREE.AdditiveBlending, depthWrite: false })); bm.scale.set(.07, 3.2, .07); bm.position.y = 1.6; g.add(bm); }
@@ -5728,25 +5735,30 @@ class InventorySystem {
    PARTICLE MANAGER (pooled GPU points) + FX (arcs, markers, telegraphs, projectiles)
    ============================================================ */
 const SCATTER = { value: 1 }, PLIT = { value: 1 }, HERO_P = { value: new THREE.Vector3() };
-const PART_VS = `attribute float aSize; attribute float aAlpha; attribute vec3 aColor; uniform float uScale; uniform float uLit; uniform vec3 uHeroP; varying vec3 vC; varying float vA; varying vec2 vW;
-void main(){ vC=aColor*mix(1.0,mix(0.45,1.3,1.0-smoothstep(1.2,8.0,length(position.xz-uHeroP.xz))),uLit); vA=aAlpha; vW=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_PointSize=max(1.0,aSize*uScale); }`;
-const PART_FS = `varying vec3 vC; varying float vA; varying vec2 vW; uniform vec3 uClip; void main(){ vec2 p=gl_PointCoord-0.5; if(abs(vW.x-uClip.x)>uClip.z||abs(vW.y-uClip.y)>uClip.z||vA<=0.001||dot(p,p)>0.25) discard; gl_FragColor=vec4(vC,vA); }`;
+/** how much of what is asked for is made, by kind (part 92) */
+const PART_K = { blood: .42, bone: .42, slime: .42, wood: .45, debris: .45, spark: .3, flare: .5, shock: .5, frost: .6, fire: .6, acid: .6, dark: .6, volt: .6, holy: .6, goldburst: .6, dustpuff: .6, splash: .6 };
+/* part 92 (owner, 2026-11-20: "too many particles, and they are spheres"): a particle is a small chip of the thing it flew off - a square turned at its own angle, lit on one side and dark on the other, so it reads as a splinter of the world's own cubes - or, for what glows, a four-pointed spark with a bright heart. No more round blobs. */
+const PART_VS = `attribute float aSize; attribute float aAlpha; attribute vec3 aColor; uniform float uScale; uniform float uLit; uniform vec3 uHeroP; varying vec3 vC; varying float vA; varying vec2 vW; varying vec2 vR;
+void main(){ vC=aColor*mix(1.0,mix(0.45,1.3,1.0-smoothstep(1.2,8.0,length(position.xz-uHeroP.xz))),uLit); vA=aAlpha; vW=position.xz; float an=fract(sin(float(gl_VertexID)*12.9898)*43758.5453)*6.2832; vR=vec2(cos(an),sin(an)); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_PointSize=max(1.0,aSize*uScale); }`;
+const PART_FS = `varying vec3 vC; varying float vA; varying vec2 vW; varying vec2 vR; uniform vec3 uClip; uniform float uGlow; void main(){ if(abs(vW.x-uClip.x)>uClip.z||abs(vW.y-uClip.y)>uClip.z||vA<=0.001) discard; vec2 p=gl_PointCoord-0.5;
+ if(uGlow>0.5){ /* a spark: four thin points and a bright heart */ float d=abs(p.x)+abs(p.y), star=max(0.0,1.0-d*2.0), arm=max(0.0,1.0-min(abs(p.x),abs(p.y))*9.0)*max(0.0,1.0-max(abs(p.x),abs(p.y))*2.0); float k=max(star*star,arm*0.9); if(k<0.04) discard; gl_FragColor=vec4(vC*(0.7+0.6*k),vA*k); }
+ else{ /* a chip: a square at its own angle, two faces */ vec2 q=vec2(p.x*vR.x-p.y*vR.y,p.x*vR.y+p.y*vR.x); if(max(abs(q.x),abs(q.y))>0.33) discard; float face=q.x+q.y>0.0?1.18:0.72; gl_FragColor=vec4(vC*face,vA); } }`;
 class ParticlePool {
   constructor(n, additive, scene) {
     this.n = n; this.i = 0; const f = k => new Float32Array(n * k);
     this.pos = f(3); this.col = f(3); this.size = f(1); this.alpha = f(1); this.vel = f(3); this.life = f(1); this.max = f(1); this.grav = f(1); this.drag = f(1); this.s0 = f(1); this.a0 = f(1); this.grow = f(1);
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(this.pos, 3)); g.setAttribute('aColor', new THREE.BufferAttribute(this.col, 3)); g.setAttribute('aSize', new THREE.BufferAttribute(this.size, 1)); g.setAttribute('aAlpha', new THREE.BufferAttribute(this.alpha, 1));
-    this.mat = new THREE.ShaderMaterial({ uniforms: { uScale: { value: 1 }, uClip: CLIP, uLit: additive ? { value: 0 } : PLIT, uHeroP: HERO_P }, vertexShader: PART_VS, fragmentShader: PART_FS, transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending });
+    this.mat = new THREE.ShaderMaterial({ uniforms: { uScale: { value: 1 }, uClip: CLIP, uLit: additive ? { value: 0 } : PLIT, uHeroP: HERO_P, uGlow: { value: additive ? 1 : 0 } }, vertexShader: PART_VS, fragmentShader: PART_FS, transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending });
     this.points = new THREE.Points(g, this.mat); this.points.frustumCulled = false; this.geo = g; scene.add(this.points);
   }
   spawn(x, y, z, vx, vy, vz, life, size, r, g, b, a, grav, drag, grow) { if (!(x === x && y === y && z === z)) return;
     const i = this.i; this.i = (i + 1) % this.n; const k = i * 3;
     this.pos[k] = x; this.pos[k + 1] = y; this.pos[k + 2] = z; this.vel[k] = vx; this.vel[k + 1] = vy; this.vel[k + 2] = vz; this.col[k] = r; this.col[k + 1] = g; this.col[k + 2] = b;
-    this.life[i] = this.max[i] = life; this.s0[i] = size; this.a0[i] = a; this.grav[i] = grav; this.drag[i] = drag; this.grow[i] = grow; this.size[i] = size; this.alpha[i] = a;
+    this.colDirty = true; this.live = Math.max(this.live || 0, life); this.life[i] = this.max[i] = life; this.s0[i] = size; this.a0[i] = a; this.grav[i] = grav; this.drag[i] = drag; this.grow[i] = grow; this.size[i] = size; this.alpha[i] = a;
   }
   update(dt) {
-    const { n, pos, vel, life, max, size, alpha } = this;
+    const { n, pos, vel, life, max, size, alpha } = this; /* nothing alive in the pool: nothing to move and nothing to send to the card */ if (!(this.live > 0) && !this.colDirty) { if (this.points.visible) this.points.visible = false; return; } if (!this.points.visible) this.points.visible = true; this.live = Math.max(0, (this.live || 0) - dt);
     for (let i = 0; i < n; i++) {
       if (life[i] <= 0) continue; life[i] -= dt; if (life[i] <= 0) { alpha[i] = 0; size[i] = 0; continue; }
       const k = i * 3; vel[k + 1] -= this.grav[i] * dt; const f = Math.max(0, 1 - this.drag[i] * dt); vel[k] *= f; vel[k + 1] *= f; vel[k + 2] *= f;
@@ -5754,13 +5766,14 @@ class ParticlePool {
       if (pos[k + 1] < .03 && this.grav[i] > 0) { pos[k + 1] = .03; if (PLIT.value && vel[k + 1] < -1.2) { vel[k + 1] *= -.32; vel[k] *= .55; vel[k + 2] *= .55; } else vel[k] = vel[k + 1] = vel[k + 2] = 0; } // sparks and debris bounce once before they settle
       const q = life[i] / max[i]; alpha[i] = this.a0[i] * Math.min(1, q * 2.5); size[i] = this.s0[i] * (1 + this.grow[i] * (1 - q));
     }
-    const a = this.geo.attributes; a.position.needsUpdate = a.aSize.needsUpdate = a.aAlpha.needsUpdate = a.aColor.needsUpdate = true;
+    const a = this.geo.attributes; a.position.needsUpdate = a.aSize.needsUpdate = a.aAlpha.needsUpdate = true; if (this.colDirty) { a.aColor.needsUpdate = true; this.colDirty = false; }
   }
 }
 class ParticleManager {
   constructor(G) { this.G = G; this.add = new ParticlePool(700, true, G.scene); this.nor = new ParticlePool(500, false, G.scene); this.points = [this.add.points, this.nor.points]; }
   setScale(s) { this.add.mat.uniforms.uScale.value = s; this.nor.mat.uniforms.uScale.value = s; }
   emit(kind, x, y, z, n = 1, dx = 0, dz = 0) {
+    /* fewer: what flies off a struck body is under half of what it was, the sparks and bursts half; nothing is made outside the slab in sight */ { const c = CLIP.value; if (c && c.z > 0 && (Math.abs(x - c.x) > c.z + 1.5 || Math.abs(z - c.y) > c.z + 1.5)) return; const K = PART_K[kind]; if (K !== undefined && n > 1) { const f = n * K; n = Math.floor(f) + (Math.random() < f - Math.floor(f) ? 1 : 0); if (n < 1) n = 1; } /* a burst of sparks is a handful, whatever asks for it (a hard blow asked for twenty) */ if (kind === 'spark' && n > 5) n = 5; else if (PART_K[kind] !== undefined && n > 16) n = 16; }
     y += this.G.world.hAt(x, z);
     const A = this.add, N = this.nor, r = rand;
     for (let i = 0; i < n; i++) switch (kind) {
@@ -5775,11 +5788,13 @@ class ParticleManager {
       case 'dark': A.spawn(x + r(-.4, .4), y + r(-.5, .3), z + r(-.4, .4), 0, r(.4, 1.2), 0, r(.5, 1), 2.4, .9, .35, 1.4, .9, 0, .5, -.5); break;
       case 'dust': A.spawn(x + r(-7, 7), y + r(.2, 2.4), z + r(-7, 7), r(-.12, .12), r(-.04, .06), r(-.12, .12), r(4, 8), 1.5, .16, .13, .09, .7, 0, 0, 0); break;
       case 'dustpuff': N.spawn(x + r(-.2, .2), y, z + r(-.2, .2), r(-.8, .8), r(.2, .7), r(-.8, .8), r(.4, .8), 3, .22, .2, .17, .3, 0, 2, 1.2); break;
-      case 'blood': N.spawn(x, y, z, dx * 2 + r(-1.6, 1.6), r(.8, 3.2), dz * 2 + r(-1.6, 1.6), r(.9, 2.2), r(2, 3.2), .32, .02, .015, 1, 10, .5, 0); break;
-      case 'bone': N.spawn(x, y, z, dx * 3 + r(-2.4, 2.4), r(1, 4), dz * 3 + r(-2.4, 2.4), r(1.2, 2.8), r(2.2, 3.6), .62, .58, .46, 1, 11, .4, 0); break;
-      case 'slime': N.spawn(x, y, z, dx * 2 + r(-2, 2), r(.8, 3), dz * 2 + r(-2, 2), r(.8, 2), r(2.4, 4), .2, .5, .08, .9, 9, .5, 0); break;
+      case 'blood': N.spawn(x, y, z, dx * 2 + r(-1.6, 1.6), r(.8, 3.2), dz * 2 + r(-1.6, 1.6), r(.45, 1.0), r(2.4, 3.6), .32, .02, .015, 1, 10, .5, 0); break;
+      case 'bone': N.spawn(x, y, z, dx * 3 + r(-2.4, 2.4), r(1, 4), dz * 3 + r(-2.4, 2.4), r(.6, 1.3), r(2.6, 4), .62, .58, .46, 1, 11, .4, 0); break;
+      case 'slime': N.spawn(x, y, z, dx * 2 + r(-2, 2), r(.8, 3), dz * 2 + r(-2, 2), r(.45, 1.0), r(2.6, 4.2), .2, .5, .08, .9, 9, .5, 0); break;
       case 'wood': N.spawn(x, y, z, dx * 2 + r(-2.4, 2.4), r(1, 3.6), dz * 2 + r(-2.4, 2.4), r(.8, 2), r(2.2, 3.8), .2, .12, .06, 1, 11, .4, 0); break;
       case 'debris': N.spawn(x + r(-.5, .5), y + r(0, 1), z + r(-.5, .5), r(-1, 1), r(-1, 1), r(-1, 1), r(.9, 2), r(2, 3.6), .25, .22, .18, 1, 9, .3, 0); break;
+      case 'volt': { const a = r(TAU), sp = r(2, 5); A.spawn(x, y, z, Math.cos(a) * sp, r(.2, 2.2), Math.sin(a) * sp, r(.15, .35), r(1.8, 2.8), .8, 1.5, 2.6, 1, 4, 2, -.5); break; }
+      case 'holy': A.spawn(x + r(-.2, .2), y, z + r(-.2, .2), r(-.6, .6), r(.6, 2), r(-.6, .6), r(.3, .6), r(1.8, 2.8), 2.4, 2.0, 1.0, 1, -.3, 1, -.5); break;
       case 'acid': A.spawn(x, y, z, r(-.4, .4), r(0, .6), r(-.4, .4), r(.2, .45), 2.2, .3, 1.3, .1, .8, 1, 1, -.5); break;
       case 'frost': A.spawn(x, y, z, r(-.5, .5), r(0, .6), r(-.5, .5), r(.2, .5), 2.2, .9, 1.3, 1.8, .8, .5, 1, -.5); break;
       case 'snow': A.spawn(x + r(-7, 7), y + r(2, 4), z + r(-7, 7), r(-.8, -.3), r(-1.4, -.8), r(.2, .6), r(2.5, 4), 1.6, .5, .6, .75, .8, 0, 0, 0); break;
@@ -5875,8 +5890,11 @@ class FX {
   updLock(dt) { const e = this.G.player && this.G.player.lockE; if (!this.lockM) { if (!e) return; const m = this.lockM = new THREE.Mesh(new THREE.RingGeometry(.86, 1, 4, 1).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xffd060, transparent: true, opacity: .95, depthWrite: false, depthTest: false, fog: false })); m.renderOrder = 4; this.G.scene.add(m); }
     const m = this.lockM; m.visible = !!e; if (!e) return; const r = (e.r || .4) * 1.9; m.position.set(e.x, this.G.world.hAt(e.x, e.z) + .06, e.z); m.scale.set(r, 1, r); m.rotation.y += dt * 1.6; }
   /** a flooded dungeon: a sheet of water over the floor, wherever the hero is */
-  updFlood(dt) { const G = this.G, on = !!(G.biome && G.biome.flood), p = G.player; if (!this.floodM) { if (!on) return; const m = this.floodM = new THREE.Mesh(new THREE.PlaneGeometry(64, 64).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x3a8ab0, transparent: true, opacity: .42, depthWrite: false })); m.renderOrder = 1; m.frustumCulled = false; G.scene.add(m); }
-    const m = this.floodM; m.visible = on; if (!on) return; m.position.set(p.x, (G.world.hAt(p.x, p.z) || 0) + .3 + Math.sin(G.time * 1.3) * .03, p.z); if (Math.random() < dt * 5 && (p.ivx || p.ivz || p.mdx || p.mdz)) this.ripple(p.x, p.z, 0xc8ecff); }
+  /** the water of a drowned floor lies on each tile at that tile's own height (owner, 2026-11-20: it was one sheet at the height of the hero's feet - from a terrace the whole floor looked drowned to the top, and the water sank as the hero went down, as if the hero made it). A square of forty tiles about the hero, laid again when the hero steps onto another tile */
+  updFlood(dt) { const G = this.G, on = !!(G.biome && G.biome.flood), p = G.player, N = 40; if (!this.floodM) { if (!on) return; const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * N * 18), 3)); const m = this.floodM = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x3a8ab0, transparent: true, opacity: .42, depthWrite: false })); m.renderOrder = 1; m.frustumCulled = false; G.scene.add(m); this.floodAt = null; }
+    const m = this.floodM; m.visible = on; if (!on) return; const tx = Math.floor(p.x), tz = Math.floor(p.z), key = tx + ',' + tz + ',' + G.depth + ',' + (G.chunks.loaded ? G.chunks.loaded.size : 0);
+    if (this.floodAt !== key) { this.floodAt = key; const P = m.geometry.attributes.position.array, W = G.world; let o = 0; for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const x = tx - N / 2 + i, z = tz - N / 2 + j; let y = -50; try { if (W.code(x, z) !== 1) y = (W.hAt(x + .5, z + .5) || 0) + .3; } catch (e) { } /* a tile of wall carries no water: its square is folded away under the world */ P[o++] = x; P[o++] = y; P[o++] = z; P[o++] = x; P[o++] = y; P[o++] = z + 1; P[o++] = x + 1; P[o++] = y; P[o++] = z + 1; P[o++] = x; P[o++] = y; P[o++] = z; P[o++] = x + 1; P[o++] = y; P[o++] = z + 1; P[o++] = x + 1; P[o++] = y; P[o++] = z; } m.geometry.attributes.position.needsUpdate = true; }
+    m.position.set(0, Math.sin(G.time * 1.3) * .03, 0); if (Math.random() < dt * 5 && (p.ivx || p.ivz || p.mdx || p.mdz)) this.ripple(p.x, p.z, 0xc8ecff); }
   updLevel(dt) { const L = this.lvl; if (!L || L.t <= 0) return; L.t -= dt; const parts = [L.outer, L.inner, L.r1, L.r2, L.disc]; if (L.t <= 0) { for (const m of parts) m.visible = false; return; }
     const p = L.p, e = 2 - L.t, y = this.G.world.hAt(p.x, p.z), ease = k => 1 - Math.pow(1 - Math.min(1, k), 3), out = Math.min(1, L.t / .9);
     for (const m of parts) { m.visible = true; m.position.set(p.x, y + .04, p.z); }
@@ -5891,7 +5909,7 @@ class FX {
   updateFx7(dt) {
     const G = this.G, p = G.player; if (!p) return;
     /* contact shadows under the hero and the nearest foes */
-    if (gfx('ao')) { const L = [p, ...G.enemies.list.filter(e => e.alive && e.hidden <= 0 && Math.abs(e.x - p.x) < 10 && Math.abs(e.z - p.z) < 10).slice(0, 39)]; this.blobs.forEach((m, i) => { const e = L[i]; if (!e) { m.visible = false; return; } const r = e === p ? .42 : (e.r || .3) * 1.5 * (e.type === 'boss' ? 1.3 : 1); m.visible = !(e.dead || e.state === 'dead'); m.position.set(e.x, G.world.hAt(e.x, e.z) + .028, e.z); m.scale.set(r * 2, 1, r * 2); }); }
+    if (gfx('ao')) { const L = [p, ...G.enemies.list.filter(e => e.alive && !e.under && Math.abs(e.x - p.x) < 10 && Math.abs(e.z - p.z) < 10).slice(0, 39)]; this.blobs.forEach((m, i) => { const e = L[i]; if (!e) { m.visible = false; return; } const r = e === p ? .42 : (e.r || .3) * 1.5 * (e.type === 'boss' ? 1.3 : 1); m.visible = !(e.dead || e.state === 'dead'); m.position.set(e.x, G.world.hAt(e.x, e.z) + .028, e.z); m.scale.set(r * 2, 1, r * 2); }); }
     else this.blobs.forEach(m => m.visible = false);
     /* light shafts slanting down in the open-sky realms (thinner during a fight) */
     /* real shafts: where the sun is blocked (a canopy, a wall, a doorway's lintel) the shaft is cut, read from the sun's own shadow map */
@@ -6706,7 +6724,7 @@ class HUD {
     { let h = ''; const chip = (k, col, name, t) => `<span class="sx" style="color:${col}" title="${name}"><svg viewBox="0 0 24 24"><path d="${STATUS_ICON[k] || STATUS_ICON.curse}"/></svg>${OPT.cb ? name + ' ' : ''}<small>${t > 0 ? Math.ceil(t) + 's' : ''}</small></span>`;
       for (const k in p.sx) h += chip(k, STATUS[k].col, STATUS[k].n + (k === 'chill' ? ' ' + p.chillN : ''), p.sx[k]); if (!p.sx.silence && (G.zone === 'null' || G.floorRule === 'silence')) h += chip('silence', STATUS.silence.col, STATUS.silence.n, 0); if (p.poisonT > 0) h += chip('poison', '#9ae04a', 'POISON', p.poisonT); if (p.slowT > 0 && !p.sx.slow) h += chip('slow', '#b0b0b0', 'SLOW', p.slowT); if (p.wardT > 0) h += chip('ward', '#d0e8ff', 'WARD', p.wardT); if (p.casting) h += `<span style="color:#ffe9a0">CASTING ${SPELLS[p.casting.k].n}</span>`; if (this.c.st !== h) { this.c.st = h; $('status').innerHTML = h; } } this.cls('aPot', 'off', p.potions <= 0); this.set2('aPot', p.potionCd > 0 && p.potions > 0 ? Math.ceil(p.potionCd) + 's' : ''); this.set('sMana', p.mpots | 0); this.cls('aMana', 'off', !(p.mpots > 0)); { const rn = p.rollN === undefined ? CB.rollN : p.rollN; this.cls('aDodge', 'off', rn < 1); this.set2('aDodge', rn < CB.rollN ? Math.max(1, Math.ceil(CB.rollCd * p.M.roll - (p.rollT || 0))) + 's' : ''); if (this.c.rollN !== rn) { this.c.rollN = rn; let el = $('aDodge').querySelector('small'); if (!el) { el = document.createElement('small'); $('aDodge').insertBefore(el, $('aDodge').querySelector('b')); } el.textContent = rn; } const need = CB.rollCd * p.M.roll, sf = Math.min(1, (rn + (rn < CB.rollN ? (p.rollT || 0) / need : 0)) / CB.rollN); if (this.c.stf !== sf) { this.c.stf = sf; const f = $('stFill'); if (f) f.style.width = (sf * 100).toFixed(1) + '%'; } } this.set('sChm', p.bracelets); this.cls('aChm', 'off', !(p.bracelets > 0)); { let e = $('sEsc'); if (!e && $('aEsc')) { e = document.createElement('small'); e.id = 'sEsc'; $('aEsc').insertBefore(e, $('aEsc').querySelector('b')); } if (e) this.set('sEsc', ''); this.cls('aEsc', 'off', !!(POCKET && !POCKET.town) || !!G.lock || !!(G.events && G.events.cur)); } { const due = G.talentsDue(); this.cls('aTal', 'due', due > 0); }
     // health bars over wounded monsters
-    let bi = 0; for (const e of G.enemies.list) { if (bi >= this.ebars.length) break; if (!e.alive || (e.hp >= e.maxHp && !e.role && !e.elite && !Object.keys(e.sx).length) || (e.type === 'boss' && !e.clone)) continue; if (Math.abs(e.x - p.x) > 11 || Math.abs(e.z - p.z) > 11) continue;
+    let bi = 0; for (const e of G.enemies.list) { if (bi >= this.ebars.length) break; if (!e.alive || e.under || (e.hp >= e.maxHp && !e.role && !e.elite && !Object.keys(e.sx).length) || (e.type === 'boss' && !e.clone)) continue; if (Math.abs(e.x - p.x) > 11 || Math.abs(e.z - p.z) > 11) continue;
       const b = this.ebars[bi++], v = G.cam.project(e.x, (e.gy || 0) + (e.type === 'rat' || e.type === 'slime' ? .8 : 1.75) * (e.S.scale || 1) + .15, e.z), w = Math.round(e.hp / e.maxHp * 100);
       if (!b.on) { b.on = true; b.el.style.display = 'block'; } if (b.w !== w) { b.w = w; b.f.style.width = w + '%'; }
       { const tg = (e.elite ? 'ELITE \u00b7 ' : '') + (e.affix ? AFFIX[e.affix].n + ' ' : '') + (e.role ? ROLES[e.role].n : '') + Object.keys(e.sx).map(k => STATUS[k] ? ' ' + STATUS[k].n : '').join('') + (e.shield > 0 ? ' WARD' : ''); if (b.tg !== tg) { b.tg = tg; if (!b.em) { b.em = document.createElement('em'); b.el.appendChild(b.em); } b.em.textContent = tg; } }
@@ -6876,7 +6894,7 @@ class Allies {
   update(dt) { const G = this.G, p = G.player; if (!this.list.length && !this.zones.length) return; const sp = p.spellPow() * (p.M.minion || 1);
     for (const a of [...this.list]) { if (a.sk) { this.skUnit(a, dt); continue; } const wolf = a.kind === 'wolf', dur = wolf ? .34 : .5; a.t += dt; a.life -= dt; a.cd -= dt; a.rise = Math.max(0, a.rise - dt); a.lunge = Math.max(0, a.lunge - dt); a.flash = Math.max(0, a.flash - dt * 4); if (a.life <= 0 || p.dead) { this.drop(a); continue; }
       /* it goes for the nearest foe it can see near the hero, asleep or not; with none, it keeps a place behind the hero */
-      let b = null, bd = 8.5; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.hidden > 0 || e.entT === undefined && e.enter) continue; const d = Math.hypot(e.x - a.x, e.z - a.z); if (d < bd && Math.hypot(e.x - p.x, e.z - p.z) < 10 && G.world.los(a.x, a.z, e.x, e.z)) { bd = d; b = e; } }
+      let b = null, bd = 8.5; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.under || e.entT === undefined && e.enter) continue; const d = Math.hypot(e.x - a.x, e.z - a.z); if (d < bd && Math.hypot(e.x - p.x, e.z - p.z) < 10 && G.world.los(a.x, a.z, e.x, e.z)) { bd = d; b = e; } }
       const i = this.list.indexOf(a), tx = b ? b.x : p.x - Math.sin(p.facing + (i - 1) * .9) * 1.4, tz = b ? b.z : p.z - Math.cos(p.facing + (i - 1) * .9) * 1.4, dx = tx - a.x, dz = tz - a.z, dd = Math.hypot(dx, dz) || 1, stop = b ? (b.r || .4) + .7 : .35; let mv = 0;
       if (Math.hypot(p.x - a.x, p.z - a.z) > 13) { a.x = p.x; a.z = p.z; a.rise = .5; } else if (dd > stop && a.rise <= 0 && a.lunge <= 0) { const sp0 = (wolf ? 6.4 : 4.8) * (b || dd > 3 ? 1 : .55), v = Math.min(dd - stop, sp0 * dt), nx = a.x + dx / dd * v, nz = a.z + dz / dd * v; if (G.world.walkLine(a.x, a.z, nx, nz, .25)) { a.x = nx; a.z = nz; mv = sp0 > 4 ? (wolf ? 1.35 : 1) : .6; } else if (!b && dd > 5) { a.x = p.x; a.z = p.z; a.rise = .5; } a.facing = rotTo(a.facing, Math.atan2(dx, dz), 12 * dt); }
       else if (!b && a.lunge <= 0) a.facing = rotTo(a.facing, p.facing, 3 * dt);
@@ -6889,7 +6907,7 @@ class Allies {
       if (!wolf && a.rise > 0 && Math.random() < dt * 40) G.fx.particles.emit('debris', a.x + rand(-.25, .25), .05, a.z + rand(-.25, .25), 1);
       a.m.visible = !G.titleOn && !(a.life < 2.5 && Math.sin(a.t * 30) < -.3); }
     for (const q of [...this.zones]) { q.t -= dt; q.age += dt; if (q.t <= 0) { this.unzone(q); continue; } q.m.position.set(q.x, (G.world.hAt(q.x, q.z) || 0) + .05, q.z); if (q.kind === 'sk') { this.skZoneTick(q, dt); continue; }
-      if (q.kind === 'trap') { q.m.material.opacity = q.age < .5 ? .3 : .55 + .25 * Math.sin(q.age * 8); if (q.age > .5) { let go = false; for (const e of G.enemies.list) if (e.alive && !e.resting && !(e.hidden > 0) && Math.hypot(e.x - q.x, e.z - q.z) < 1.3 + e.r) { go = true; break; }
+      if (q.kind === 'trap') { q.m.material.opacity = q.age < .5 ? .3 : .55 + .25 * Math.sin(q.age * 8); if (q.age > .5) { let go = false; for (const e of G.enemies.list) if (e.alive && !e.resting && !(e.under) && Math.hypot(e.x - q.x, e.z - q.z) < 1.3 + e.r) { go = true; break; }
           if (go) { G.dsrc = 'spell'; G.dsk = 'trap'; for (const e of G.enemies.list) if (e.alive && !e.resting && Math.hypot(e.x - q.x, e.z - q.z) < 2.5 + e.r) { const dx = e.x - q.x, dz = e.z - q.z, d = Math.hypot(dx, dz) || 1; e.takeDamage(q.sp * 1.1 /* balance (part 64): it was .7 - the snare did less per cast than a thrown fan and waits ten seconds */ * rand(.9, 1.1), dx / d, dz / d, .8, false, 'slash'); applyStatus(e, 'bleed', 4, q.sp * .1); } G.dsrc = null; G.fx.particles.emit('spark', q.x, .4, q.z, 40); G.fx.wave(q.x, q.z, .5); G.audio.play('shatter', q.x, q.z); G.shake(.2); this.unzone(q); } } }
       else { q.m.material.opacity = Math.min(1, q.t) * (.5 + .12 * Math.sin(q.age * 5)); q.tick -= dt; if (q.tick <= 0) { q.tick = .5; G.dsrc = 'spell'; G.dsk = 'hallow'; for (const e of G.enemies.list) if (e.alive && !e.resting && Math.hypot(e.x - q.x, e.z - q.z) < 3 + e.r) { const u = e.type === 'skeleton' || e.type === 'warrior' || biomeOf(G.depth).id === 'undead' ? (q.und || 1) * 2 : 1; e.takeDamage(q.sp * .2 * u, 0, 0, 0, false, 'holy'); } G.dsrc = null;
           if (Math.hypot(p.x - q.x, p.z - q.z) < 3.2 && p.hp < p.maxHp && !p.dead) { p.hp = Math.min(p.maxHp, p.hp + p.maxHp * .012 * p.M.heal); G.fx.particles.emit('heal', p.x, .8, p.z, 3); } } } }
@@ -6915,7 +6933,7 @@ class FamiliarPet {
     /* it keeps to the hero's left shoulder, a step behind; if it falls far behind it simply catches up */
     const tx = p.x - Math.sin(p.facing) * .9 + Math.cos(p.facing) * .7, tz = p.z - Math.cos(p.facing) * .9 - Math.sin(p.facing) * .7, dx = tx - this.x, dz = tz - this.z, dd = Math.hypot(dx, dz); if (dd > 9) { this.x = tx; this.z = tz; } else if (dd > .15) { const v = Math.min(dd, (2.5 + dd * 2.2) * dt); this.x += dx / dd * v; this.z += dz / dd * v; this.m.rotation.y = rotTo(this.m.rotation.y, Math.atan2(dx, dz), 10 * dt); }
     const g = G.world.hAt(this.x, this.z) || 0, mv = dd > .3; this.m.position.set(this.x, g + (F.fly ? .95 + Math.sin(this.t * 3.1) * .08 : Math.abs(Math.sin(this.t * (mv ? 11 : 0))) * .16 + Math.sin(Math.min(1, this.hop / .4) * Math.PI) * .3) + .02, this.z); this.m.visible = !p.dead && !G.titleOn;
-    if (p.dead || G.paused) return; const near = r => { let b = null, bd = r; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.hidden > 0 || e.state === 'idle') continue; const d = Math.hypot(e.x - p.x, e.z - p.z); if (d < bd) { bd = d; b = e; } } return b; };
+    if (p.dead || G.paused) return; const near = r => { let b = null, bd = r; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.under || e.state === 'idle') continue; const d = Math.hypot(e.x - p.x, e.z - p.z); if (d < bd) { bd = d; b = e; } } return b; };
     if (it.fam === 'gulper' && this.cd <= 0) { const e = near(5); if (e) { this.cd = 26 - L * 3; this.x = e.x; this.z = e.z; this.hop = .4; G.fx.particles.emit('slime', e.x, .4, e.z, 16); G.audio.play('chomp', e.x, e.z); if (e.elite || e.type === 'boss') e.takeDamage(p.dmg * 2, 0, 0, .4, false, 'pierce'); else { e.takeDamage(e.hp + 1, 0, 0, 0, false, 'pierce'); G.hud.number(e.x, 1.6, e.z, 'GULP', '#8ad08a'); } } }
     else if (it.fam === 'emberling' && this.cd <= 0) { const e = near(6); if (e) { this.cd = 9 - L; applyStatus(e, 'burn', 3.5, p.dmg * .25); G.fx.bolt(this.x, this.z, e.x, e.z, 0xff8a30); G.fx.particles.emit('fire', e.x, .6, e.z, 10); G.audio.play('zfire', e.x, e.z, .6); } }
     else if (it.fam === 'glimmer' && this.cd <= 0 && G.hud.c.fight && p.hp < p.maxHp) { this.cd = 5; const h = Math.round(p.maxHp * (.6 + L * .3) / 100); p.hp = Math.min(p.maxHp, p.hp + h); G.hud.number(p.x, 2, p.z, '+' + h, '#ffe9a0'); G.fx.particles.emit('heal', p.x, 1, p.z, 6); }
@@ -7167,7 +7185,7 @@ class MouseController {
     let best = null, bd = 1e9;
     for (const e of G.enemies.list) { if (!e.alive) continue; const rr = (e.r + .3) * (e.r + .3) * (e.S.scale > 1.5 ? 2 : 1), d2 = R.distanceSqToPoint(this.v.set(e.x, (e.gy || 0) + .55 * e.S.scale, e.z)); if (d2 < rr && d2 < bd) { bd = d2; best = e; } }
     /* part 74: a click that just misses a creature that moved is still meant for it (a tile about the point), and a button held after a kill goes on to the next creature near the pointer instead of walking there */
-    if (!best && this.floor()) { const hx = this.hit.x, hz = this.hit.z, R2 = first ? .9 : this.hold === 'enemy' ? 3.5 : 0; let d0 = R2; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.hidden > 0) continue; const d = Math.hypot(e.x - hx, e.z - hz) - e.r; if (d < d0 && Math.hypot(e.x - p.x, e.z - p.z) < 11) { d0 = d; best = e; } } this.ray.setFromCamera(this.ndc, G.cam.cam); }
+    if (!best && this.floor()) { const hx = this.hit.x, hz = this.hit.z, R2 = first ? .9 : this.hold === 'enemy' ? 3.5 : 0; let d0 = R2; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.under) continue; const d = Math.hypot(e.x - hx, e.z - hz) - e.r; if (d < d0 && Math.hypot(e.x - p.x, e.z - p.z) < 11) { d0 = d; best = e; } } this.ray.setFromCamera(this.ndc, G.cam.cam); }
     if (best) { p.setTargetEnemy(best); this.hold = 'enemy'; return; }
     if (!first && this.hold === 'enemy') return; /* held after a kill with nothing near the pointer: the hero stands, it does not walk */
     if (first) for (const r of G.inter.list) { if (r.done) continue; if (R.distanceSqToPoint(this.v.set(r.x, G.world.hAt(r.x, r.z) + .45, r.z)) < .36) { p.setTargetInteract(r); G.fx.mark(r.x, r.z); this.hold = 'obj'; return; } }
@@ -8978,7 +8996,7 @@ class Game {
       if (s.root) { if (m > .01) p.facing = Math.atan2(wx, wz); p.setManualMove(0, 0, 1); } else if (m > .01) p.setManualMove(wx / m, wz / m, m > .65 ? 1 : .5); else p.setManualMove(0, 0, 1);
       let aim; /* the right stick does not turn the hero nor strike (owner): pressed, it fixes the nearest creature as the target (pressed again, lets it go); pushed, it moves the mark to the creature on that side. The hero's blows and spells go to the marked one */
       if (s.labels) { this.labelsOn = !this.labelsOn; this.audio.play('uimove'); }
-      { const near = e => e.alive && !e.resting && !(e.hidden > 0) && !(e.enter && !e.entered) && Math.hypot(e.x - p.x, e.z - p.z) < 14; if (p.lockE && !near(p.lockE)) p.lockE = null;
+      { const near = e => e.alive && !e.resting && !(e.under) && !(e.enter && !e.entered) && Math.hypot(e.x - p.x, e.z - p.z) < 14; if (p.lockE && !near(p.lockE)) p.lockE = null;
         if (s.lock) { if (p.lockE) p.lockE = null; else { let b = null, bd = 1e9; for (const e of this.enemies.list) if (near(e)) { const d = Math.hypot(e.x - p.x, e.z - p.z); if (d < bd) { bd = d; b = e; } } p.lockE = b; } this.audio.play(p.lockE ? 'uiok' : 'uiback'); }
         const push = !!s.aim && Math.hypot(s.aim[0], s.aim[1]) > .6; if (push && !this.aimWas && p.lockE) { const a = Math.atan2(s.aim[0] - s.aim[1], -s.aim[0] - s.aim[1]), L = p.lockE; let b = null, bs = 1.1; for (const e of this.enemies.list) if (e !== L && near(e)) { const d = Math.abs(angDiff(Math.atan2(e.x - L.x, e.z - L.z), a)); if (d < bs) { bs = d; b = e; } } if (b) { p.lockE = b; this.audio.play('uimove'); } } this.aimWas = push; }
       let use = false; if (s.attack) { const o = this.inter.nearest(p.x, p.z, 1.75) || (this.events && this.events.nearest(p.x, p.z, 2)) || this.loot.nearest(p.x, p.z, 1.7); if (o && !this.enemies.list.some(e => e.alive && !e.resting && e.state !== 'idle' && e.state !== 'patrol' && Math.hypot(e.x - p.x, e.z - p.z) < 2.6)) { use = true; p.interact(); } }
@@ -9108,7 +9126,7 @@ Object.assign(Player.prototype, {
     else if (k === 'el') { const t = s.o.elT, v = skV(this, id, 'c1'), r = n >= 2 ? skYd(4) : 0; if (r) { G.fx.wave(e.x, e.z, .5); this.skNear(e.x, e.z, r, q => { this.skDmg(q, skRoll(v), t, .3, id); if (n >= 3 && s.v.c3f) applyStatus(q, 'freeze', Math.min(4, skV(this, id, 'c3f'))); if (n >= 3 && s.v.c3 && t === 'fire') applyStatus(q, 'burn', 3, skAvg(skV(this, id, 'c3'))); }); if (n >= 3 && t === 'storm') this.skNear(e.x, e.z, skYd(8), q => this.skDmg(q, skRoll(skV(this, id, 'c3')) * .5, t, .1, id)); } else this.skDmg(e, skRoll(v), t, .2, id); P.emit(t === 'fire' ? 'flare' : t === 'frost' ? 'frost' : 'shock', e.x, 1, e.z, 20); }
     else if (k === 'tri') { const t = n === 1 ? 'fire' : n === 2 ? 'storm' : 'frost', v = skV(this, id, key); G.fx.wave(e.x, e.z, .7); this.skNear(e.x, e.z, skYd(n === 1 ? 4 : 7), q => { this.skDmg(q, skRoll(v), t, .3, id); if (n === 3) applyStatus(q, 'chill', 4); }); P.emit(n === 1 ? 'flare' : n === 2 ? 'shock' : 'frost', e.x, 1, e.z, 40); } },
   /** the nearest creature the hero could mean with a blow: in reach, in front first */
-  skFoe(R, any) { const G = this.G, T = this.targetE; if (T && T.alive && Math.hypot(T.x - this.x, T.z - this.z) - T.r < R) return T; let b = null, bs = 1e9; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.hidden > 0) continue; const dx = e.x - this.x, dz = e.z - this.z, d = Math.hypot(dx, dz) - e.r; if (d > R) continue; const a = Math.abs(angDiff(Math.atan2(dx, dz), this.facing)), sc = d + (any ? 0 : a * 1.5); if (sc < bs) { bs = sc; b = e; } } return b; },
+  skFoe(R, any) { const G = this.G, T = this.targetE; if (T && T.alive && Math.hypot(T.x - this.x, T.z - this.z) - T.r < R) return T; let b = null, bs = 1e9; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.under) continue; const dx = e.x - this.x, dz = e.z - this.z, d = Math.hypot(dx, dz) - e.r; if (d > R) continue; const a = Math.abs(angDiff(Math.atan2(dx, dz), this.facing)), sc = d + (any ? 0 : a * 1.5); if (sc < bs) { bs = sc; b = e; } } return b; },
   skSwing(dur, arc, range, style) { const G = this.G; this.atkDur = dur; this.atkT = dur; this.atkHit = true; this.style = style || 'h'; this.combo = 0; this.comboT = 0; this.lastAtkT = this.t; this.queued = false; G.fx.swing(this.x, this.z, this.facing, arc, range, undefined, style || 'h'); G.audio.weapon(famKey(this.equip.weapon), this.x, this.z, false); },
   /** begin a skill the bar holds: called by castNow for every spell whose base is 'sk' */
   skCast(s, c) { const G = this.G, id = s.id; G.dsk = id; this.skUndead = s.v.undead ? skV(this, id, 'undead') : 0;
@@ -9290,7 +9308,7 @@ Object.assign(Allies.prototype, {
     if (unit === 'cage' && c.e && c.e.alive && c.e.type !== 'boss') c.e.stun(Math.min(8, a.life)); return a; },
   skUnit(a, dt) { const G = this.G, p = G.player, s = SKS[a.sk], o = s.o, U = a.U; a.t += dt; a.life -= dt; a.cd -= dt; a.rise = Math.max(0, a.rise - dt); a.lunge = Math.max(0, a.lunge - dt); a.flash = Math.max(0, a.flash - dt * 4);
     if (a.life <= 0 || a.hp <= 0 || p.dead) { const sp = a.unit === 'spirit'; this.drop(a); if (sp) p.derive(); return; }
-    let b = null, bd = a.still ? 8 : 9; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.hidden > 0) continue; const d = Math.hypot(e.x - a.x, e.z - a.z); if (d < bd && Math.hypot(e.x - p.x, e.z - p.z) < 12 && G.world.los(a.x, a.z, e.x, e.z)) { bd = d; b = e; } }
+    let b = null, bd = a.still ? 8 : 9; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.under) continue; const d = Math.hypot(e.x - a.x, e.z - a.z); if (d < bd && Math.hypot(e.x - p.x, e.z - p.z) < 12 && G.world.los(a.x, a.z, e.x, e.z)) { bd = d; b = e; } }
     const gy = G.world.hAt(a.x, a.z) || 0, strike = e => { const d = a.dmg(), ex = e.x - a.x, ez = e.z - a.z, ed = Math.hypot(ex, ez) || 1, pk = G.dsk; G.dsrc = 'spell'; G.dsk = a.sk; const dealt = d > 0 ? e.takeDamage(d * rand(.9, 1.1), ex / ed, ez / ed, .3, false, a.dt || (U.m === 'b' ? 'pierce' : 'slash')) || 0 : 0; G.dsrc = null; G.dsk = pk; if (s.v.slow && e.alive) applyStatus(e, 'slow', 3); if (s.v.leech && dealt) p.hp = Math.min(p.maxHp, p.hp + Math.min(p.maxHp * .05, dealt * skV(p, a.sk, 'leech') / 100 * .2)); if (a.feed && a.feed.t > G.time) a.hp = Math.min(a.maxHp, a.hp + dealt * a.feed.ls / 100); if (s.v.pdur && s.v.d && o.dt === 'poison') p.skPoison(e, d, skV(p, a.sk, 'pdur'), a.sk); if (a.shots) { a.shots--; if (a.shots <= 0) a.life = 0; } };
     if (a.pm) { /* a pillar: it shoots, it pulses, it feeds, or it only stands */ if (U.float) { const tx = p.x - Math.sin(p.facing + 2.4) * 1.5, tz = p.z - Math.cos(p.facing + 2.4) * 1.5; a.x += (tx - a.x) * Math.min(1, dt * 3); a.z += (tz - a.z) * Math.min(1, dt * 3); }
       a.m.position.set(a.x, gy + U.h / 2 + (U.float ? .5 + Math.sin(a.t * 2) * .1 : 0), a.z); a.m.rotation.y += dt * 1.5; a.m.visible = !G.titleOn;
