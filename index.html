@@ -1333,7 +1333,7 @@ const CFG = {
   TITLE: 'DOWNFALL DUNGEON', /* the game's name: the 3D title, the menu and the page all read it from here */
   CHUNK: 24, VIEW: 22.4, VSHIFT: -.45, CONTAIN: 9.05, /* half-size of the fixed square world container */ ARENA: 11.15, /* half-size while a boss is fought */ ELEV: 40 * Math.PI / 180, RES_SCALE: 1,
   LOAD_DIST: 16, UNLOAD_DIST: 24, DEADZONE: 0.22, AUTO_IDLE: 20,
-  WALL_H: 1.8, LOW_H: 0.6, ENV_LIGHTS: 8, SHADOW: 2048,
+  WALL_H: 1.8, LOW_H: 0.6, ENV_LIGHTS: 12, SHADOW: 2048,
   /* ECONOMY — one floor's honest yield is worth(t) = W0 + W1*t; prices and payouts are fractions of it */
   ECON: { foundK: .5, sellK: .6, W0: 150, W1: 70, core: [2, .45], mat: [1, .27], belt: 10, regenCap: .35,
     potion: [10, 3], key: [10, 3], unit: .025, bracelet: .05, scroll: .75, crystal: 2.5, refuge: .075, pocket: .35, pocketGold: .35, questGold: 1, potionUp: .15, entryX: .075, chart: .12, socket: .15, repair: .24, inn: [.25, .15, .1], gear: [1, .6], toll: .2, entry: [5, 2],
@@ -1661,7 +1661,7 @@ const PROP = {
     else if (k === 'tower') { for (let i = 0; i < 10; i++) { const a = i / 10 * TAU, h = 1.2 + ((i * 3) % 7) * .3; P.add(B, i % 3 ? st : sd, Math.cos(a) * 1.0, h / 2, Math.sin(a) * 1.0, .66, h, .34, 0, -a + 1.5708, 0); } P.add(B, sd, .4, .2, 1.5, .7, .4, .5, 0, .5, 0).add(B, st, -.9, .15, 1.4, .5, .3, .4, 0, 1.2, 0).add(B, 0x5a3d26, 0, .1, 0, 1.4, .12, 1.4); }
     else if (k === 'icefall') { const ic = 0x9ad0f0, il = 0xd8f4ff; P.add(B, sd, 0, 1.4, -.6, 2.4, 2.8, .7); for (let i = 0; i < 7; i++) { const x = -1 + i * .34, h = 1.6 + ((i * 5) % 4) * .4; Gl.add(B, i % 2 ? ic : il, x, 2.7 - h / 2, -.18, .26, h, .2); } Gl.add(B, ic, 0, .12, .3, 2.0, .2, .9).add(B, il, .3, .28, .4, .7, .2, .5); }
   },
-  tiki(P, p, r, F) { const h = 1.25 + r() * .3; P.add(GEO.box, 0x8a6a3a, 0, h / 2, 0, .1, h, .1); for (let i = 0; i < 4; i++) P.add(GEO.box, i % 2 ? 0x5a3a1e : 0xa07a42, 0, .25 + i * .26, 0, .13, .04, .13); P.add(GEO.box, 0x4a3018, 0, h + .02, 0, .26, .14, .26).add(GEO.box, 0x6a4826, 0, h - .08, 0, .2, .08, .2); F.add(GEO.flame, 0xffffff, 0, h + .08, 0, .26, .55, .26).add(GEO.flame, 0xffffff, .03, h + .08, .02, .15, .72, .15); },
+  tiki(P, p, r, F) { const h = 1.25 + r() * .3; P.add(GEO.box, 0x8a6a3a, 0, h / 2, 0, .1, h, .1); for (let i = 0; i < 4; i++) P.add(GEO.box, i % 2 ? 0x5a3a1e : 0xa07a42, 0, .25 + i * .26, 0, .13, .04, .13); P.add(GEO.box, 0x4a3018, 0, h + .02, 0, .26, .14, .26).add(GEO.box, 0x6a4826, 0, h - .08, 0, .2, .08, .2); F.add(GEO.flame, 0xffffff, 0, h + .08, 0, .26, .62, .26); /* one flame (owner, 2026-11-20: "the torches seem to have two outlets of light; only one") - there were two cones, one inside the other and a little aside */ },
   clamp(P, p, r, F, Gl) { const c = p.color || 0xffd070; P.add(GEO.box, 0x24262c, 0, .75, 0, .07, 1.5, .07).add(GEO.box, 0x24262c, .16, 1.48, 0, .34, .05, .05).add(GEO.box, 0x30333a, .3, 1.36, 0, .2, .04, .2).add(GEO.box, 0x30333a, .3, 1.12, 0, .2, .04, .2).add(GEO.box, 0x24262c, 0, .04, 0, .3, .08, .3);
     for (const [x, z] of [[-.08, -.08], [.08, -.08], [-.08, .08], [.08, .08]]) P.add(GEO.box, 0x30333a, .3 + x, 1.24, z, .02, .22, .02); Gl.add(GEO.box, c, .3, 1.24, 0, .15, .2, .15); },
   plank(P, p, r) { P.add(GEO.box, 0x6a4a2a, 0, -.04, 0, 1.0, .08, .84); P.add(GEO.box, 0x4a3018, 0, .0, -.44, 1.0, .05, .05); },
@@ -1674,8 +1674,8 @@ const PROP = {
   brokenPillar(P, p, r) { const h = .45 + r() * .7; P.add(GEO.box, C.stoneD, 0, .09, 0, .8, .18, .8).add(GEO.cyl, C.stone, 0, .18 + h / 2, 0, .54, h, .54).add(GEO.cyl, C.stoneD, .02, .18 + h, 0, .5, .14, .5, .3, 0, .2).add(GEO.box, C.stone, .3, .1, .3, .24, .2, .3, 0, .7, 0); },
   coffin(P) { P.add(GEO.box, C.stoneD, 0, .2, 0, .62, .4, .96).add(GEO.box, C.stone, .03, .44, 0, .68, .1, 1.0, 0, .07, 0).add(GEO.box, C.stoneL, 0, .5, .05, .09, .04, .5).add(GEO.box, C.stoneL, 0, .5, -.1, .3, .04, .09); },
   statue(P, p, r) { P.add(GEO.box, C.stoneD, 0, .2, 0, .7, .4, .7).add(GEO.cyl, C.stone, 0, .85, 0, .42, .9, .32).add(GEO.box, C.stone, 0, 1.12, 0, .64, .14, .22); if (r() < .55) P.add(GEO.sph, C.stoneL, 0, 1.46, 0, .3, .32, .3); else P.add(GEO.sph, C.stoneL, .36, .13, .3, .28, .26, .28); },
-  brazier(P, p, r, F) { P.add(GEO.cyl, C.iron, 0, .3, 0, .1, .6, .1).add(GEO.cyl, C.iron, 0, .04, 0, .44, .08, .44).add(GEO.cone, C.iron, 0, .62, 0, .62, .3, .62, Math.PI).add(GEO.cyl, C.woodD, 0, .76, 0, .46, .06, .46); F.add(GEO.flame, 0xffffff, 0, .76, 0, .46, .7, .46).add(GEO.flame, 0xffffff, .05, .76, .04, .26, .95, .26); },
-  firepit(P, p, r, F) { for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; P.add(GEO.box, i % 2 ? C.stone : C.stoneD, Math.cos(a) * .36, .08, Math.sin(a) * .36, .2, .16, .16, 0, -a, 0); } P.add(GEO.cyl, C.woodD, 0, .08, 0, .08, .5, .08, 1.3, .4, 0).add(GEO.cyl, C.woodD, 0, .1, 0, .08, .5, .08, 1.3, 2.2, 0); F.add(GEO.flame, 0xffffff, 0, .08, 0, .5, .8, .5).add(GEO.flame, 0xffffff, .06, .08, -.05, .3, 1.05, .3); },
+  brazier(P, p, r, F) { P.add(GEO.cyl, C.iron, 0, .3, 0, .1, .6, .1).add(GEO.cyl, C.iron, 0, .04, 0, .44, .08, .44).add(GEO.cone, C.iron, 0, .62, 0, .62, .3, .62, Math.PI).add(GEO.cyl, C.woodD, 0, .76, 0, .46, .06, .46); F.add(GEO.flame, 0xffffff, 0, .76, 0, .46, .82, .46); },
+  firepit(P, p, r, F) { for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; P.add(GEO.box, i % 2 ? C.stone : C.stoneD, Math.cos(a) * .36, .08, Math.sin(a) * .36, .2, .16, .16, 0, -a, 0); } P.add(GEO.cyl, C.woodD, 0, .08, 0, .08, .5, .08, 1.3, .4, 0).add(GEO.cyl, C.woodD, 0, .1, 0, .08, .5, .08, 1.3, 2.2, 0); F.add(GEO.flame, 0xffffff, 0, .08, 0, .5, .92, .5); },
   altar(P, p, r, F) { P.add(GEO.box, C.stoneD, 0, .1, 0, 1.0, .2, .8).add(GEO.box, C.stone, 0, .42, 0, .86, .46, .6).add(GEO.box, C.cloth, 0, .66, 0, .5, .03, .64).add(GEO.cyl, C.wax, -.32, .76, 0, .06, .2, .06).add(GEO.cyl, C.wax, .32, .73, 0, .06, .14, .06); F.add(GEO.flame, 0xffffff, -.32, .86, 0, .07, .14, .07).add(GEO.flame, 0xffffff, .32, .8, 0, .07, .14, .07); },
   upstairs(P) { for (let i = 0; i < 5; i++) P.add(GEO.box, i % 2 ? C.stone : C.stoneL, 0, .1 + i * .1, -.4 + i * .2, .9, .2 + i * .2, .2); },
   stairs(P, p, r, F, Gl) { /* part 85 (owner): the way down takes four tiles - two by two - where it took one: ten steps into the dark between low kerbs, two posts at its mouth */ P.add(GEO.box, C.black, 0, -2.0, 0, 2.0, .1, 2.0); for (let i = 0; i < 10; i++) P.add(GEO.box, i % 2 ? C.stone : C.stoneD, 0, -.12 - i * .18, .9 - i * .2, 2.0, .18, .2); P.add(GEO.box, C.black, 0, -1.0, -1.02, 2.0, 2.0, .06).add(GEO.box, C.black, -1.02, -1.0, 0, .06, 2.0, 2.0).add(GEO.box, C.black, 1.02, -1.0, 0, .06, 2.0, 2.0); P.add(GEO.box, C.stoneD, -1.08, .14, 0, .16, .3, 2.2).add(GEO.box, C.stoneD, 1.08, .14, 0, .16, .3, 2.2).add(GEO.box, C.stoneD, 0, .14, -1.08, 2.32, .3, .16).add(GEO.box, C.stoneL, -1.08, .46, 1.02, .26, .38, .26).add(GEO.box, C.stoneL, 1.08, .46, 1.02, .26, .38, .26); Gl.add(GEO.plane, 0x16304a, 0, -1.1, -.3, 1.8, 1, 1.3); },
@@ -3117,7 +3117,7 @@ class DungeonGenerator {
         const south = F(i, j + 1), east = F(i + 1, j); if (!south && !east) continue;
         const o = south ? { x: wx(i), z: wz(j) + .5, ry: 0 } : { x: wx(i) + .5, z: wz(j), ry: Math.PI / 2 };
         if (h % 5 === 0 && torches.length < 8 && !torches.some(t => Math.abs(t[0] - i) + Math.abs(t[1] - j) < 5)) {
-          torches.push([i, j]); prop('wallTorch', i, j, o); light(o.x + (south ? 0 : .3), 1.6, o.z + (south ? .3 : 0), 0xffa858, 10, 8.5);
+          torches.push([i, j]); prop('wallTorch', i, j, o); light(o.x + (south ? 0 : .6), 1.5, o.z + (south ? .6 : 0), 0xffa858, 10, 8.5); /* the light hangs a little out from the wall, at the flame: three tenths of a tile off, half of what it threw fell into the wall */
         } else if (h % 19 === 1) prop('chains', i, j, o); else if (h % 23 === 2 && WALL_BANNER.includes(bm.id)) prop('wallBanner', i, j, o);
         else if (!OPEN_WALL.includes(bm.id) && (south ? ox + i : oz + j) % 4 === 0) prop('pilaster', i, j, o);
         if (TRIM_WALL.includes(bm.id)) prop('trim', i, j, o);
@@ -5842,7 +5842,7 @@ class FX {
     /* soft round texture shared by halos and ground marks */
     const hc = document.createElement('canvas'); hc.width = hc.height = 128; const hg = hc.getContext('2d'), gr = hg.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); hg.fillStyle = gr; hg.fillRect(0, 0, 128, 128); const soft = new THREE.CanvasTexture(hc);
     /* halos: every fire and glow of the world wears a soft bloom of light in the air */
-    this.halos = []; for (let i = 0; i < CFG.ENV_LIGHTS; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: soft, color: 0xffa040, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .5 })); sp.visible = false; S.add(sp); this.halos.push(sp); }
+    this.halos = []; /* part 97: a fire gave light twice - the light on the ground and the walls, and a round bloom hung in the air at the flame, a picture that faces the eye. Standing against a wall the bloom was cut along the wall in a straight line. The bloom is gone: a fire is one flame and the light it throws */
     /* marks: kills and bursts leave a stain on the ground for a few seconds */
     this.marks = []; for (let i = 0; i < 16; i++) { const m = new THREE.Mesh(GEO.plane, new THREE.MeshBasicMaterial({ map: soft, color: 0x000000, transparent: true, depthWrite: false, opacity: 0 })); m.visible = false; m.renderOrder = 1; S.add(m); this.marks.push({ m, t: 0 }); } this.markI = 0;
     /* ground fog: a low drifting haze tinted by the realm */
@@ -6083,12 +6083,14 @@ class LightingManager {
     { const k = this.outK = (this.outK === undefined ? 1 : this.outK) + ((G.zone === 'dark' ? 0 : 1) - (this.outK === undefined ? 1 : this.outK)) * Math.min(1, dt * 5); const ft = G.flameT || [1, 1, 1]; MAT.flame.uniforms.uTint.value.set(ft[0] * k, ft[1] * k, ft[2] * k); MAT.flame.visible = k > .04; }
     this.pickT -= dt;
     if (this.pickT <= 0) {
-      this.pickT = .2; const S = this.sources; for (const s of S) s.d = Math.hypot(s.x - p.x, s.z - p.z); S.sort((a, b) => a.d - b.d);
+      this.pickT = .2; const S = this.sources; for (const s of S) s.d = Math.hypot(s.x - p.x, s.z - p.z); /* a fire that is lit stays among the lit ones a little longer than its distance alone would keep it: the set does not flicker at its edge */ { const key = q => q.d / (.6 + Math.min(12, q.int || 1) / 12) - (q.k > .5 ? 2 : 0); /* and a great fire counts as nearer than a small glow at the same distance: a torch nine tiles off is lit before a crack of lava six tiles off */ S.sort((a, b) => key(a) - key(b)); }
       this.cut = S.length > this.pool.length ? S[this.pool.length].d : 30;
     }
+    for (let i = this.pool.length; i < this.sources.length; i++) { const s = this.sources[i]; if (s.k) s.k = Math.max(0, s.k - dt * 2.2); }
     for (let i = 0; i < this.pool.length; i++) {
       const l = this.pool[i], s = this.sources[i], hl = G.fx.halos[i]; if (!s) { l.intensity = 0; if (hl) hl.visible = false; continue; }
-      const fade = clamp((this.cut - s.d) / 3, 0, 1) * clamp((22 - s.d) / 5, 0, 1) * (s.key === '_dyn' ? 1 : this.outK);
+      /* part 97 (owner, with a photograph: "the light even changes as one comes near"): a fire's light was scaled by how far the hero stood from it and from the ninth nearest fire, so every torch grew and shrank as the hero walked. A fire in sight now burns at its own strength, whatever the distance; only one that enters or leaves the lit set comes up or goes down, over half a second */ s.k = (s.k || 0) + ((s.d < 23 ? 1 : 0) - (s.k || 0)) * Math.min(1, dt * 2.2);
+      const fade = s.k * clamp((24 - s.d) / 2, 0, 1) * (s.key === '_dyn' ? 1 : this.outK);
       l.position.set(s.x, s.y, s.z); if (i < 2) { l.position.x += Math.sin(t * 13.1 + i * 2.1) * .05 + Math.sin(t * 31.7 + i) * .02; l.position.y += Math.sin(t * 17.3 + i) * .05; l.position.z += Math.cos(t * 11.7 + i * 1.3) * .05 + Math.cos(t * 27.1) * .02; } l.color.set(s.color); l.distance = s.range;
       l.intensity = s.int * fade * (.88 + .12 * Math.sin(t * 11 + s.x * 3.7 + s.z * 1.9) + .06 * Math.sin(t * 19.3 + s.z)) * (s.d < 1.7 && p.speed > .4 ? .72 + .28 * Math.sin(t * 43 + i) : 1); /* a flame gutters when someone hurries past it */
       if (hl) { hl.visible = fade > .02; hl.position.set(s.x, s.y + .1, s.z); hl.material.color.set(s.color); hl.material.opacity = .32 * fade * Math.min(1, s.int / 9); const hs = Math.min(4.2, s.range * .42) * (.94 + .06 * Math.sin(t * 9 + s.x)); hl.scale.set(hs, hs, 1); }
@@ -7889,7 +7891,7 @@ class Shop {
   }
   /** what the tile in focus is: its name, what it does (a piece of gear: all of it, and how it compares with what you wear), its price and why it cannot be had */
   showDesc(i) { const el = this.el.querySelector('#shopDesc'); if (!el) return; const E = this.entries(), e = E[i], p = this.G.player; this.descI = i;
-    if (!e) { el.innerHTML = `<i>${T(DEV() === 'pad' ? 'MOVE OVER SOMETHING TO SEE WHAT IT IS' : 'POINT AT SOMETHING TO SEE WHAT IT IS')}</i>`; return; }
+    if (!e) { el.innerHTML = ''; el.style.display = 'none'; /* nothing pointed at: no words and no box (owner, 2026-11-20: "point at something to see what it is" goes without saying) */ return; } el.style.display = '';
     const why = e.can === false ? T('NOT AVAILABLE NOW') : p.gold < e.price ? T('NOT ENOUGH GOLD') : '', cost = e.gain ? T('PAYS') + ' ' + e.gain + ' G' : e.price ? T('PRICE') + ': ' + e.price + ' G' : T('FREE');
     el.innerHTML = abbrH((e.item && e.item.slot !== 'tome' ? this.G.inv.text(e.item).split('<br>').slice(0, -1).join('<br>') + this.G.inv.compare(e.item) : `<b class="${e.cls || ''}">${T(e.label)}</b><br>${T(e.sub || '')}`) + `<br><em>${cost}${why ? ' &middot; <u>' + why + '</u>' : ''}</em>`); }
   update() { const p = this.G.player; if (this.mode && this.mode !== 'choice') { const f = this.el.querySelector('.st.focus') || this.el.querySelector('.st:hover'), i = f ? +f.dataset.buy : this.descI; if (i !== this.descI) this.showDesc(i); } if (this.mode === 'choice' && !this.at) return; if (this.mode && (!this.at || this.at.gone || p.dead || Math.hypot(p.x - this.at.x, p.z - this.at.z) > 3)) this.close(); }
