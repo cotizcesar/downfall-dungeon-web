@@ -5734,7 +5734,8 @@ class InventorySystem {
 /* ============================================================
    PARTICLE MANAGER (pooled GPU points) + FX (arcs, markers, telegraphs, projectiles)
    ============================================================ */
-const LIGHTS_ONLY = /[?&]lights=only/.test(location.search);
+/* the light of the game (owner, 2026-11-20, after the trial: "leave the lighting with torches only, it looks great"): no general light - no sky, no bounce off the ground, no sun. What lights a place is its torches, what powers throw, and the hero's own light. ?lights=all brings the general light back, to compare */
+const LIGHTS_ONLY = !/[?&]lights=all/.test(location.search);
 const SCATTER = { value: 1 }, PLIT = { value: 1 }, HERO_P = { value: new THREE.Vector3() };
 const PART_AMB = { dust: 1, firefly: 1, spore: 1, snow: 1, sand: 1, ash: 1, wisp: 1, sparkle: 1, glint: 1, leaf: 1 };
 /** how much of what is asked for is made, by kind (part 92) */
@@ -9017,7 +9018,7 @@ class Game {
     for (const ch of this.chunks.loaded.values()) if (ch.spikes) { ch.spikes.position.y = -.5 + .5 * up; if (up > .6 && !p.dead) for (const t of ch.data.traps) if (!t.k && Math.abs(p.x - t.x) < .5 && Math.abs(p.z - t.z) < .5) p.takeDamage(p.maxHp * .07, null); }
     this.chunks.update(p.x, p.z, false);
     const ck = Math.floor(p.x / 24) + ',' + Math.floor(p.z / 24); if (ck !== this.pchunk) this.refreshStairs(); if (this.mapDirty) this.drawMap();
-    this.lights.update(dt, p.tip); /* a trial (owner, 2026-11-20): with ?lights=only the general light is put out - the sky's, the ground's bounce and the sun - and only the torches of the place, what powers throw and the hero's own light are left */ if (LIGHTS_ONLY) { const L = this.lights; L.amb.intensity = 0; L.hemi.intensity = 0; L.fill.intensity = 0; }
+    this.lights.update(dt, p.tip); if (LIGHTS_ONLY) { const L = this.lights; L.amb.intensity = 0; L.hemi.intensity = 0; L.fill.intensity = 0; }
     /* look-ahead towards where the hero moves; a little wider with a crowd, closer for a guardian's entrance and its last blow */
     { const f = p.facing, sp = Math.min(1, p.speed || 0) * (OPT.motion / 10), near = this.enemies.list.reduce((n, e) => n + (e.alive && !e.resting && e.state !== 'idle' && Math.hypot(e.x - p.x, e.z - p.z) < 8 ? 1 : 0), 0); this.pushT = Math.max(0, (this.pushT || 0) - dt);
       this.cam.hy = p.gy || 0; this.cam.update(dt, p.x, p.z, Math.sin(f) * 1.1 * sp, Math.cos(f) * 1.1 * sp, 1); }
