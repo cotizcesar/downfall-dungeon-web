@@ -1109,9 +1109,11 @@ body.pad:not(.hudl) #coreBar .act.empty kbd,body.pad:not(.hudl) #coreBar .act.of
 #hcard .cRew div{display:flex;align-items:center;justify-content:center;gap:calc(var(--p) * 10)}
 #hcard .cRew img{width:calc(var(--p) * 52);height:calc(var(--p) * 66);object-fit:contain;box-sizing:border-box;padding:calc(var(--p) * 4);border:1px solid #6a5a30;background:#10191a}
 #hcard .cGold{display:flex;align-items:center;gap:calc(var(--p) * 8);margin-left:calc(var(--p) * 10);padding-left:calc(var(--p) * 14);border-left:1px solid #3a4a46;font-size:calc(var(--p) * 17);letter-spacing:.06em;color:#e8c070}#hcard .cGold i{width:calc(var(--p) * 14);height:calc(var(--p) * 14);border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff0b0,#d8a830 60%,#8a6010)}
+/* part 74: a word for whatever the pointer rests on in the bar, the icons of state and the purse */
+#tt{position:fixed;z-index:60;display:none;max-width:min(30em,46vw);padding:.55em .7em;background:rgba(11,15,16,.96);border:1px solid #8a7238;border-radius:.2em;color:#c8c4ba;font-size:calc(var(--p) * 13);line-height:1.35;letter-spacing:.04em;pointer-events:none;box-shadow:0 .3em 1.2em rgba(0,0,0,.6)}#tt b{color:#e6c56a;font-weight:500}#tt u{text-decoration:none;color:#5fb8a6}#tt s{text-decoration:none;color:#8a8f92}#buffs .bf{pointer-events:auto}
 </style>
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}
 </script>
 </head>
 <body>
@@ -1317,7 +1319,7 @@ const CFG = {
   STATS: { perLevel: 5, pool: 2, manaPool: 1 /* part 73: mana is the reference's own line, not doubled as the life is */, manaFull: 120 /* part 73: an empty pool fills in two minutes, as in the reference; what a skill or a thing worn adds to the recovery shortens that */ },
   SKILLS: { W: 6.5, ramp: 1.8 /* part 71: 1.1 - the 33 builds walked the sampled road in a median of 15.6 hours with hardly a death */ /* part 70: .5 before the attributes - a hero's strength now stands behind every blow of its weapon and its vitality under its life, more with every level; the first floors are left as they were */, rampFrom: 10, rampTo: 50 /* between floors 10 and 50 the creatures' life grows half as much again (CB.hpBook), and the tables' flat numbers with it */, deepFrom: 40, deep: .05 /* past floor 40 the tables' flat numbers grow 5% a floor (part 71: 3.5% - spells fell behind the weapon past floor 60): the creatures' life goes on growing after a skill has its twenty levels */, YARD: .45, shell: .25, corpse: .5 },
   COMBAT: { hpX: 2 /* part 65: 1.3 - with the skill book a blow of the weapon carries two to four times what it did. 2.6 was tried for a longer game: the strong builds were no slower (the druid stood on floor 100 after 27 hours and one death) and the guardian of floor 60 took the huntress 75 times */, guardHp: 2.6, guardDmg: .85, xpExp: 1.62, crit: 1.8, interrupt: .08, castSlow: .4, roleFrom: 11, roleChance: .3, eliteFrom: 11, elite: .08, eliteMid: .11, eliteDeep: .14,
-    awaken: [150, 450], expert: 1.15, xpBase: 100, arrowCost: 0, manaLv: .025, dmgDeep: .2 /* part 71: a hero's life grows with every point of vitality it places - from floor 12 to 62 a creature's blow grows by this much more */, dmgBook: 1.8 /* part 65: with the skill book's coats, banners and shapes a hero stands far more; from floor 12 on every blow of a creature is this much heavier */, manaRegen: 4.5, manaCalm: 3, manaHit: 7, manaHeavy: 12, manaShot: 4, rollN: 2, rollCd: 3.4, manaPot: .6, beltM: 3, block: .25, shatter: 1.8, chainN: 3, chainK: .6, adaptRes: .35, enemyInterrupt: .15, reviveT: 10, recover: 300,
+    awaken: [150, 450], expert: 1.15, xpBase: 100, arrowCost: 0, manaLv: .025, dmgDeep: .2 /* part 71: a hero's life grows with every point of vitality it places - from floor 12 to 62 a creature's blow grows by this much more */, dmgBook: 1.8 /* part 65: with the skill book's coats, banners and shapes a hero stands far more; from floor 12 on every blow of a creature is this much heavier */, manaRegen: 4.5, manaCalm: 3, manaHit: 7, manaHeavy: 12, manaShot: 4, rollN: 2, rollCd: 3.4, manaPot: .6, beltM: 3, chestPot: .3, chestMana: .25, block: .25, shatter: 1.8, chainN: 3, chainK: .6, adaptRes: .35, enemyInterrupt: .15, reviveT: 10, recover: 300,
     earlyDmg: .8, earlyTo: 30, guardEarlyHp: 0, guardEarlyDmg: 0 /* part 65: .3 and .4 - every creature carries more life and strikes half as hard again now; with their own share on top the guardian of floor 20 took the berserker's life twenty-one times running */, guardEarlyTo: 40, guardFadeTo: 58, /* the guardians of floors 10 to 40 hit 40% harder and carry 30% more life, fading to nothing by floor 58: with their hall five halls from the inn and potions a hero can pay for they took no life at all (measured: tools/balance/strata.sh with LVS) */ poison: .008, poisonFloor: .1, frozenDmg: .025 /* .035 */, blazeDmg: .005 /* .01: on floor 99 the air alone asked for thirteen potions; the last four floors took thirty to fifty lives from five classes of eight */, dmgEarly: 1.12, dmgKnee: 12, dmgSlope: .47, quakeDmg: .07, boltDmg: .09, boltEvery: [3.2, 5.5], boltOnYou: .25 },
   /* THE LENGTH OF A FLOOR: how many halls away the nearest stairs lie, by depth [from floor, halls]. The first two floors keep their three. What a kill and a chest pay is divided by the same growth (roadK), so a floor pays what it paid and the hero's level keeps its pace */
   LEN: [[3, 13], [11, 19], [31, 23], [61, 26]], LEN_DECEIT: 8, LEN_ELEMENTAL: 14, LEN_GUARDIAN: 5, DECEIT_1IN: 50,
@@ -2080,55 +2082,55 @@ const RIM = { value: new THREE.Color(.55, .6, .75) };
     sticks to the body), its own roughness, and its own way of showing wounds; a dying creature burns away from the edges. */
 const SURF = { fur: 1, scale: 2, chitin: 3, bone: 4, stone: 5, metal: 6, cloth: 7, flesh: 8, crystal: 9, wood: 10, ghost: 11 };
 const SURF_PBR = { fur: [.95, 0], scale: [.5, .05], chitin: [.45, .1], bone: [.75, 0], stone: [.92, 0], metal: [.4, .3], cloth: [.9, 0], flesh: [.58, 0], crystal: [.18, .05], wood: [.8, 0], ghost: [.6, 0] };
-const SURF_FS_HEAD = `uniform float uWound; uniform float uDis; uniform float uCT; varying vec3 vOP;
+const SURF_FS_HEAD = `uniform int uSurf; uniform float uWound; uniform float uDis; uniform float uCT; varying vec3 vOP;
 float c_h(vec3 p){ p=fract(p*0.3183099+0.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
 float c_n(vec3 x){ vec3 i=floor(x), f=fract(x); f=f*f*(3.0-2.0*f); return mix(mix(mix(c_h(i),c_h(i+vec3(1.0,0.0,0.0)),f.x),mix(c_h(i+vec3(0.0,1.0,0.0)),c_h(i+vec3(1.0,1.0,0.0)),f.x),f.y),mix(mix(c_h(i+vec3(0.0,0.0,1.0)),c_h(i+vec3(1.0,0.0,1.0)),f.x),mix(c_h(i+vec3(0.0,1.0,1.0)),c_h(i+vec3(1.0,1.0,1.0)),f.x),f.y),f.z); }
 `;
 const SURF_FS_COLOR = `#include <color_fragment>
  float cN1=c_n(vOP*5.0), cN2=c_n(vOP*12.0), cPat=1.0, cRough=0.0;
-#if SURF==1
+ if(uSurf==1){
  cPat=(0.8+0.34*c_n(vOP*vec3(22.0,22.0,4.0)))*(0.9+0.2*cN1);
-#elif SURF==2
+ }else if(uSurf==2){
  { vec3 q=vOP*9.0; q.z+=0.5*floor(q.x); vec3 f=fract(q); float e=min(min(f.x,1.0-f.x),min(f.z,1.0-f.z)); cPat=(0.68+0.4*smoothstep(0.0,0.22,e))*(0.88+0.24*c_h(floor(q))); cRough=-0.15*smoothstep(0.1,0.4,e); }
-#elif SURF==3
+ }else if(uSurf==3){
  cPat=0.86+0.2*cN1; cRough=-0.1*cN2;
-#elif SURF==4
+ }else if(uSurf==4){
  cPat=(0.84+0.2*cN2)*(1.0-0.4*smoothstep(0.05,0.0,abs(cN1-0.5)));
-#elif SURF==5
+ }else if(uSurf==5){
  cPat=(0.72+0.4*cN1*(0.6+0.8*cN2))*(1.0-0.5*smoothstep(0.045,0.0,abs(c_n(vOP*3.0)-0.5)));
-#elif SURF==6
+ }else if(uSurf==6){
  { float br=c_n(vOP*vec3(26.0,3.0,26.0)); float rust=smoothstep(0.6,0.78,cN1*0.7+cN2*0.3); cPat=0.85+0.2*br; diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.36,0.17,0.08),rust*0.55); cRough=rust*0.5-0.1*br; }
-#elif SURF==7
+ }else if(uSurf==7){
  cPat=(0.88+0.16*c_n(vOP*vec3(14.0,3.0,14.0)))*(0.9+0.16*cN1);
-#elif SURF==8
+ }else if(uSurf==8){
  cPat=0.82+0.3*cN1; diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.15,0.8,0.8),smoothstep(0.55,0.8,cN2)*0.5); cRough=-0.2*cN2;
-#elif SURF==9
+ }else if(uSurf==9){
  { vec3 f=abs(fract(vOP*4.0)-0.5); cPat=0.8+0.5*smoothstep(0.3,0.5,max(f.x,max(f.y,f.z))); }
-#elif SURF==10
+ }else if(uSurf==10){
  cPat=0.78+0.3*c_n(vOP*vec3(5.0,18.0,5.0));
-#elif SURF==11
+ }else if(uSurf==11){
  cPat=0.85+0.3*c_n(vOP*5.0+vec3(0.0,-uCT*0.6,0.0));
-#endif
+ }
  diffuseColor.rgb*=cPat;
-#if SURF==1||SURF==2||SURF==3||SURF==7||SURF==8||SURF==10
+ if(uSurf==1||uSurf==2||uSurf==3||uSurf==7||uSurf==8||uSurf==10){
  { float wv=1.0-smoothstep(uWound*0.5-0.08,uWound*0.5,cN1*0.6+cN2*0.4); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.26,0.02,0.02),wv*0.92); cRough-=wv*0.3; }
-#else
+ }else{
  { float wv=smoothstep(0.07,0.0,abs(cN2-0.5))*uWound; diffuseColor.rgb*=1.0-wv*0.8; }
-#endif
+ }
  float cDn=cN1*0.5+cN2*0.5; if(uDis>0.0 && cDn<uDis) discard;`;
 function rimLit(mat, k = 1, surf, wave) {
-  const S = surf ? SURF[surf] : 0, cu = mat.userData.cu = { wound: { value: 0 }, dis: { value: 0 }, sl: { value: 0 } };
-  if (S) { mat.roughness = SURF_PBR[surf][0]; mat.metalness = SURF_PBR[surf][1]; mat.defines = Object.assign({}, mat.defines, { SURF: S }); if (wave) mat.defines.SLITHER = 1; }
+  const S = surf ? SURF[surf] : 0, cu = mat.userData.cu = { wound: { value: 0 }, dis: { value: 0 }, sl: { value: 0 } }; mat.userData.surf = S; mat.userData.wave = !!wave;
+  if (S) { mat.roughness = SURF_PBR[surf][0]; mat.metalness = SURF_PBR[surf][1]; }
   mat.onBeforeCompile = sh => { sh.uniforms.uRim = RIM; sh.uniforms.uRimK = { value: k };
     sh.fragmentShader = 'uniform vec3 uRim;\nuniform float uRimK;\n' + sh.fragmentShader.replace('#include <dithering_fragment>', 'float rimF = pow(1.0 - clamp(normal.z, 0.0, 1.0), 2.6); gl_FragColor.rgb += uRim * rimF * 0.42 * uRimK;\n#include <dithering_fragment>');
-    if (!S) return; sh.uniforms.uWound = cu.wound; sh.uniforms.uDis = cu.dis; sh.uniforms.uCT = VEG_T; sh.uniforms.uSl = cu.sl;
-    sh.vertexShader = 'varying vec3 vOP;\nuniform float uCT;\nuniform float uSl;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vOP = position;\n#ifdef SLITHER\n transformed.x += sin(position.z * 4.5 - uCT * 6.0) * uSl * (0.5 + abs(position.z));\n#endif');
+    if (!S) return; sh.uniforms.uSurf = { value: S }; sh.uniforms.uWound = cu.wound; sh.uniforms.uDis = cu.dis; sh.uniforms.uCT = VEG_T; sh.uniforms.uSl = cu.sl;
+    sh.vertexShader = 'varying vec3 vOP;\nuniform float uCT;\nuniform float uSl;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vOP = position;\n transformed.x += sin(position.z * 4.5 - uCT * 6.0) * uSl * (0.5 + abs(position.z));');
     sh.fragmentShader = SURF_FS_HEAD + sh.fragmentShader.replace('#include <color_fragment>', SURF_FS_COLOR)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n roughnessFactor=clamp(roughnessFactor+cRough,0.08,1.0);')
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n#if SURF==2||SURF==4||SURF==5\n normal=normalize(normal+vec3(dFdx(cPat),dFdy(cPat),0.0)*1.6);\n#endif')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n if(uSurf==2||uSurf==4||uSurf==5){\n normal=normalize(normal+vec3(dFdx(cPat),dFdy(cPat),0.0)*1.6);\n }')
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n if(uDis>0.0) totalEmissiveRadiance+=vec3(1.0,0.45,0.1)*(1.0-smoothstep(uDis,uDis+0.09,cDn))*2.2;')
-      .replace('#include <dithering_fragment>', '#if SURF==1\n gl_FragColor.rgb += uRim * rimF * 0.3;\n#elif SURF==3\n gl_FragColor.rgb += rimF * vec3(0.04,0.16,0.2);\n#elif SURF==9\n gl_FragColor.rgb += rimF * diffuseColor.rgb * 0.9;\n#elif SURF==11\n gl_FragColor.a *= 0.4 + 0.6 * rimF;\n#endif\n#include <dithering_fragment>'); };
-  mat.customProgramCacheKey = () => 'rim' + k + 's' + S + (wave ? 'w' : ''); return mat; }
+      .replace('#include <dithering_fragment>', ' if(uSurf==1){\n gl_FragColor.rgb += uRim * rimF * 0.3;\n }else if(uSurf==3){\n gl_FragColor.rgb += rimF * vec3(0.04,0.16,0.2);\n }else if(uSurf==9){\n gl_FragColor.rgb += rimF * diffuseColor.rgb * 0.9;\n }else if(uSurf==11){\n gl_FragColor.a *= 0.4 + 0.6 * rimF;\n }\n#include <dithering_fragment>'); };
+  /* part 74: what a creature is made of was a constant of its shader, so every surface, with and without a slither, was a program of its own to compile - ninety of them before the first frame. It is a number handed to one shader now */ mat.customProgramCacheKey = () => S ? 'rimS' : 'rim'; return mat; }
 MAT.veg = MAT.vc.clone(); MAT.veg.onBeforeCompile = sh => { sh.uniforms.uTime = VEG_T; sh.uniforms.uScatter = SCATTER; sh.uniforms.uHeroB = HERO_P; sh.fragmentShader = 'uniform float uScatter;\n' + sh.fragmentShader.replace('#include <dithering_fragment>', '#ifdef USE_COLOR\n float bl = pow(1.0 - clamp(normal.z, 0.0, 1.0), 1.8); float leafy = step(vColor.r * 1.08, vColor.g); gl_FragColor.rgb += vColor.rgb * vec3(1.0, 1.08, 0.7) * bl * 0.38 * leafy * uScatter;\n#endif\n#include <dithering_fragment>'); sh.vertexShader = 'uniform float uTime;\nuniform vec3 uHeroB;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n { vec2 hd=position.xz-uHeroB.xz; float hl=length(hd); float hk=max(0.0,1.0-hl/1.15)*step(position.y,1.3)*min(position.y,0.9); transformed.xz+=hd/max(hl,0.001)*hk*0.42; transformed.y-=hk*0.18; }\n float vh=min(position.y,3.2)*0.5; float gust=0.55+0.55*sin(uTime*0.55+position.x*0.12+position.z*0.09); transformed.x+=(sin(uTime*1.7+position.x*1.3+position.z*1.7)*0.035+gust*0.05)*vh+sin(uTime*7.0+position.x*9.0+position.y*7.0)*0.009*vh*vh; transformed.z+=(cos(uTime*1.3+position.x*1.1-position.z*0.9)*0.028+gust*0.025)*vh+cos(uTime*6.3+position.z*8.0+position.y*5.0)*0.008*vh*vh;'); };
 const WALL_GEO = {}; const wallGeoFor = top => WALL_GEO[top] || (WALL_GEO[top] = wallGeo(CFG.WALL_H, top));
 /** Floor guardians (every 10th floor), the hidden elite (89), the four wyrms (96-99), the final boss (100) and the lesser wardens (every 3rd floor). */
@@ -2377,6 +2379,19 @@ Object.assign(SPELL_ICON, {
 /* THE FOUR ATTRIBUTES (part 70): strength, dexterity, vitality and energy, as the reference game gives them to its classes - what each class starts with,
    what a level adds to its life and its mana by itself, and what a point of vitality or of energy adds. Five points to place come with every level. The lines are
    straight, so they go on past level 100 exactly as they came to it. Life and mana are the tables' own numbers times CFG.STATS.pool (a hero here carries twice the life). */
+/*REF:BEGIN - written by tools/gen_ref.py from the reference's tables; do not edit by hand*/
+const REF = { xp: [0,500,1500,3750,7875,14175,22680,32886,44396,57715,72144,90180,112725,140906,176132,220165,275207,344008,430010,537513,671891,839864,1049830,1312287,1640359,2050449,2563061,3203826,3902260,4663553,5493363,6397855,7383752,8458379,9629723,10906488,12298162,13815086,15468534,17270791,19235252,21376515,23710491,26254525,29027522,32050088,35344686,38935798,42850109,47116709,51767302,56836449,62361819,68384473,74949165,82104680,89904191,98405658,107672256,117772849,128782495,140783010,153863570,168121381,183662396,200602101,219066380,239192444,261129853,285041630,311105466,339515048,370481492,404234916,441026148,481128591,524840254,572485967,624419793,681027665,742730244,809986056,883294891,963201521,1050299747,1145236814,1248718217,1361512946,1484459201,1618470619,1764543065,1923762030,2097310703,2286478756,2492671933,2717422497,2962400612,3229426756,3520485254,3837739017],
+  ratio: [1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,1024,976,928,880,832,784,736,688,640,592,544,496,448,400,352,304,256,192,144,108,81,61,46,35,26,20,15,11,8,6,5],
+  mxp: [[0,30,40,50,60,70,80,90,100,110,120,130,140,154,169,186,205,225,248,273,300,330,363,399,439,470,503,538,576,616,659,706,755,808,864,925,990,1059,1133,1212,1297,1388,1485,1589,1693,1797,1901,2005,2109,2213,2317,2421,2525,2629,2733,2837,2941,3045,3149,3253,3357,3461,3565,3669,3773,3877,3981,4085,4189,4293,4397,4501,4605,4709,4813,4917,5021,5125,5229,5333,5437,5541,5645,5749,5853,5957,6061,6165,6269,6373,6477,6581,6685,6789,6893,6997,7101,7205,7309,7413,7517,7621,7725,7829,7933,8037,8141,8245,8349,8453],
+    [0,78,104,131,156,182,207,234,260,285,312,338,363,401,440,482,533,584,644,708,779,857,942,1035,1139,1220,1305,1397,1494,1598,1709,1832,1958,2097,2241,2399,2568,2745,2939,3144,3365,3600,3852,4121,4409,4718,5051,5402,5783,6186,6618,7080,7506,7956,8435,8942,9477,10044,10647,11286,11964,12680,13442,14249,15104,16010,16916,17822,18728,19634,20540,21446,22352,23258,24164,25070,25976,26882,27788,28694,29600,30506,31412,32318,33224,34130,35036,35942,36848,37754,38660,39566,40472,41378,42284,43190,44096,45002,45908,46814,47720,48626,49532,50438,51344,52250,53156,54062,54968,55874],
+    [0,117,156,197,234,273,311,351,390,428,468,507,545,602,660,723,800,876,966,1062,1169,1286,1413,1553,1709,1830,1958,2096,2241,2397,2564,2748,2937,3146,3362,3599,3852,4118,4409,4716,5048,5400,5778,6182,6614,7077,7577,8103,8675,9279,9927,10620,11259,11934,12653,13413,14216,15066,15971,16929,17946,19020,20163,21374,22656,24015,25374,26733,28092,29451,30810,32169,33528,34887,36246,37605,38964,40323,41682,43041,44400,45759,47118,48477,49836,51195,52554,53913,55272,56631,57990,59349,60708,62067,63426,64785,66144,67503,68862,70221,71580,72939,74298,75657,77016,78375,79734,81093,82452,83811]],
+  mhp: [[0,7,9,12,15,17,20,23,27,31,35,36,40,44,48,52,56,60,64,68,73,78,84,89,94,100,106,113,120,126,134,142,150,158,166,174,182,190,198,206,215,225,234,243,253,262,271,281,290,299,310,321,331,342,352,363,374,384,395,406,418,430,442,454,466,477,489,501,513,525,539,552,565,579,592,605,618,632,645,658,673,688,702,717,732,746,761,775,790,805,821,837,853,868,884,900,916,932,948,964,982,999,1016,1033,1051,1068,1085,1103,1120,1137],
+    [0,107,113,120,125,132,139,145,152,157,164,171,177,184,189,196,203,209,216,221,228,236,243,248,255,261,268,275,280,287,320,355,388,423,456,491,525,559,593,627,661,696,729,764,797,832,867,900,935,968,1003,1037,1071,1105,1139,1173,1208,1241,1276,1309,1344,1379,1412,1447,1480,1515,1549,1583,1617,1651,1685,1720,1753,1788,1821,1856,1891,1924,1959,1992,2027,2061,2095,2129,2163,2197,2232,2265,2300,2333,2368,2403,2436,2471,2504,2539,2573,2607,2641,2675,2709,2744,2777,2812,2845,2880,2915,2948,2983,3016],
+    [0,1107,1136,1167,1196,1227,1256,1287,1316,1347,1376,1407,1436,1467,1496,1527,1556,1587,1616,1647,1676,1707,1736,1767,1796,1827,1856,1887,1916,1947,1976,2007,2036,2067,2096,2127,2156,2187,2216,2247,2276,2307,2336,2367,2396,2427,2456,2487,2516,2547,2576,2607,2636,2667,2707,2767,2847,2962,3077,3192,3307,3422,3537,3652,3767,3882,3997,4112,4227,4342,4457,4572,4687,4802,4917,5032,5147,5262,5377,5492,5607,5722,5837,5952,6067,6182,6297,6412,6527,6642,6757,6872,6987,7102,7217,7332,7447,7562,7677,7792,7907,8022,8137,8252,8367,8482,8597,8712,8827,8942]],
+  mdm: [[0,2,3,3,4,4,5,5,6,7,7,8,8,9,10,10,11,11,12,13,13,14,14,15,16,16,17,17,18,19,19,20,20,21,22,22,23,23,24,25,25,26,26,27,28,28,29,29,30,31,31,32,32,33,34,34,35,35,36,37,37,38,38,39,39,40,41,41,42,43,43,44,44,45,46,46,47,47,48,49,49,50,50,51,51,52,53,53,54,55,55,56,56,57,58,58,59,59,60,60,61,62,62,63,63,64,65,65,66,67],
+    [0,3,4,4,5,5,7,7,8,9,9,11,11,12,13,13,15,15,16,17,17,19,19,20,21,21,23,23,24,25,25,27,27,28,29,29,31,31,32,33,33,35,35,36,37,37,39,39,40,41,41,43,43,44,45,45,47,47,48,49,49,51,51,52,52,53,55,55,56,57,57,59,59,60,61,61,63,63,64,65,65,67,67,68,68,69,70,70,72,73,73,74,74,76,77,77,78,78,80,80,81,82,82,84,84,85,86,86,88,89],
+    [0,4,6,6,7,7,9,9,11,13,13,15,15,17,19,19,20,20,22,24,24,26,26,28,30,30,31,31,33,35,35,37,37,39,41,41,43,43,44,46,46,48,48,50,52,52,54,54,56,57,57,59,59,61,63,63,65,65,67,68,68,70,70,72,72,74,76,76,78,80,80,81,81,83,85,85,87,87,89,91,91,93,93,94,94,96,98,98,100,102,102,104,104,105,107,107,109,109,111,111,113,115,115,117,117,118,120,120,122,124]] };
+/*REF:END*/
 const CLASS_STATS = {
   berserker: { str: 30, dex: 20, vit: 25, ene: 10, life: 55, lL: 2, lV: 4, mana: 10, mL: 1, mE: 1 },
   sorcerer: { str: 10, dex: 25, vit: 10, ene: 35, life: 40, lL: 1, lV: 2, mana: 35, mL: 2, mE: 2 },
@@ -2439,6 +2454,7 @@ const CAST_FR = { sorcerer: _F1, berserker: _F1, templar: _F2, necromancer: _F2,
   druid: [[0, 18], [4, 17], [10, 16], [19, 15], [30, 14], [46, 13], [68, 12], [99, 11], [163, 10]], druidWolf: [[0, 16], [6, 15], [14, 14], [26, 13], [40, 12], [60, 11], [95, 10], [157, 9]], druidBear: [[0, 16], [7, 15], [15, 14], [26, 13], [40, 12], [63, 11], [99, 10], [163, 9]] };
 /* part 73 - THE DRAUGHT OF MANA is the reference's potion: a fixed amount by its grade, more for the classes that live by mana, given over 5.12 seconds. The grade follows the floor (the reference's follows its acts). */
 const MPOT = { n: [20, 40, 80, 150, 250], every: 20, t: 5.12, k: { sorcerer: 2, necromancer: 2, druid: 2, occultist: 2, huntress: 1.5, templar: 1.5, nightblade: 1.5, berserker: 1 } }, manaPotN = (p, depth) => Math.round(MPOT.n[Math.min(4, Math.floor((Math.max(1, depth | 0) - 1) / MPOT.every))] * (MPOT.k[archKey(p.arch)] || 1));
+const sigCost = (p, S) => S[1] * (p.stMax || 100) / 100;
 const CAST_REL = .55, skCastFr = (p, s) => { const M = p.M || {}, a = p.arch, T = CAST_FR[a === 'sorcerer' && s && s.o.slow ? 'sorcererSlow' : a === 'druid' && M.form === 'wolf' ? 'druidWolf' : a === 'druid' && M.form === 'bear' ? 'druidBear' : a] || _F2, f = Math.round((M.fcr || 0) * 100); let n = T[0][1]; for (const q of T) if (f >= q[0]) n = q[1]; return n; },
   /** seconds from the first gesture to the moment the hero can do something else; 0 for what is not cast (a blow, a thrown weapon, a banner, a leap) */ skCastT = (p, s) => SPELLS[s.id] && SPELLS[s.id].cast ? skCastFr(p, s) / 25 : 0;
 for (const id in SKS) { const s = SKS[id]; if (!s.act) continue; const cdv = s.v.cd ? s.v.cd[0] : (s.o.cdC || (s.o.dash === 2 ? 1.2 /* a leap takes its time in the air: the table gives it no wait, the engine lands it at once */ : s.k === 'move' && s.o.mode === 'tele' ? 0 : SK_CD[s.k] || 0)); SPELLS[id] = { n: s.n, s: SK_SCHOOL[s.o.dt || s.o.elT] || (s.k === 'strike' || s.k === 'shotw' ? 'blade' : s.k === 'aura' ? 'holy' : s.k === 'summon' ? 'earth' : 'warding'), cost: 0, cd: Array.isArray(cdv) ? cdv[0] : cdv, cast: SK_CAST[s.k] || (s.k === 'move' && s.o.mode === 'tele' ? .2 : 0), base: 'sk', ico: s.ico, sk: s, r: s.v.rad ? skYd(skHi(s.v.rad[0])) : 1, d: '' }; SPELL_ICON[id] = SPELL_ICON[s.ico] || SPELL_ICON.flare; }
@@ -4211,7 +4227,7 @@ class Player {
     this.lastAtkT = this.t; if (angle !== undefined) this.facing = angle;
     const F = this.fam || FAMILY.sword; if (F.ranged && this.st < CB.arrowCost) return; if (this.casting || this.castLock > 0) return;
     /* auto-aim (see aimTarget): the hero turns to whoever the blow or the shot is for; a blade that would fall just short takes a step in */
-    this.aimE = OPT.assist ? this.aimTarget(!!F.ranged, F.ranged ? 12 : F.reach + 1.4) : null; if (this.aimE) { const e = this.aimE, dx = e.x - this.x, dz = e.z - this.z, d = Math.hypot(dx, dz) || 1; this.facing = Math.atan2(dx, dz); if (!F.ranged) { const gap = Math.min(1.1, d - e.r - F.reach * .8); if (gap > 0) G.col.move(this, dx / d * gap, dz / d * gap); } }
+    this.aimE = OPT.assist ? this.aimTarget(!!F.ranged, F.ranged ? 12 : F.reach + 1.4) : null; if (this.aimE) { const e = this.aimE, dx = e.x - this.x, dz = e.z - this.z, d = Math.hypot(dx, dz) || 1; this.facing = Math.atan2(dx, dz); if (!F.ranged && !this.noStep /* part 74: standing still means standing still */) { const gap = Math.min(1.1, d - e.r - F.reach * .8); if (gap > 0) G.col.move(this, dx / d * gap, dz / d * gap); } }
     this.combo = this.comboT > 0 ? this.combo % 3 + 1 : 1; this.spin = false;
     this.atkDur = (this.combo === 3 ? F.heavy : F.dur) / this.aspd; this.atkT = this.atkDur; this.atkHit = false; this.style = attackStyle(famKey(this.equip.weapon), this.combo); this.tipFired = false; this.comboT = this.atkDur + .55; this.queued = false;
     G.audio.weapon(famKey(this.equip.weapon) + (F.ranged ? '_up' : ''), this.x, this.z, this.combo === 3);
@@ -4250,10 +4266,10 @@ class Player {
   useSlot(i) { const k = this.slots[i]; if (!k) return; if (this.atkT > 0 || this.dodgeT > 0 || this.stagT > 0) this.hold('slot', i); else this.cast(k); }
   /** the signature of the weapon in hand: costs energy, has its own cooldown; false when it cannot be used (then the blow is an ordinary one) */
   signature(aim) {
-    const G = this.G, fk = famKey(this.equip.weapon), S = SIGNATURE[fk]; if (!S || this.dead || this.dodgeT > 0 || this.atkT > 0 || this.downT > 0 || (this.sigCd || 0) > 0 || this.st < S[1]) return false;
+    const G = this.G, fk = famKey(this.equip.weapon), S = SIGNATURE[fk]; if (!S || this.dead || this.dodgeT > 0 || this.atkT > 0 || this.downT > 0 || (this.sigCd || 0) > 0 || this.st < sigCost(this, S)) return false; /* part 73: the weapon's own move costs a share of the pool - its numbers were written for a pool of a hundred */
     if (aim !== undefined) this.facing = aim; if (OPT.assist) { const F0 = this.fam || FAMILY.sword, e = this.aimTarget(!!F0.ranged, F0.ranged ? 12 : F0.reach + 2); if (e) this.facing = Math.atan2(e.x - this.x, e.z - this.z); } const f = this.facing, fx = Math.sin(f), fz = Math.cos(f), D = this.dmg * (this.fam || FAMILY.sword).dmg, ty = (this.fam || FAMILY.sword).t;
     const area = (x, z, r, mul, type, cb) => { let n = 0; for (const e of G.enemies.list) { if (!e.alive || e.resting) continue; const d = Math.hypot(e.x - x, e.z - z); if (d > r + e.r) continue; n++; e.takeDamage(D * mul, (e.x - this.x) / (Math.hypot(e.x - this.x, e.z - this.z) || 1), (e.z - this.z) / (Math.hypot(e.x - this.x, e.z - this.z) || 1), 1.1, false, type || ty); if (cb && e.alive) cb(e); } return n; };
-    G.story('sig'); this.st -= S[1]; this.sigCd = S[2]; this.lastAtkT = this.t; this.style = fk === 'spear' || fk === 'daggers' ? 'thrust' : fk === 'mace' || fk === 'cleaver' ? 'v' : 'h'; this.atkDur = .34; this.atkT = .34; this.atkHit = true; this.combo = 0; this.comboT = 0; G.hud.number(this.x, 2.3, this.z, S[0], '#ffd75a'); G.audio.play('swing', this.x, this.z, .7); tele('signatures'); G.sigOn = true;
+    G.story('sig'); this.st -= sigCost(this, S); this.sigCd = S[2]; this.lastAtkT = this.t; this.style = fk === 'spear' || fk === 'daggers' ? 'thrust' : fk === 'mace' || fk === 'cleaver' ? 'v' : 'h'; this.atkDur = .34; this.atkT = .34; this.atkHit = true; this.combo = 0; this.comboT = 0; G.hud.number(this.x, 2.3, this.z, S[0], '#ffd75a'); G.audio.play('swing', this.x, this.z, .7); tele('signatures'); G.sigOn = true;
     if (fk === 'sword') { this.iframe = Math.max(this.iframe, .3); for (let i = 0; i < 5; i++) G.col.move(this, fx * .5, fz * .5); area(this.x - fx * 1.2, this.z - fz * 1.2, 2.2, 1.6); G.fx.swing(this.x, this.z, f, 2.6, 2.2); }
     else if (fk === 'longsword') { G.fx.shoot(this.x + fx * .6, 1, this.z + fz * .6, fx * 15, fz * 15, D * 1.4, 'lance', { friendly: 1, type: ty, pierce: 9 }); G.fx.swing(this.x, this.z, f, 1.7, 2.2); }
     else if (fk === 'falchion') { for (let i = 0; i < 3; i++) setTimeout(() => { if (!this.dead) { G.sigOn = true; area(this.x + Math.sin(this.facing) * 1.1, this.z + Math.cos(this.facing) * 1.1, 1.5, .75); G.sigOn = false; G.fx.swing(this.x, this.z, this.facing + (i - 1) * .5, 1.2, 1.7); G.audio.play('swing', this.x, this.z, 1.4); } }, i * 110); }
@@ -4437,7 +4453,7 @@ class Player {
     else if (this.atkT > 0) {
       this.atkT -= dt; const pr = 1 - this.atkT / this.atkDur;
       if (!this.atkHit && pr >= .42) { this.atkHit = true; this.strike(); }
-      if (pr < .42 && !this.spin) G.col.move(this, Math.sin(this.facing) * 1.3 * dt, Math.cos(this.facing) * 1.3 * dt);
+      if (pr < .42 && !this.spin && !this.noStep) G.col.move(this, Math.sin(this.facing) * 1.3 * dt, Math.cos(this.facing) * 1.3 * dt);
       if (this.atkT <= 0 || (this.queued && pr >= .82 && !this.spin)) { this.atkT = 0; this.spin = false; if (this.queued) { this.queued = false; this.attack(); } }
     } else {
       let dx = 0, dz = 0, run = 1;
@@ -4605,7 +4621,7 @@ class Enemy {
     this.model.root.position.set(x, 0, z); G.scene.add(this.model.root); if (OPT.ghost !== 0) ghostify(this.model.root, GHOST_E);
     if (o.name) this.S = Object.assign({}, this.S, { name: o.name });
     /* how it arrives (creatures laid out with the floor, and the ones a guardian calls): spiders and their kind come down a thread out of the dark above; the dead climb out of the ground */
-    this.enter = boss || o.clone || !(id != null || o.minion) ? null : this.model.kind === 'beast' && this.model.sp.gait === 'bug' ? 'drop' : (this.model.kind === 'human' && this.model.mat.defines && this.model.mat.defines.SURF === SURF.bone) || mk === 'bonehound' ? 'rise' : null;
+    this.enter = boss || o.clone || !(id != null || o.minion) ? null : this.model.kind === 'beast' && this.model.sp.gait === 'bug' ? 'drop' : (this.model.kind === 'human' && this.model.mat.userData.surf === SURF.bone) || mk === 'bonehound' ? 'rise' : null;
     /* a guardian that rides: the steed is a body of its own under the rider, and falls with it */
     if (boss && !o.clone && V.mount && BEAST[V.mount]) { this.mount = buildBeast(V.mount, this.S.scale * 1.15); this.mountH = .5 * this.S.scale; if (this.mount.mat) { this.mount.mat.color.setHex(0xb8c4d8); if (this.mount.mat.emissive) this.mount.mat.emissive.setHex(0x406a70); } this.mount.root.position.set(x, 0, z); G.scene.add(this.mount.root); }
     if (boss && !o.clone) { this.light = { x, y: 2, z, color: V.tint !== undefined ? V.tint : 0xff3a18, int: 14, range: 9, key: '_dyn' }; G.lights.sources.push(this.light); }
@@ -5375,9 +5391,9 @@ class LootManager {
     if (boss && !e.clone && isGuardianFloor(dp) && Math.random() < .25) { const ids = uniqueIds(); this.drop('item', e.x, e.z, { item: makeUnique(ids[Math.random() * ids.length | 0], dp) }); }
     /* the crimson tier falls from bosses alone, and seldom: one guardian in eight, one lesser boss in twenty-five */
     if (boss && !e.clone && Math.random() < (isGuardianFloor(dp) ? MYTH.guardian : MYTH.boss)) { this.drop('item', e.x, e.z, { item: makeItem(dp + 2, TOP) }); G.hud.banner('A MYTHIC FIND', 'ONLY THE LORDS OF THE DEEP CARRY THE CRIMSON'); }
-    if (boss) { this.drop('gold', e.x, e.z, { amount: (60 + dp * 22) * roadK(dp) /* a lord's purse is one to a floor: it is not thinned by the longer road */ }); this.drop('item', e.x, e.z, { item: makeItem(dp + 1, 2) }); this.drop('item', e.x, e.z, { item: makeItem(dp + 1, 1) }); this.drop('potion', e.x, e.z); return; }
+    if (boss) { this.drop('gold', e.x, e.z, { amount: (60 + dp * 22) * roadK(dp) /* a lord's purse is one to a floor: it is not thinned by the longer road */ }); this.drop('item', e.x, e.z, { item: makeItem(dp + 1, 2) }); this.drop('item', e.x, e.z, { item: makeItem(dp + 1, 1) }); /* part 73: potions are bought, or found in chests - nothing that dies leaves one */ return; }
     /* creatures born of the dungeon's energy carry no purse: they leave cores and materials (see onKill), rarely a potion, a key or gear */
-    const r = Math.random() * pay(dp); if (r < .006) this.drop('potion', e.x, e.z); else if (r < .011) this.drop('key', e.x, e.z); else if (r < (e.type === 'warrior' ? .13 : .075)) this.drop('item', e.x, e.z, { item: makeItem(dp) });
+    const r = Math.random() * pay(dp); if (r < .006) { /* part 73: it left a potion here */ } else if (r < .011) this.drop('key', e.x, e.z); else if (r < (e.type === 'warrior' ? .13 : .075)) this.drop('item', e.x, e.z, { item: makeItem(dp) });
   }
   chestLoot(r) {
     const tier = r.tier || (r.o && r.o.rich ? 'Silver' : 'Bronze'); teleF('chest', tier); if (Math.random() < (tier === 'Gold' ? .12 : tier === 'Silver' ? .04 : .01)) this.drop('crystal', r.x, r.z);
@@ -5387,8 +5403,8 @@ class LootManager {
     if (tier === 'Silver' && Math.random() < .15) this.drop('item', r.x, r.z, { item: makeItem(this.G.depth + 1, 2) });
     { const G = this.G, P = G.lostPool, i = P.findIndex(it => G.depth >= (it.lostAt || 0) + 2 && canWield(G.player, it)); if (i >= 0 && Math.random() < EC.poolChance) { const it = P.splice(i, 1)[0]; if (it.rar < LEG) { it.rar++; for (const q of ['dmg', 'armor', 'hp']) if (it.s[q]) it.s[q] = Math.round(it.s[q] * 1.22); it.value = Math.round(it.value * 1.6); } it.tag = 'fallen'; it.uid = ITEM_UID++; delete it.lostAt; this.drop('item', r.x, r.z, { item: it }); } }
     const dp = this.G.depth, rich = r.o.rich; this.drop('gold', r.x, r.z, { amount: Math.round(rand(.6, 1.4) * (3 + .9 * dp) * (rich ? 3 : 1)) });
-    if (rich) { this.drop('item', r.x, r.z, { item: makeItem(dp + 1, 1) }); if (Math.random() < .6) this.drop('item', r.x, r.z, { item: makeItem(dp, 0) }); this.drop('potion', r.x, r.z); }
-    else { const q = Math.random(); if (q < .6) { const it = makeItem(dp); if (it.rar === 0 && Math.random() < .35) { for (const k of ['dmg', 'armor', 'hp']) if (it.s[k]) it.s[k] = Math.round(it.s[k] * 1.25); it.name = "APPRENTICE'S " + it.name.split(' ').slice(1).join(' '); it.value = Math.round(it.value * 1.3); } this.drop('item', r.x, r.z, { item: it }); } else if (q < .7) this.drop('potion', r.x, r.z); else if (q < .77) this.drop('key', r.x, r.z); }
+    if (rich) { this.drop('item', r.x, r.z, { item: makeItem(dp + 1, 1) }); if (Math.random() < .6) this.drop('item', r.x, r.z, { item: makeItem(dp, 0) }); this.drop('potion', r.x, r.z); this.drop('mana', r.x, r.z); }
+    else { const q = Math.random(); if (q < .6) { const it = makeItem(dp); if (it.rar === 0 && Math.random() < .35) { for (const k of ['dmg', 'armor', 'hp']) if (it.s[k]) it.s[k] = Math.round(it.s[k] * 1.25); it.name = "APPRENTICE'S " + it.name.split(' ').slice(1).join(' '); it.value = Math.round(it.value * 1.3); } this.drop('item', r.x, r.z, { item: it }); } else if (q < .7) { } else if (q < .77) this.drop('key', r.x, r.z); /* part 73: chests are the only place a potion is found: a plain one holds a potion of life three times in ten and a draught of mana one in four, each on its own roll; a rich one holds both */ if (Math.random() < CB.chestPot) this.drop('potion', r.x, r.z); if (Math.random() < CB.chestMana) this.drop('mana', r.x, r.z); }
   }
   /** the nearest thing on the ground a hand can reach (gold is never asked for) */
   nearest(x, z, r) { let b = null, bd = r; for (const d of this.list) { if (d.gone || d.kind === 'gold' || d.fly > 0 || d.t < .35 || d.skip > 0) continue; const dd = Math.hypot(d.x - x, d.z - z); if (dd < bd) { bd = dd; b = d; } } return b; }
@@ -5396,7 +5412,7 @@ class LootManager {
   label(d) { return 'TAKE ' + (d.kind === 'item' ? d.item.name : d.kind === 'potion' ? 'THE POTION' : d.kind === 'mana' ? 'THE MANA DRAUGHT' : d.kind === 'key' ? 'THE KEY' : d.kind === 'crystal' ? 'THE CRYSTAL' : d.kind === 'grave' ? 'YOUR LOST PACK' : 'IT'); }
   /** take it by hand */
   take(d) { if (!d || d.gone) return false; const p = this.G.player; p.facing = Math.atan2(d.x - p.x, d.z - p.z); p.raiseT = Math.max(p.raiseT || 0, .25); if (!this.collect(d)) return false; this.remove(d); this.list = this.list.filter(q => !q.gone); this.takeN = (this.takeN || 0) + 1; return true; }
-  breakLoot(x, z) { const r = Math.random(); if (r < .35) this.drop('gold', x, z, { amount: Math.round(rand(.5, 1.5) * (1 + this.G.depth * .4)) }); else if (r < .36) this.drop('potion', x, z); else if (r < .372) this.drop('key', x, z); }
+  breakLoot(x, z) { const r = Math.random(); if (r < .35) this.drop('gold', x, z, { amount: Math.round(rand(.5, 1.5) * (1 + this.G.depth * .4)) }); else if (r < .36) { /* part 73: one in a hundred held a potion */ } else if (r < .372) this.drop('key', x, z); }
   collect(d) {
     const G = this.G, p = G.player;
     if (d.kind === 'gold') { const g = Math.max(1, Math.round(d.amount * EC.foundK * p.M.gold * (OMEN.gold || 1) / roadK(G.depth) * (POCKET && !POCKET.town ? EC.pocketGold : 1) /* a dungeon's chests hold a third of the gold of a floor's: twenty halls of them, and what it keeps at the end, made gold worthless */)); p.gold += g; G.led('found', g); G.hud.number(d.x, .6, d.z, '+' + g, '#ffd75a'); G.audio.play('coin', d.x, d.z); }
@@ -5491,7 +5507,7 @@ class InventorySystem {
     for (const a of AFFIXES) if (s[a.k]) L.push(`+${Math.round(s[a.k] * 100)}% ${a.t}`); if (it.tier) L.push('TIER ' + ['', 'I', 'II', 'III', 'IV', 'V'][it.tier]); if (it.uniq) L.push(`<span class="r4">UNIQUE: ${UNIQUES[it.uniq].d}</span>`); if (it.named !== undefined) L.push('<span class="r4">NAMED - ONE OF ' + NAMED.length + '</span>');
     if (it.set) { const n = this.G.player.setN ? this.G.player.setN[it.set] || 0 : 0; L.push(`<span style="color:#${SETS[it.set].col.toString(16).padStart(6, '0')}">${SETS[it.set].n} SET (${n} OF 6 WORN)</span>`, ...SET_AT.map((c, i) => (n >= c ? '\u25C6 ' : '\u25C7 ') + ['TWO', 'FOUR', 'SIX'][i] + ': ' + SETS[it.set].b[i])); }
     if (it.slot === 'off') { const ok = offKind(it); if (!canWield(this.G.player, it)) L.push('<b style="color:#e5484d">A ' + archName(this.G.player.arch, this.G.player.sex) + ' CANNOT CARRY THIS</b>'); L.push('<b style="color:#e6c56a">' + OFF_TXT[ok] + '</b>', 'A TWO-HANDED WEAPON OR A PAIR LEAVES NO HAND FOR IT'); }
-    if (it.slot === 'weapon') { const F = famOf(it), ml = masteryLv((this.G.player.mastery || {})[famKey(it)]); { const sg = SIGNATURE[famKey(it)]; if (sg) L.push('SPECIAL ATTACK (STAND STILL + ATTACK): ' + sg[0] + ' - ' + sg[3] + ' - ' + sg[1] + ' MANA, ' + sg[2] + ' S'); } if (!canWield(this.G.player, it)) L.push('<b style="color:#e5484d">A ' + archName(this.G.player.arch, this.G.player.sex) + ' CANNOT WIELD THIS</b>'); L.push('<b style="color:#e6c56a">' + HANDS_TXT[HANDS[famKey(it)]] + '</b>', 'FAMILY: ' + F.n + ' - ' + F.tip, ...(isExpert(this.G.player.arch, it) ? ['<b style="color:#ffd75a">\u2726 YOUR TRAINING: +' + Math.round((CB.expert - 1) * 100) + '% DAMAGE</b>'] : []), 'DAMAGE: ' + F.t.toUpperCase(), ...(ml ? ['MASTERY ' + ml + ' OF 5 (+' + ml * 2 + '% DAMAGE)'] : [])); if (it.energy || it.awake) L.push('ENERGY ' + (it.energy || 0) + ' / ' + (it.awake >= 2 ? 'FULLY AWAKE' : CB.awaken[it.awake || 0]) + (it.awake ? ' - AWAKENED ' + (it.awake >= 2 ? 'TWICE (' + (it.edge || 'NO CORE') + ' EDGE)' : 'ONCE') : '')); }
+    if (it.slot === 'weapon') { const F = famOf(it), ml = masteryLv((this.G.player.mastery || {})[famKey(it)]); { const sg = SIGNATURE[famKey(it)]; if (sg) L.push('SPECIAL ATTACK (STAND STILL + ATTACK): ' + sg[0] + ' - ' + sg[3] + ' - ' + Math.round(sigCost(this.G.player, sg)) + ' MANA, ' + sg[2] + ' S'); } if (!canWield(this.G.player, it)) L.push('<b style="color:#e5484d">A ' + archName(this.G.player.arch, this.G.player.sex) + ' CANNOT WIELD THIS</b>'); L.push('<b style="color:#e6c56a">' + HANDS_TXT[HANDS[famKey(it)]] + '</b>', 'FAMILY: ' + F.n + ' - ' + F.tip, ...(isExpert(this.G.player.arch, it) ? ['<b style="color:#ffd75a">\u2726 YOUR TRAINING: +' + Math.round((CB.expert - 1) * 100) + '% DAMAGE</b>'] : []), 'DAMAGE: ' + F.t.toUpperCase(), ...(ml ? ['MASTERY ' + ml + ' OF 5 (+' + ml * 2 + '% DAMAGE)'] : [])); if (it.energy || it.awake) L.push('ENERGY ' + (it.energy || 0) + ' / ' + (it.awake >= 2 ? 'FULLY AWAKE' : CB.awaken[it.awake || 0]) + (it.awake ? ' - AWAKENED ' + (it.awake >= 2 ? 'TWICE (' + (it.edge || 'NO CORE') + ' EDGE)' : 'ONCE') : '')); }
     if (it.master) L.push('MASTERWORK EDGE: NEVER DULLS'); else if (it.wear >= DULL) L.push('DULL: -12% DAMAGE UNTIL REPAIRED');
     if (it.tag === 'fallen') L.push('SOAKED IN THE DEEP - ONCE CARRIED BY A FALLEN HERO');
     const ns = slotsOf(it); if (ns && (it.sock || []).length) L.push('SOCKETS: ' + Array.from({ length: ns }, (_, i) => (it.sock || [])[i] || 'EMPTY').join(' / '));
@@ -5690,7 +5706,7 @@ class FX {
     else this.blobs.forEach(m => m.visible = false);
     /* light shafts slanting down in the open-sky realms (thinner during a fight) */
     /* real shafts: where the sun is blocked (a canopy, a wall, a doorway's lintel) the shaft is cut, read from the sun's own shadow map */
-    { const sm = G.lights.fill.shadow, on = sm.map && G.lights.fill.castShadow && (GFX.tier === 'high' || GFX.tier === 'ultra'); this.shaftU.uOn.value = on ? 1 : 0; if (on) { this.shaftU.tShadow.value = sm.map.texture; this.shaftU.uSM.value.copy(sm.matrix); } }
+    { const sm = G.lights.fill.shadow, on = sm.map && G.lights.fill.castShadow && G.lights.fill.shOn && (GFX.tier === 'high' || GFX.tier === 'ultra'); this.shaftU.uOn.value = on ? 1 : 0; if (on) { this.shaftU.tShadow.value = sm.map.texture; this.shaftU.uSM.value.copy(sm.matrix); } }
     const sky = ['meadow', 'swamp', 'tundra', 'desert', 'elite', 'sanctum', 'ruins'].includes(G.biome.id) && gfx('shafts'), fight = !!G.lock, cx = G.cam.target.x, cz = G.cam.target.z;
     /* each shaft belongs to a spot in the world, not to the screen: it fades in, drifts with the clouds, fades out and is born again elsewhere */
     const SR = Math.min(CLIP.value.z, 12) - 1.5;
@@ -6484,6 +6500,7 @@ class HUD {
         if (st && OPT.quests) { const cur = st.steps[S.step], fl = cur[0] === 'floor', have = fl ? Math.min(G.depth, cur[1]) : S.count, need = fl ? cur[1] : cur[1]; rows.push(['story', st.n, cur[2], fl ? T('FLOOR') + ' ' + G.depth + ' / ' + need : have + '/' + need, have >= need, (S.step + 1) + '/' + st.steps.length]); }
         if (S && S.dq && POCKETS[S.dq] && OPT.quests) { const D = POCKETS[S.dq]; rows.push(['story', D.q.n, S.dqItem === S.dq ? 'HAND IN ' + D.relic : D.q.ask, S.dqItem === S.dq ? '' : POCKET && POCKET.k === S.dq ? T('INSIDE') : '', false, '']); }
         if (b) { const have = b.ty === 'cores' ? p.cores : b.got; rows.push(['contract', b.ty === 'boss' ? 'A NOBLE\'S CONTRACT' : b.ty === 'cores' ? 'A MERCHANT\'S CONTRACT' : 'A GUILD CONTRACT', b.ty === 'boss' ? 'SLAY THE NEXT GUARDIAN' : b.ty === 'cores' ? 'DELIVER ENERGY CORES' : 'SLAY CREATURES ON FLOOR ' + b.min + ' OR DEEPER', have + '/' + b.need, have >= b.need, '']); }
+        if (OPT.quests && !POCKET) { const ng = Math.min(100, Math.ceil((G.depth + .001) / 10) * 10); rows.unshift(['story', 'THE DESCENT', G.depth >= 100 ? 'THE LAST FLOOR' : 'REACH FLOOR 100 - THE NEXT GUARDIAN WAITS ON FLOOR ' + ng, T('FLOOR') + ' ' + G.depth + ' / 100', false, '']); if (!b && G.depth === 1) rows.push(['contract', 'NO CONTRACT', 'THE GUILD COUNTER IN TOWN HAS PAID WORK', '', false, '']); } /* part 74: what the hero is here to do, always in sight */
         const key = JSON.stringify(rows) + LANG.name; if (this.c.qt !== key) { this.c.qt = key; tr.innerHTML = rows.map(([k, n, s, c, done, part]) => `<div class="qt ${k}${done ? ' done' : ''}"><b><i></i>${T(n)}${part ? ' <small>' + part + '</small>' : ''}</b><span>${T(s)} <em>${c}</em></span>${done ? '<span class="qd">' + T(k === 'contract' ? 'RETURN TO THE GUILD COUNTER' : 'DONE') + '</span>' : ''}</div>`).join(''); tr.style.display = rows.length ? '' : 'none'; } }
       const due = G.talentsDue(); if (this.c.due !== due) { this.c.due = due; const b = $('tpBadge'); b.style.display = due ? 'block' : 'none'; b.dataset.n = due || ''; if (due) b.textContent = '\u2726 ' + T(due + (due === 1 ? ' SKILL POINT TO SPEND' : ' SKILL POINTS TO SPEND')) + '  [' + glyph('talent', DEV()).toUpperCase() + ']'; const ct = document.querySelector('#cTabs [data-ct="talents"]'); if (ct) ct.classList.toggle('due', !!due); document.body.classList.toggle('tpdue', !!due); } }
     if (this.capT > 0) { this.capT -= dt; if (this.capT <= 0) $('cap').style.display = 'none'; }
@@ -6554,7 +6571,7 @@ const SLOTS = 4, saveKey = n => n === 1 ? CFG.SAVE_KEY : CFG.SAVE_KEY + ':' + n,
    STORY AND DEPTH (part 7): the opening, the keepers, writings, guardian voices, milestones, endings;
    affixes, uniques, sets, talent paths, run modifiers, achievements, weapon mastery, cycles and records
    ============================================================ */
-const INTRO = ['THE CITY OF LAMPS STANDS ON A HOLE NOBODY HAS SEEN THE BOTTOM OF.', 'IT SELLS YOU A CHARM, A BED AND A BLADE, AND IT BUYS WHATEVER YOU CARRY BACK UP.', 'A HUNDRED FLOORS. A GUARDIAN ON EVERY TENTH. THE CHARM BRINGS YOU HOME ONCE.', 'GO DOWN. COME BACK RICHER. OR DO NOT COME BACK.'];
+const INTRO = ['THE CITY OF LAMPS STANDS ON A HOLE NOBODY HAS SEEN THE BOTTOM OF.', 'IT SELLS YOU A CHARM, A BED AND A BLADE, AND IT BUYS WHATEVER YOU CARRY BACK UP.', 'A HUNDRED FLOORS. A GUARDIAN ON EVERY TENTH. THE CHARM BRINGS YOU HOME ONCE.', 'GO DOWN. COME BACK RICHER. OR DO NOT COME BACK.', 'YOUR TASK: REACH FLOOR 100. THE GUILD COUNTER IN TOWN PAYS FOR CONTRACTS ON THE WAY; YOUR TASKS ARE KEPT UNDER THE MAP.'];
 /** the people behind the counters: a name of their own, a face, and lines that change with how deep the hero has been ([by depth band], then lines for a hero with no charm, in debt, or badly hurt) */
 const KEEPERS = {
   shop: { n: 'MARDA OF THE SCALES', c: ['#c89060', '#5a3020', '#d8b030'], l: [['FIRST DESCENT? BUY THE CHARM BEFORE THE SWORD.', 'I WEIGH EVERYTHING. EVEN PROMISES.'], ['TEN FLOORS AND STILL BREATHING. THE GUILD NOTICED.', 'CORES FROM THE THIRD STRETCH FETCH MORE. BRING THOSE.'], ['YOU SMELL OF THE DEEP MINES. GOOD. THAT SMELL PAYS.', 'HALF OF THOSE WHO REACH THIRTY NEVER SEE FORTY. PROVE ME WRONG.'], ['THEY TALK ABOUT YOU IN THE UPPER MARKET NOW.', 'NOBODY SELLS BELOW SIXTY BUT ME. PRICE ACCORDINGLY.'], ['WHATEVER IS DOWN THERE, IT KNOWS YOUR NAME BY NOW.', 'IF YOU REACH THE BOTTOM, TELL ME WHAT IT WAS ALL FOR.']], nc: 'NO CHARM ON YOUR WRIST. I WILL NOT SELL A SWORD TO A CORPSE.', debt: 'THE LENDER ASKED AFTER YOU. I SAID YOU WERE BUSY.', hurt: 'YOU ARE BLEEDING ON MY COUNTER. POTIONS ARE ON THE LEFT.' },
@@ -6903,7 +6920,7 @@ class InputManager {
     const P = gp.pressed, H = gp.held, menu = !!this.G.shop.mode;
     s.attack = !!P.attack; s.attackHeld = !!H.attack; s.forceUse = pr.has(B.attack); s.core = !!P.core; s.dodge = pr.has(B.dodge) || !!P.dodge;
     /* standing still: held, or a toggle for players who cannot hold a key */
-    if (OPT.hold) { if (pr.has(B.root) || P.root) this.rootOn = !this.rootOn; s.root = !!this.rootOn; } else s.root = k.has(B.root) || (B.root === 'ShiftLeft' && k.has('ShiftRight')) || !!H.root;
+    if (OPT.hold) { if (pr.has(B.root) || P.root) this.rootOn = !this.rootOn; s.root = !!this.rootOn; } else s.root = k.has(B.root) || (B.root === 'ShiftLeft' && k.has('ShiftRight')) || k.has('AltLeft') || k.has('AltRight') /* part 74: Alt stands the hero still too */ || !!H.root;
     s.interact = pr.has('Enter') || pr.has(B.attack) || !!P.attack; /* a menu is still chosen with F */ s.back = !!P.dodge; s.potion = pr.has(B.potion) || !!P.potion; s.mana = pr.has(B.mana) || (!menu && !!P.mana); s.talent = (!menu && !!P.talent); s.escape = pr.has(B.escape) || !!P.down; s.ledger = false; { const sh = k.has('ShiftLeft') || k.has('ShiftRight'); s.pgTree = pr.has('KeyS') && sh; s.pgSkills = (pr.has('KeyS') && !sh) || pr.has('KeyA'); if (pr.has('KeyA') && this.G.talentsDue && this.G.talentsDue()) { s.pgSkills = false; s.pgTree = true; } s.journal = pr.has('KeyJ') || pr.has('KeyL'); }
     s.skill1 = (!menu && pr.has(B.skill1)) || !!P.skill1; s.skill2 = (!menu && pr.has(B.skill2)) || !!P.skill2; s.skill3 = (!menu && pr.has(B.skill3)) || !!P.skill3; s.skill4 = (!menu && pr.has(B.skill4)) || !!P.skill4;
     /* the pad's Menu opens the character; pressed again there, the game's menu */ const padMenu = !!P.pause, win = /\b(inv|menu|bigmap|hubj|shop|title|csel|pick)\b/.test(document.body.className) || !!this.G.paused; s.padMenu = padMenu && win; s.lock = !!P.lock; s.labels = !!P.labels;
@@ -6913,6 +6930,15 @@ class InputManager {
     /* the pointer belongs to the mouse: with a pad there is none */ { const nc = DEV() !== 'key'; if (nc !== this.nc) { this.nc = nc; document.body.classList.toggle('nocur', nc); } }
     s.aim = (gp.ax || gp.ay) ? [gp.ax, gp.ay] : null; pr.clear(); return s;
   }
+}
+/** part 74 - a word for whatever the pointer rests on: a skill of the bar shows the card of the tree, every other button what it does, an icon of state its name, the purse what each number is */
+const TIP_TXT = { aAtk: 'ATTACK - CLICK A CREATURE AND THE HERO GOES ON STRIKING IT; HOLD THE BUTTON TO GO ON TO THE NEXT. WITH SHIFT OR ALT HELD, A CLICK STRIKES WHERE YOU POINT AND THE HERO DOES NOT WALK', aDodge: 'ROLL - NOTHING TOUCHES YOU WHILE YOU ROLL', aPot: 'POTION OF LIFE - GIVES BACK 45% OF YOUR LIFE AND CURES POISON', aTal: 'THE SKILL TREE - SPEND YOUR POINTS THERE', aRoot: 'STAND STILL - HELD, A CLICK STRIKES WHERE YOU POINT AND THE HERO DOES NOT WALK', aChm: 'LIFELINE CHARMS - ONE BRINGS YOU BACK TO THE ENTRANCE WHEN YOU FALL. WITH NONE, DEATH IS FOR GOOD', aEsc: 'TOWN PORTAL - OPENS A DOOR TO THE CAMP OF THIS REALM', aMap: 'THE MAP OF THE FLOOR' };
+function tipInit(G) {
+  const el = document.createElement('div'); el.id = 'tt'; document.body.appendChild(el); let cur = null;
+  const text = n => { const p = G.player; if (/^sk[1-4]$/.test(n.id)) { const k = p.slots[+n.id[2] - 1]; return k && SKS[k] ? G.inv.skText(k) : k && SPELLS[k] ? '<b>' + T(SPELLS[k].n) + '</b>' : T('AN EMPTY PLACE - PUT A SKILL HERE FROM THE SKILL TREE'); } if (n.id === 'aMana') return abbrN(T('MANA DRAUGHT - ' + manaPotN(p, G.depth) + ' MANA OVER 5 SECONDS')); if (TIP_TXT[n.id]) return T(TIP_TXT[n.id]); if (n.title) { n.dataset.tt = n.title; n.removeAttribute('title'); } return n.dataset.tt ? T(n.dataset.tt.toUpperCase()) : ''; };
+  const show = n => { const h = text(n); if (!h) { el.style.display = 'none'; return; } el.innerHTML = h; el.style.display = 'block'; const r = n.getBoundingClientRect(), w = el.offsetWidth, hh = el.offsetHeight; let x = r.left + r.width / 2 - w / 2, y = r.top - hh - 8; if (y < 4) y = r.bottom + 8; el.style.left = Math.max(4, Math.min(innerWidth - w - 4, x)) + 'px'; el.style.top = y + 'px'; };
+  document.addEventListener('mouseover', e => { const n = e.target.closest && e.target.closest('.act, #buffs .bf, #res [title], #res [data-tt], .orb2, #mapbox canvas'); if (n === cur) return; cur = n; if (n) show(n); else el.style.display = 'none'; });
+  document.addEventListener('mouseleave', () => { cur = null; el.style.display = 'none'; }); addEventListener('keydown', e => { if (e.key === 'Alt') e.preventDefault(); /* Alt stands the hero still: the browser must not take it for its menu */ });
 }
 class MouseController {
   constructor(G, canvas) {
@@ -6935,7 +6961,10 @@ class MouseController {
     const G = this.G, p = G.player; this.ray.setFromCamera(this.ndc, G.cam.cam); const R = this.ray.ray;
     let best = null, bd = 1e9;
     for (const e of G.enemies.list) { if (!e.alive) continue; const rr = (e.r + .3) * (e.r + .3) * (e.S.scale > 1.5 ? 2 : 1), d2 = R.distanceSqToPoint(this.v.set(e.x, (e.gy || 0) + .55 * e.S.scale, e.z)); if (d2 < rr && d2 < bd) { bd = d2; best = e; } }
+    /* part 74: a click that just misses a creature that moved is still meant for it (a tile about the point), and a button held after a kill goes on to the next creature near the pointer instead of walking there */
+    if (!best && this.floor()) { const hx = this.hit.x, hz = this.hit.z, R2 = first ? .9 : this.hold === 'enemy' ? 3.5 : 0; let d0 = R2; for (const e of G.enemies.list) { if (!e.alive || e.resting || e.hidden > 0) continue; const d = Math.hypot(e.x - hx, e.z - hz) - e.r; if (d < d0 && Math.hypot(e.x - p.x, e.z - p.z) < 11) { d0 = d; best = e; } } this.ray.setFromCamera(this.ndc, G.cam.cam); }
     if (best) { p.setTargetEnemy(best); this.hold = 'enemy'; return; }
+    if (!first && this.hold === 'enemy') return; /* held after a kill with nothing near the pointer: the hero stands, it does not walk */
     if (first) for (const r of G.inter.list) { if (r.done) continue; if (R.distanceSqToPoint(this.v.set(r.x, G.world.hAt(r.x, r.z) + .45, r.z)) < .36) { p.setTargetInteract(r); G.fx.mark(r.x, r.z); this.hold = 'obj'; return; } }
     if (first) for (const d of G.loot.list) { if (d.gone || d.kind === 'gold' || d.fly > 0) continue; if (R.distanceSqToPoint(this.v.set(d.x, G.world.hAt(d.x, d.z) + .3, d.z)) < .3) { if (Math.hypot(d.x - p.x, d.z - p.z) < 1.5) G.loot.take(d); else { p.takeD = d; p.moveTo(d.x, d.z); G.fx.mark(d.x, d.z); } this.hold = 'obj'; return; } }
     this.plane.constant = -(p.gy || 0); if (R.intersectPlane(this.plane, this.hit)) { if (p.moveTo(this.hit.x, this.hit.z) && first) { const e = p.path[p.path.length - 1]; G.fx.mark(e[0], e[1]); } this.hold = 'move'; }
@@ -6943,6 +6972,9 @@ class MouseController {
   update(dt) {
     const m = this.m, p = this.G.player; if (p.dead) { m.clicked = m.rclicked = false; return; }
     if (m.rclicked) { m.rclicked = false; if (this.floor()) { p.clearOrders(); p.signature(Math.atan2(this.hit.x - p.x, this.hit.z - p.z)); /* the right button: the core skill - the weapon's signature - toward the pointer */ } }
+    /* part 74: with the stand-still key held (Shift or Alt) the button strikes where the pointer is, again and again while it is held, and the hero does not take a step */
+    p.noStep = !!this.G.input.s.root; if ((m.clicked || m.down) && this.G.input.s.root) { m.clicked = false; this.hold = 'stand'; if (this.floor()) { p.clearOrders(); if (p.atkT <= 0) p.attack(Math.atan2(this.hit.x - p.x, this.hit.z - p.z)); } return; }
+    if (!this.taught && this.G.depth > 1 && this.G.input.device !== 'gamepad' && !this.G.auto) { const C = p.codex || (p.codex = {}); if (C.rootTip) this.taught = true; else if (this.G.enemies.list.some(e => e.alive && !e.resting && e.state !== 'idle' && e.state !== 'patrol' && Math.hypot(e.x - p.x, e.z - p.z) < 6)) { this.taught = true; C.rootTip = 1; this.G.hud.side('HOLD THE BUTTON TO KEEP STRIKING - SHIFT OR ALT: STRIKE WITHOUT WALKING'); } }
     if (m.clicked) { m.clicked = false; this.resolve(true); this.holdT = .25; }
     else if (m.down) { this.holdT -= dt; if (this.holdT <= 0) { this.holdT = .18; if (this.hold === 'move' || (this.hold === 'enemy' && !p.targetE)) this.resolve(false); } }
   }
@@ -7159,7 +7191,7 @@ class AutoPilot {
       /* the list is nearest first: the first door that will do is the one */ this.dgQ = null; this.dgT = G.time + 20; tele('pilotDoorSought'); return this.dg = { cx, cz, key, until: G.time + 240 + dd * 90 }; }
     if (Q.i >= Q.L.length) { this.dgQ = null; this.dgT = G.time + 20; } return null; }
   /** the weapon's signature: into a crowd for the ones that sweep, on a big or a wounded one for the ones that strike once, whenever the line is there for the ones that fly */
-  sig(best, near) { const p = this.G.player, fk = famKey(p.equip.weapon), S = SIGNATURE[fk]; if (!S || (p.sigCd || 0) > 0 || p.casting || p.atkT > 0 || p.st < S[1] + (CASTERS.includes(p.arch) ? 25 : 10)) return false; const F = p.fam || FAMILY.sword, d = Math.hypot(best.x - p.x, best.z - p.z) - best.r, big = best.type === 'boss' || best.elite, tough = best.hp > p.dmg * 2.5;
+  sig(best, near) { const p = this.G.player, fk = famKey(p.equip.weapon), S = SIGNATURE[fk]; if (!S || (p.sigCd || 0) > 0 || p.casting || p.atkT > 0 || p.st < (S[1] + (CASTERS.includes(p.arch) ? 25 : 10)) * (p.stMax || 100) / 100) return false; const F = p.fam || FAMILY.sword, d = Math.hypot(best.x - p.x, best.z - p.z) - best.r, big = best.type === 'boss' || best.elite, tough = best.hp > p.dmg * 2.5;
     const fit = fk === 'cleaver' ? d < F.reach && (best.hp < best.maxHp * .33 || big) : fk === 'axe' || fk === 'mace' ? d < 2 && (near >= 2 || big) : fk === 'daggers' ? d < 6 && tough && near <= 2 && p.hp > p.maxHp * .55 /* the step lands the hero behind its mark, among whatever stands with it: not into a crowd, and not when hurt */ : fk === 'falchion' ? d < 1.4 && (tough || near >= 2) : fk === 'sword' ? d < 2 && (near >= 2 || tough) : fk === 'spear' ? d < 4.8 && (tough || near >= 2) : fk === 'longsword' ? d < 8 && (tough || near >= 2) : d < 8.5 && (tough || near >= 2 || big);
     return fit ? p.signature(Math.atan2(best.x - p.x, best.z - p.z)) : false; }
   skipped(o) { const k = this.skey(o), t = this.skip.get(k); if (t === undefined) return false; if (t < this.G.time) { this.skip.delete(k); return false; } return true; }
@@ -8174,7 +8206,7 @@ class Game {
     MAT.floor.needsUpdate = MAT.wall.needsUpdate = MAT.low.needsUpdate = MAT.cap.needsUpdate = true; GEO.wallTall = wallGeoFor(b.top);
     const ft = b.flame || [1, 1, 1]; this.flameT = [1 + (ft[0] - 1) * .55, 1 + (ft[1] - 1) * .55, 1 + (ft[2] - 1) * .55]; MAT.flame.uniforms.uTint.value.set(this.flameT[0], this.flameT[1], this.flameT[2]);
     this.mirrorOn = !['desert', 'volcano', 'puzzle', 'sanctum'].includes(b.id) && (!this.quality || this.quality.level === 0);
-    { const out = ['meadow', 'swamp', 'tundra', 'desert', 'elite'].includes(b.id) && (!this.quality || this.quality.level === 0); if (out) L.fill.shOff = false; if (L.fill.castShadow !== out) { L.fill.castShadow = out; for (const k in MAT) if (MAT[k].isMaterial) MAT[k].needsUpdate = true; } if (out) L.fill.intensity = Math.max(L.fill.intensity, .5); }
+    { const out = ['meadow', 'swamp', 'tundra', 'desert', 'elite'].includes(b.id) && (!this.quality || this.quality.level === 0); if (out) L.fill.shOff = false; /* part 74: the sun's shadow was switched off and on with the kind of place, and every material of the game was compiled again each time (152 shaders, two thirds of a second on a desk machine). The light keeps its shadow for as long as the quality allows one; under a roof its shadow box shrinks to nothing, so nothing is drawn into it and no pixel reads it */ { const q0 = !this.quality || this.quality.level === 0; if (L.fill.castShadow !== q0) { L.fill.castShadow = q0; for (const k in MAT) if (MAT[k].isMaterial) MAT[k].needsUpdate = true; } if (L.fill.shOn !== out) { L.fill.shOn = out; const c = L.fill.shadow.camera, k = out ? 17 : .001; c.left = c.bottom = -k; c.right = c.top = k; c.far = out ? 60 : 1.001; c.updateProjectionMatrix(); L.fill.shOff = !out; /* under a roof its map is not drawn at all (the frame's own shadow schedule skips a light marked so) */ L.fill.shadow.needsUpdate = out; } } if (out) L.fill.intensity = Math.max(L.fill.intensity, .5); }
     if (this.fx) { const fu = this.fx.fog.material.uniforms, fc = new THREE.Color(b.amb), FA = { swamp: .3, undead: .3, tundra: .26, cave: .2, elite: .24, volcano: .2, sanctum: .2, desert: .14, meadow: .14, ruins: .18, puzzle: .16 }; fu.uCol.value.set(.1 + fc.r * .22, .1 + fc.g * .22, .1 + fc.b * .22); fu.uA.value = (FA[b.id] || .16) * 1.3; }
     if (this.renderer) { const pu = this.renderer.post.mat.uniforms, sh = b.shade || [.3, .32, .5]; pu.uDark.value = (b.dark === undefined ? .62 : b.dark) + CFG.DARK.add; pu.uShade.value.set(.34 + (sh[0] - .34) * .35, .36 + (sh[1] - .36) * .35, .44 + (sh[2] - .44) * .35); pu.uBloom.value = (b.bloom || .6) * .5;
       // backdrop: a deep neutral that leans to the realm's gloom; the slab's shadow is the same hue, darker
@@ -9088,10 +9120,10 @@ window.TD = { MPOT, manaPotN, CAST_FR, CAST_REL, skCastFr, skCastT, AFFIXES, CLA
     in the language the player chose, or in Spanish when the phone itself speaks it and no language was chosen yet */
 function phoneGate() { const el = document.createElement('div'); el.id = 'phoneGate'; const draw = () => { el.innerHTML = `<div class="gLogo">${logoSVG(true)}</div><i></i><p>${T('THIS GAME IS MADE FOR A COMPUTER OR A CONSOLE')}</p><small>${T('PHONES AND TABLETS ARE NOT SUPPORTED. OPEN IT ON A PC TO PLAY.')}</small>`; }; draw(); document.body.appendChild(el); document.body.classList.add('gated'); try { LOAD(1); } catch (e) { }
   if (!LANG.text && /^es/i.test(navigator.language || '')) fetch('lang/es.json').then(r => r.json()).then(d => { if (d && d.text) { LANG.text = d.text; draw(); } }).catch(() => { }); }
-if (IS_PHONE) phoneGate(); else try { const g = new Game(); let skip = false; try { skip = !!sessionStorage.getItem('dd-skip-title'); sessionStorage.removeItem('dd-skip-title'); } catch (e) { } if (!/[?&](noq|notitle)/.test(location.search) && !skip) g.showTitle(); else if (g.needArch) { g.needArch = false; setTimeout(() => g.chooseArch(), 400); } G.pet = new FamiliarPet(G); G.allies = new Allies(G); G.events = new Events(G); G.applyLang(); langDom(); G.applyOpt();
+if (IS_PHONE) phoneGate(); else try { const g = new Game(); let skip = false; try { skip = !!sessionStorage.getItem('dd-skip-title'); sessionStorage.removeItem('dd-skip-title'); } catch (e) { } if (!/[?&](noq|notitle)/.test(location.search) && !skip) g.showTitle(); else if (g.needArch) { g.needArch = false; setTimeout(() => g.chooseArch(), 400); } G.pet = new FamiliarPet(G); G.allies = new Allies(G); G.events = new Events(G); G.applyLang(); langDom(); G.applyOpt(); tipInit(G);
   /* pools that are made on first use are made now, so the warm-up compiles their shaders too */
   try { G.fx.warn(0, 0, .1, .01, true); G.fx.warns.forEach(q => { q.t = 0; q.m.visible = false; }); G.fx.critters(0); const d = G.loot.drop('gold', G.player.x, G.player.z, {}); G.loot.remove(d); G.loot.list = G.loot.list.filter(q => !q.gone); } catch (e) { }
-  G.warm(); LOAD(1);
+  { const t0 = performance.now(); G.warm(); window.BOOT_T = { warm: Math.round(performance.now() - t0), ready: Math.round(performance.now()), programs: G.renderer.r.info.programs.length }; } LOAD(1);
   /* first launch: one question about brightness, never asked again */
   /* first launch: the calibrations come after PRESS ANY KEY (see pressGo) */
   /* a lost graphics context: save, say so, and reload when the browser gives it back */
