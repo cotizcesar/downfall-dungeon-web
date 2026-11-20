@@ -905,6 +905,10 @@ body #topr{top:calc(var(--p) * 8) !important;right:calc(var(--p) * 18) !importan
 body #tlt{order:0 !important;max-width:none !important;overflow:visible !important;padding:0 !important;text-align:right}
 body #place{font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--p) * 14);letter-spacing:.14em;text-transform:uppercase;color:#e8e0cc;white-space:nowrap;text-shadow:0 1px 2px #000}
 body #sBiome{display:inline !important;font-size:1em !important;max-width:none !important;margin:0 !important;color:#e8e0cc !important;letter-spacing:inherit !important}body #sBiome::after{content:' \00b7 '}
+/* the place's line is set from its right end: a longer name grows to the left, and one too long for the screen is cut short with dots instead of leaving it */
+body #tlt{display:flex !important;justify-content:flex-end}body #place{display:flex;justify-content:flex-end;align-items:baseline;gap:.35em;max-width:calc(var(--p) * 620);min-width:0}body #place #sBiome{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}body #place #sDepth,body #place #sClock{flex:none}
+/* no button to close a window anywhere (owner, 2026-11-20): ESC, or B on a controller, is understood */
+#xBtn,#opts .ox{display:none !important}
 body #sClock{display:inline !important;margin-left:.6em;padding-left:.6em;border-left:1px solid #6a5a30;color:#cfc8b8;font-size:.92em}
 body #compass{display:none !important}
 body:not(.bigmap) #mapbox{order:1;width:calc(var(--p) * 302) !important;height:calc(var(--p) * 242) !important;border-radius:0 !important;border:1px solid #6a5a30 !important;background:radial-gradient(ellipse at 50% 50%,#4a4126,#2a2415 70%,#17130b) !important;box-shadow:0 0 0 1px #0a0a0a,0 .3em .8em rgba(0,0,0,.7)}
@@ -4334,7 +4338,7 @@ class Player {
   }
   trailCol() { const w = this.equip.weapon; if (w && w.awake >= 2) return { fire: 0xff7a30, storm: 0xa0b0ff, blunt: 0xd0c0a0, void: 0xc040ff, holy: 0xfff0a0 }[this.edge()] || 0xffffff; return w ? [0x9fb4c8, 0x7ae08a, 0x6a98ff, 0xc890ff, 0xff7a20, 0xff5060][w.rar] || 0x9fb4c8 : 0x9fb4c8; }
   /** where a spell leaves from: the crystal of a staff, or just in front of the chest */
-  castOrigin() { const f = this.facing; if (CASTW[famKey(this.equip.weapon)] && this.tipW) { this.glowK = 1; const t = this.tipW; this.G.fx.particles.emit('spark', t.x, t.y - this.G.world.hAt(t.x, t.z), t.z, 12); return { x: t.x, y: t.y - this.G.world.hAt(t.x, t.z), z: t.z }; } return { x: this.x + Math.sin(f) * .5, y: 1, z: this.z + Math.cos(f) * .5 }; }
+  castOrigin() { const f = this.facing; if (CASTW[famKey(this.equip.weapon)] && this.tipW) { this.glowK = 1; const t = this.tipW; this.G.fx.particles.emit('spark', t.x, t.y - this.G.world.hAt(t.x, t.z), t.z, 12); /* the staff's head may be behind the shoulder when the spell leaves (owner: "the powers come out behind the hero"): what is thrown starts at the head's height but never behind the hero - at least half a pace before it, on the line it is thrown along */ const y = t.y - this.G.world.hAt(t.x, t.z), fx = Math.sin(f), fz = Math.cos(f), along = (t.x - this.x) * fx + (t.z - this.z) * fz; if (along >= .5) return { x: t.x, y, z: t.z }; return { x: this.x + fx * .55, y: clamp(y, .8, 1.5), z: this.z + fz * .55 }; } return { x: this.x + Math.sin(f) * .5, y: 1, z: this.z + Math.cos(f) * .5 }; }
   whirl() { this.cast('whirl'); }
   flare() { this.cast('flare'); }
   useSlot(i) { const k = this.slots[i]; if (!k) return; if (this.atkT > 0 || this.dodgeT > 0 || this.stagT > 0) this.hold('slot', i); else this.cast(k); }
