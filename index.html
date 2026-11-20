@@ -5292,6 +5292,9 @@ function itemIcon(it) {
   const key = kind + ':' + (it ? it.rar : 0) + (it && it.lvl ? 'L' + it.lvl : '') + (it && it.tag === 'fallen' ? 'f' : '') + (it && it.awake ? 'a' + it.awake : '');
   return ICONS[key] || (ICONS[key] = paintIcon(kind, it ? it.rar : 0, it));
 }
+/* part 109: an icon is painted on a canvas and turned into an image the first time its kind and tier are shown - a few milliseconds each on a desk machine, many more on a handheld, and they all fell in the frame that opened the bag (62 ms for twenty things here; the owner felt it each time the pilot picked a thing up and opened the bag). A thing's icon is painted ahead now, one at a time in idle moments, from the moment the thing lies on the ground or sits in the bag */
+const ICON_Q = []; let ICON_T = 0;
+function warmIcon(it) { if (!it || ICON_Q.includes(it)) return; ICON_Q.push(it); if (ICON_T) return; const step = () => { ICON_T = 0; const x = ICON_Q.shift(); if (x) { try { itemIcon(x); } catch (e) { } } if (ICON_Q.length) ICON_T = (window.requestIdleCallback || setTimeout)(step, { timeout: 400 }); }; ICON_T = (window.requestIdleCallback || setTimeout)(step, { timeout: 400 }); }
 const iconOf = kind => ICONS[kind] || (ICONS[kind] = paintIcon(kind, -1, null));
 function paintIcon(kind, rar, it) {
   const S = 96, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
@@ -5559,7 +5562,7 @@ class LootManager {
     { const wg = this.warm = new THREE.Group(), o = new THREE.Mesh(GEO.sph, this.orbM[0]), dc = new THREE.Mesh(this.discG, this.discM[0]), b = new THREE.Sprite(this.beamM[0]); for (const q of [o, dc, b]) { q.scale.setScalar(.0001); q.frustumCulled = false; wg.add(q); } G.scene.add(wg); setTimeout(() => G.scene.remove(wg), 4000); }
     this.glowMats = GLOW_COL.map(c => new THREE.MeshBasicMaterial({ map: TEX.rune, color: new THREE.Color(c).multiplyScalar(.55), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
   }
-  drop(kind, x, z, o = {}) {
+  drop(kind, x, z, o = {}) { if (kind === 'item' && o.item) warmIcon(o.item);
     if (kind === 'potion' && !o.sure && Math.random() < .34) kind = 'mana';
     const G = this.G; let px = x, pz = z;
     for (let a = 0; a < 8; a++) { const tx = x + rand(-.7, .7), tz = z + rand(-.7, .7); if (G.world.free(tx, tz)) { px = tx; pz = tz; break; } }
@@ -6106,7 +6109,7 @@ class LightingManager {
     { const k = this.outK = (this.outK === undefined ? 1 : this.outK) + ((G.zone === 'dark' ? 0 : 1) - (this.outK === undefined ? 1 : this.outK)) * Math.min(1, dt * 5); const ft = G.flameT || [1, 1, 1]; MAT.flame.uniforms.uTint.value.set(ft[0] * k, ft[1] * k, ft[2] * k); MAT.flame.visible = k > .04; }
     this.pickT -= dt;
     if (this.pickT <= 0) {
-      this.pickT = .2; const S = this.sources; for (const s of S) s.d = Math.hypot(s.x - p.x, s.z - p.z); /* a fire that is lit stays among the lit ones a little longer than its distance alone would keep it: the set does not flicker at its edge */ { const key = q => q.d / (.6 + Math.min(12, q.int || 1) / 12) - (q.k > .5 ? 2 : 0); /* and a great fire counts as nearer than a small glow at the same distance: a torch nine tiles off is lit before a crack of lava six tiles off */ S.sort((a, b) => key(a) - key(b)); }
+      this.pickT = .2; const S = this.sources; for (const s of S) s.d = Math.hypot(s.x - p.x, s.z - p.z); /* a fire that is lit stays among the lit ones a little longer than its distance alone would keep it: the set does not flicker at its edge */ { const key = q => q.d / (.6 + Math.min(12, q.int || 1) / 12) - (q.k > .5 ? .7 : 0); /* part 109: the hold was 2, and a torch three tiles from the hero stayed dark while twelve fires up to six tiles off kept their places */ /* and a great fire counts as nearer than a small glow at the same distance: a torch nine tiles off is lit before a crack of lava six tiles off */ S.sort((a, b) => key(a) - key(b)); }
       this.cut = S.length > this.pool.length ? S[this.pool.length].d : 30;
     }
     for (let i = this.pool.length; i < this.sources.length; i++) { const s = this.sources[i]; if (s.k) s.k = Math.max(0, s.k - dt * 2.2); }
@@ -9429,7 +9432,7 @@ function phoneGate() { const el = document.createElement('div'); el.id = 'phoneG
 if (IS_PHONE) phoneGate(); else try { const g = new Game(); let skip = false; try { skip = !!sessionStorage.getItem('dd-skip-title'); sessionStorage.removeItem('dd-skip-title'); } catch (e) { } if (!/[?&](noq|notitle)/.test(location.search) && !skip) g.showTitle(); else if (g.needArch) { g.needArch = false; setTimeout(() => g.chooseArch(), 400); } G.pet = new FamiliarPet(G); G.allies = new Allies(G); G.events = new Events(G); G.applyLang(); langDom(); G.applyOpt(); tipInit(G);
   /* pools that are made on first use are made now, so the warm-up compiles their shaders too */
   try { G.fx.warn(0, 0, .1, .01, true); G.fx.warns.forEach(q => { q.t = 0; q.m.visible = false; }); G.fx.critters(0); const d = G.loot.drop('gold', G.player.x, G.player.z, {}); G.loot.remove(d); G.loot.list = G.loot.list.filter(q => !q.gone); } catch (e) { }
-  /* part 77: the figure of the bag is drawn by a small renderer of its own, made the first time the bag opened - a quarter of a second in the middle of play on a desk machine. It is made, and its shaders built, behind the loading screen */ try { const cv = document.createElement('canvas'); G.dollShot(cv, .5, 320, 480); } catch (e) { }
+  /* part 77: the figure of the bag is drawn by a small renderer of its own, made the first time the bag opened - a quarter of a second in the middle of play on a desk machine. It is made, and its shaders built, behind the loading screen */ try { const cv = document.createElement('canvas'); G.dollShot(cv, .5, 320, 480); } catch (e) { } try { G.dollShot(null, undefined, 320, 480); /* and once as the panel will show it: its canvas set in the panel, at its size */ } catch (e) { } try { const P0 = G.player; for (const it of [...Object.values(P0.equip), ...P0.items]) if (it) warmIcon(it); } catch (e) { }
   { const t0 = performance.now(); G.warm(); window.BOOT_T = { warm: Math.round(performance.now() - t0), ready: Math.round(performance.now()), programs: G.renderer.r.info.programs.length }; } LOAD(1);
   /* first launch: one question about brightness, never asked again */
   /* first launch: the calibrations come after PRESS ANY KEY (see pressGo) */
