@@ -5734,7 +5734,9 @@ class InventorySystem {
 /* ============================================================
    PARTICLE MANAGER (pooled GPU points) + FX (arcs, markers, telegraphs, projectiles)
    ============================================================ */
+const LIGHTS_ONLY = /[?&]lights=only/.test(location.search);
 const SCATTER = { value: 1 }, PLIT = { value: 1 }, HERO_P = { value: new THREE.Vector3() };
+const PART_AMB = { dust: 1, firefly: 1, spore: 1, snow: 1, sand: 1, ash: 1, wisp: 1, sparkle: 1, glint: 1, leaf: 1 };
 /** how much of what is asked for is made, by kind (part 92) */
 const PART_K = { blood: .42, bone: .42, slime: .42, wood: .45, debris: .45, spark: .3, flare: .5, shock: .5, frost: .6, fire: .6, acid: .6, dark: .6, volt: .6, holy: .6, goldburst: .6, dustpuff: .6, splash: .6 };
 /* part 92 (owner, 2026-11-20: "too many particles, and they are spheres"): a particle is a small chip of the thing it flew off - a square turned at its own angle, lit on one side and dark on the other, so it reads as a splinter of the world's own cubes - or, for what glows, a four-pointed spark with a bright heart. No more round blobs. */
@@ -5773,7 +5775,7 @@ class ParticleManager {
   constructor(G) { this.G = G; this.add = new ParticlePool(700, true, G.scene); this.nor = new ParticlePool(500, false, G.scene); this.points = [this.add.points, this.nor.points]; }
   setScale(s) { this.add.mat.uniforms.uScale.value = s; this.nor.mat.uniforms.uScale.value = s; }
   emit(kind, x, y, z, n = 1, dx = 0, dz = 0) {
-    /* fewer: what flies off a struck body is under half of what it was, the sparks and bursts half; nothing is made outside the slab in sight */ { const c = CLIP.value; if (c && c.z > 0 && (Math.abs(x - c.x) > c.z + 1.5 || Math.abs(z - c.y) > c.z + 1.5)) return; const K = PART_K[kind]; if (K !== undefined && n > 1) { const f = n * K; n = Math.floor(f) + (Math.random() < f - Math.floor(f) ? 1 : 0); if (n < 1) n = 1; } /* a burst of sparks is a handful, whatever asks for it (a hard blow asked for twenty) */ if (kind === 'spark' && n > 5) n = 5; else if (PART_K[kind] !== undefined && n > 16) n = 16; }
+    /* fewer: what flies off a struck body is under half of what it was, the sparks and bursts half; nothing is made outside the slab in sight */ { const c = CLIP.value; if (c && c.z > 0 && (Math.abs(x - c.x) > c.z + 1.5 || Math.abs(z - c.y) > c.z + 1.5)) return; if (PART_AMB[kind]) { /* what hangs in the air by itself - dust, fireflies, spores, snow, sand, ash, wisps, glints, leaves: half of it (owner, 2026-11-20) */ let m = 0; for (let i = 0; i < n; i++) if (Math.random() < .5) m++; if (!m) return; n = m; } const K = PART_K[kind]; if (K !== undefined && n > 1) { const f = n * K; n = Math.floor(f) + (Math.random() < f - Math.floor(f) ? 1 : 0); if (n < 1) n = 1; } /* a burst of sparks is a handful, whatever asks for it (a hard blow asked for twenty) */ if (kind === 'spark' && n > 5) n = 5; else if (PART_K[kind] !== undefined && n > 16) n = 16; }
     y += this.G.world.hAt(x, z);
     const A = this.add, N = this.nor, r = rand;
     for (let i = 0; i < n; i++) switch (kind) {
@@ -9015,7 +9017,7 @@ class Game {
     for (const ch of this.chunks.loaded.values()) if (ch.spikes) { ch.spikes.position.y = -.5 + .5 * up; if (up > .6 && !p.dead) for (const t of ch.data.traps) if (!t.k && Math.abs(p.x - t.x) < .5 && Math.abs(p.z - t.z) < .5) p.takeDamage(p.maxHp * .07, null); }
     this.chunks.update(p.x, p.z, false);
     const ck = Math.floor(p.x / 24) + ',' + Math.floor(p.z / 24); if (ck !== this.pchunk) this.refreshStairs(); if (this.mapDirty) this.drawMap();
-    this.lights.update(dt, p.tip);
+    this.lights.update(dt, p.tip); /* a trial (owner, 2026-11-20): with ?lights=only the general light is put out - the sky's, the ground's bounce and the sun - and only the torches of the place, what powers throw and the hero's own light are left */ if (LIGHTS_ONLY) { const L = this.lights; L.amb.intensity = 0; L.hemi.intensity = 0; L.fill.intensity = 0; }
     /* look-ahead towards where the hero moves; a little wider with a crowd, closer for a guardian's entrance and its last blow */
     { const f = p.facing, sp = Math.min(1, p.speed || 0) * (OPT.motion / 10), near = this.enemies.list.reduce((n, e) => n + (e.alive && !e.resting && e.state !== 'idle' && Math.hypot(e.x - p.x, e.z - p.z) < 8 ? 1 : 0), 0); this.pushT = Math.max(0, (this.pushT || 0) - dt);
       this.cam.hy = p.gy || 0; this.cam.update(dt, p.x, p.z, Math.sin(f) * 1.1 * sp, Math.cos(f) * 1.1 * sp, 1); }
