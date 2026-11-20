@@ -7677,7 +7677,7 @@ void main(){
   vec4 wp=uInvVP*vec4(uv*2.0-1.0,d*2.0-1.0,1.0); wp/=wp.w;
   if(uFogA>0.0 && d<0.99999){ float hg=wp.y-uFogY; float f=(1.0-smoothstep(-0.5,0.55,hg))*smoothstep(0.35,0.85,vn(wp.xz*0.3+vec2(uTime*0.05,uTime*0.032)));
     float lit=1.0-smoothstep(1.2,7.5,length(wp.xz-uHero.xz)); col=mix(col,uFogCol*(0.35+0.55*lit),clamp(f*uFogA,0.0,0.22)); }
-  // the dark closes in around the hero: everything far from the torch sinks into a tinted gloom (Diablo-like low key)
+  // the dark closes in around the hero: everything far from the torch sinks into a tinted gloom (a low key)
   float rd=length((vUv-vec2(0.5,0.47))*vec2(1.0,1.3)); float dk=min(1.0,smoothstep(0.22,0.7,rd)*uDark*0.45); col=mix(col,col*uShade,dk);
   col+=texture2D(tBloom,uv).rgb*uBloom; // glow of fire, magic and magma bleeds over the scene
   col*=1.1; col=(col*(2.51*col+0.03))/(col*(2.43*col+0.59)+0.14); col=clamp(col,0.0,1.0);
