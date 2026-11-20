@@ -5671,7 +5671,7 @@ class InventorySystem {
     L.push(`VALUE ${it.value} GOLD`); return L.join('<br>');
   }
   /** the names of an item's plain numbers, for the comparison */
-  hover(e) { const el = e.target.closest('.slot'); if (!el) return; const p = this.G.player, it = el.dataset.k ? p.equip[el.dataset.k] : p.items[+el.dataset.i]; this.desc.innerHTML = it ? this.text(it) + (el.dataset.k ? '' : this.compare(it)) : this.hintTxt(); }
+  hover(e) { if (this.G.auto && this.sel) return; /* the pilot has a piece chosen and its buttons on show: a pointer resting on the bag does not rewrite the card under its hands */ const el = e.target.closest('.slot'); if (!el) return; const p = this.G.player, it = el.dataset.k ? p.equip[el.dataset.k] : p.items[+el.dataset.i]; this.desc.innerHTML = it ? this.text(it) + (el.dataset.k ? '' : this.compare(it)) : this.hintTxt(); }
   /** what changes against the piece worn in the same slot */
   compare(it) { const eq = it.slot === 'tome' ? null : this.G.player.equip[eqKey(this.G.player, it)]; if (!eq || !it.s || eq === it) return eq ? '' : (it.slot !== 'tome' ? '<br><span style="color:#8ad08a">NOTHING WORN IN THIS SLOT</span>' : ''); const ks = [...new Set([...Object.keys(it.s), ...Object.keys(eq.s || {})])], out = [];
     for (const k of ks) { const d = (it.s[k] || 0) - ((eq.s || {})[k] || 0); if (Math.abs(d) < .005) continue; const pct = Math.abs(it.s[k] || 0) < 3 && Math.abs((eq.s || {})[k] || 0) < 3 && k !== 'dmg' && k !== 'armor' && k !== 'hp'; out.push(`<span style="color:${d > 0 ? '#8ad08a' : '#e58a8a'}">${d > 0 ? '\u25B2' : '\u25BC'} ${T(STAT_NAME[k] || (AFFIXES.find(a => a.k === k) || {}).t || k.toUpperCase())} ${d > 0 ? '+' : ''}${pct ? Math.round(d * 100) + '%' : Math.round(d * 10) / 10}</span>`); }
@@ -7269,14 +7269,14 @@ class AutoPilot {
   /** the next thing worth doing in the bag: put on a better piece, learn a tome, or sell the worst when the bag is nearly full */
   bagJob() { const G = this.G, p = G.player, I = G.inv, A = ARCH[p.arch];
     for (const it of p.items) { if (this.badIt.has(it)) continue; if (it.slot === 'tome') return { it, da: 'equip' }; else if (I.fits(it) && buildScore(it) > buildScore(p.equip[eqKey(p, it)])) return { it, da: 'equip' }; }
-    if (p.items.length > I.max - 4) { let w = null; for (const it of p.items) if (!w || itemScore(it) < itemScore(w)) w = it; if (w) return { it: w, da: 'sell' }; }
+    if (p.items.length > I.max - 4) { let w = null; for (const it of p.items) if (!this.badIt.has(it) && (!w || itemScore(it) < itemScore(w))) w = it; if (w) return { it: w, da: 'sell' }; }
     return null; }
   /** open the bag, choose the piece, press EQUIP (or LEARN, or SELL), and so on until nothing is left to do; a threat closes the bag at once */
   bagHands() { const G = this.G, I = G.inv, B = document.body.classList; if (!this.hands() || G.shop.mode || G.paused || !this.calm() || !this.bagJob()) return false;
     const shut = () => { if (B.contains('inv')) G.toggleInv(); return false; };
     const job = () => { if (!this.calm() || G.shop.mode) return shut(); const J = this.bagJob(); if (!J) return shut(); I.pick(J.it, null); tele('pilotBagPick');
-      this.hq.unshift(() => { if (!this.calm() || !I.sel || I.sel.it !== J.it) return shut(); const b = I.desc.querySelector('[data-da="' + J.da + '"]'); if (b) b.click(); else I.sel = null;
-        if (G.player.items.includes(J.it) && J.da === 'equip') this.badIt.add(J.it); /* it would not go on (no free hand, a full bag): not again */ this.hq.unshift(job); return this.pace(.45); });
+      this.hq.unshift(() => { if (!this.calm() || !I.sel || I.sel.it !== J.it) return shut(); const b = I.desc.querySelector('[data-da="' + J.da + '"]'); if (b) b.click(); else { /* the button is gone (a pointer resting on the bag rewrote the card - the pilot went round for ever, opening the bag and choosing the piece again): the pilot does with its own hands what the button would */ I.sel = null; if (J.da === 'sell') I.sell(J.it); else I.equip(J.it); I.dirty = true; }
+        if (G.player.items.includes(J.it)) this.badIt.add(J.it); /* it would not go on, or would not be sold (no free hand, a full bag): not again, whatever was asked */ this.hq.unshift(job); return this.pace(.45); });
       return this.pace(.75); };
     this.hand([() => { if (!B.contains('inv')) G.toggleInv(); return this.pace(.55); },
       () => { if (I.pg && I.pg !== 'char') { const t = $('cTabs').querySelector('[data-ct="char"]'); if (t) t.click(); } if ((I.bagTab || 'gear') !== 'gear') { const t = $('bagTabs').querySelector('[data-bt="gear"]'); if (t) t.click(); } return this.pace(.35); }, job]);
