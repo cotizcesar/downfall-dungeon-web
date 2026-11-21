@@ -2487,7 +2487,8 @@ const skRank = (p, id) => (p.sk && p.sk[id]) | 0;
 const skLvl = (p, id) => { if (p.procLv && p.procLv[id]) return p.procLv[id]; const r = skRank(p, id); if (!r) return 0; const X = p.X, s = SKS[id]; /* part 80: the things worn lift a skill a hero has a point in - all of them, a tree's, or the one - and the tables are carried on past their twenty rows by their last step */ return Math.min(CFG.COMBAT.skCap, r + ((p.M && p.M.allsk) | 0) + (X ? (X.allsk | 0) + (s && s.tr !== undefined ? X.tab[s.tr] | 0 : 0) + (X.sk[id] | 0) + (s && s.o && s.o.dt === 'fire' ? X.fsk | 0 : 0) /* part 110: and what a thing adds to fire skills */ : 0)); };
 /** can a point go into this skill now: its level is reached, everything it hangs from has a point, and it is not full */
 const skOpen = (p, id) => { const n = SKS[id]; if (!n || n.arch !== archKey(p.arch) || skRank(p, id) >= SK_MAX || p.level < n.req) return false; return n.r.every(q => skRank(p, q) > 0); };
-const skSpent = p => Object.values(p.sk || {}).reduce((a, b) => a + (b | 0), 0);
+/** points placed. Part 110: the point a new hero holds in each of the two skills of its class is the class's own, as the reference's first skill of a class is, and is not a point spent */
+const skSpent = p => Object.values(p.sk || {}).reduce((a, b) => a + (b | 0), 0) - (((SKB[archKey(p.arch)] || {}).start) || []).filter(id => ((p.sk || {})[id] | 0) > 0).length;
 /** one column of a skill at the hero's level in it (or at lv), with what other skills add: a number, or [low, high]. raw: the table's number, not the world's */
 const skV = (p, id, key, lv, raw) => { const s = SKS[id]; if (!s) return 0; const col = s.v[key], L = lv || skLvl(p, id) || 1; let x = col ? (L <= 20 ? col[L - 1] : (() => { const a = col[19], b = col[18], n = L - 20, st = (u, v) => key === 'mana' || key === 'manaS' ? Math.max(0, u + (u - v) * n) : u + (u - v) * n; return Array.isArray(a) ? [st(a[0], b[0]), st(a[1], b[1])] : st(a, b); })()) : s.o[key + 'C'] !== undefined ? s.o[key + 'C'] : 0; let pct = 0, flat = 0;
   if (s.syn) for (const q of s.syn) if (q[1] === key) { const n = Math.floor(skRank(p, q[0]) / q[4]); if (!n) continue; if (q[3]) pct += q[2] * n; else flat += q[2] * n; }
@@ -2499,7 +2500,7 @@ const skYd = y => Math.min(9.5, y * SKC.YARD);
 /** the hero's skills that are cast (those with a point): they are the spells it knows */
 const skKnown = p => { const T = SKILLS[archKey(p.arch)]; if (!T) return []; const o = []; for (const B of T) for (const n of B.nodes) if (n.act && skRank(p, n.id) > 0) o.push(n.id); return o; };
 /** points a hero of this level has: one a level from the second, and two to begin with (tomes gave one more until part 68) */
-const skPoints = p => (p.level - 1) + 2 + questPts(p, 0);
+const skPoints = p => (p.level - 1) + questPts(p, 0) /* part 110: one a level from the second and twelve for deeds, as in the reference (the two a hero began with are no longer counted, nor spent: see skSpent) */;
 const skSpellRank = (p, k) => skRank(p, k), skPow = () => 1;
 /** a new hero: one point in each of the two skills its class begins with */
 const skStart = p => { p.sk = {}; for (const id of (SKB[archKey(p.arch)] || {}).start || []) p.sk[id] = 1; };
